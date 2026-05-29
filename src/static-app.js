@@ -5840,7 +5840,196 @@ function roadmapPanel() {
   `;
 }
 
+
+const lovableMicrositePages = {
+  overview: {
+    eyebrow: "Lovable evidence hub",
+    title: "Lovable Review Hub",
+    status: "Evidence status: pending hands-on testing",
+    summary: "Lovable is positioned as an AI app builder for creating apps and websites through chat. NoCodeReviewed is treating this page as an evidence-first review hub until hands-on testing, pricing verification, and security checks are complete.",
+    sections: [
+      ["What can be safely said", ["Lovable is positioned as an AI app builder for creating apps and websites through chat.", "Lovable appears best suited for rapid MVPs, prototypes, dashboards, internal tools, and early product validation.", "NoCodeReviewed should not claim Lovable is production-ready or secure until hands-on tests are complete."]],
+      ["Current review status", ["contentStatus: needs-evidence", "evidenceStatus: pending-hands-on-testing", "pricingStatus: needs-verification"]],
+      ["Recommended next pages", ["Review in Progress", "Pricing Verification", "Security Questions", "Autonomy Testing", "Test Lab", "Prompts", "Templates", "Alternatives", "Final Verdict Pending"]]
+    ]
+  },
+  review: {
+    eyebrow: "Review in progress",
+    title: "Lovable Review: What We Can Say Before Testing",
+    status: "No final score yet",
+    summary: "This is not a final Lovable review. It is a controlled evidence draft. NoCodeReviewed has not completed the five planned test builds yet.",
+    sections: [
+      ["Safe preliminary framing", ["Lovable is worth evaluating for fast app prototyping and prompt-driven web app creation.", "The strongest likely use case is rapid concept-to-interface development.", "Final ratings should wait until NoCodeReviewed tests backend behavior, auth, data protection, deployment, and maintainability."]],
+      ["Do not claim yet", ["Do not claim Lovable is the best AI app builder.", "Do not claim Lovable apps are secure by default.", "Do not claim Lovable is production-ready without manual review.", "Do not claim NoCodeReviewed has completed testing until test evidence exists."]]
+    ]
+  },
+  pricing: {
+    eyebrow: "Pricing verification",
+    title: "Lovable Pricing: Verification Required",
+    status: "pricingStatus: needs-verification",
+    summary: "Pricing and usage limits can change. This page should only publish manually verified pricing with a last-checked date and screenshot evidence.",
+    sections: [
+      ["Manual verification checklist", ["Check Lovable's official pricing page.", "Capture pricing screenshots.", "Record free plan limits.", "Record paid plan limits.", "Check usage, credits, seats, project limits, and export/deployment restrictions.", "Update lastChecked after manual verification."]],
+      ["Publishing rule", ["Do not invent pricing.", "Do not rely on memory.", "Do not publish plan limits without official verification."]]
+    ]
+  },
+  security: {
+    eyebrow: "Security and production readiness",
+    title: "Lovable Security Questions",
+    status: "Security outcome not yet verified",
+    summary: "NoCodeReviewed should evaluate Lovable-generated apps at the app level. A platform can provide useful tooling while generated apps still require security review.",
+    sections: [
+      ["Security questions", ["How is authentication configured?", "Are database rules locked down?", "Are API keys exposed to the client?", "How are environment variables handled?", "Can admin routes be accessed by normal users?", "Is role-based access control implemented correctly?", "Are payments and webhooks protected?", "Do generated error messages expose sensitive details?", "What data privacy controls exist?", "Can code be exported or reviewed independently?"]],
+      ["Production-readiness rule", ["NoCodeReviewed should not call a Lovable app production-ready until it passes auth, database, deployment, privacy, and manual code review checks."]]
+    ]
+  },
+  autonomy: {
+    eyebrow: "Autonomy testing",
+    title: "How Autonomous Is Lovable?",
+    status: "Autonomy rating pending",
+    summary: "Lovable should be measured by what it can do from prompts, how well it iterates, where it fails, and where human review is still required.",
+    sections: [
+      ["Autonomy questions", ["Can it create a working app from a prompt?", "Can it iterate from user feedback?", "Can it create multi-page flows?", "Can it handle backend logic?", "Can it fix its own errors?", "Can it deploy?", "Where does human review remain required?"]],
+      ["Important distinction", ["Autonomy does not equal safety.", "A tool can generate a working prototype and still require human security review before production."]]
+    ]
+  },
+  "test-lab": {
+    eyebrow: "NoCodeReviewed test lab",
+    title: "Lovable Test Lab Plan",
+    status: "All tests planned, not completed",
+    summary: "This is the authority centerpiece. NoCodeReviewed should run repeatable test builds and document evidence before publishing final claims.",
+    sections: [
+      ["Test 1: SaaS dashboard", ["Goal: evaluate dashboard creation, auth assumptions, data model handling, and admin views.", "Capture: screenshots, generated flows, errors, data/security configuration, deployment notes."]],
+      ["Test 2: Client portal", ["Goal: evaluate role-based access, private data handling, forms, file-like workflows, and user experience.", "Capture: login flow, user/admin separation, database behavior, failure signs."]],
+      ["Test 3: Marketplace MVP", ["Goal: evaluate listings, seller/buyer flows, payments or payment placeholders, and backend complexity.", "Capture: routes, permissions, webhook handling assumptions, broken flows."]],
+      ["Test 4: Internal CRM", ["Goal: evaluate CRUD reliability, table views, search/filtering, notes, and workflow logic.", "Capture: schema, edit/delete behavior, access controls, error handling."]],
+      ["Test 5: AI content tool", ["Goal: evaluate prompt workflows, API key handling, generated content flow, and deployment risk.", "Capture: API key placement, server/client boundaries, moderation/error behavior."]]
+    ]
+  },
+  prompts: {
+    eyebrow: "Testing prompts",
+    title: "Lovable Starter Prompts for NoCodeReviewed Tests",
+    status: "Prompt set ready for testing",
+    summary: "These prompts are for testing only. Results may vary, and generated apps require manual review.",
+    sections: [
+      ["SaaS dashboard prompt", ["Build a SaaS analytics dashboard with login, team workspace, charts, billing placeholder, admin settings, and sample customer data."]],
+      ["Client portal prompt", ["Build a secure client portal where clients can log in, view project status, send messages, and update profile information."]],
+      ["Marketplace MVP prompt", ["Build a two-sided marketplace MVP with listings, seller profiles, buyer inquiry flow, admin moderation, and payment placeholder."]],
+      ["Internal CRM prompt", ["Build an internal CRM for a small service business with contacts, deals, tasks, notes, filters, and activity history."]],
+      ["AI content tool prompt", ["Build an AI content generator with prompt templates, saved outputs, project folders, and settings for API configuration."]]
+    ]
+  },
+  templates: {
+    eyebrow: "Template notes",
+    title: "Lovable Templates and Test Patterns",
+    status: "Template performance unverified",
+    summary: "This page should collect reusable app patterns after testing. NoCodeReviewed should not claim template quality until each pattern is tested.",
+    sections: [
+      ["Potential template categories", ["SaaS dashboard", "Client portal", "Marketplace MVP", "Internal CRM", "AI content tool", "Landing page plus app shell"]],
+      ["Evidence needed", ["Build screenshots", "Prompt used", "What worked", "What failed", "Security findings", "Production-readiness notes"]]
+    ]
+  },
+  alternatives: {
+    eyebrow: "Alternatives",
+    title: "Lovable Alternatives",
+    status: "Neutral comparison page",
+    summary: "This page should compare tool categories without declaring a winner until evidence exists.",
+    sections: [
+      ["Prompt app builders", ["Bolt.new", "v0 by Vercel", "Replit Agent"]],
+      ["Agentic IDEs", ["Cursor", "Windsurf", "Claude Code", "OpenAI Codex"]],
+      ["Visual no-code builders", ["Bubble AI", "FlutterFlow AI", "Webflow AI-style workflows"]],
+      ["Comparison rule", ["Do not declare a winner without testing evidence. Focus on use case fit, constraints, and verification status."]]
+    ]
+  },
+  "final-verdict": {
+    eyebrow: "Verdict pending",
+    title: "Lovable Final Verdict Pending Hands-On Testing",
+    status: "No final verdict yet",
+    summary: "NoCodeReviewed should not publish a final Lovable verdict until the test lab is complete and pricing/security claims are manually verified.",
+    sections: [
+      ["What can be said now", ["Lovable is a serious candidate for rapid AI-assisted app prototyping.", "Its final rating depends on test outcomes across security, autonomy, deployment, backend behavior, and maintainability."]],
+      ["What must happen first", ["Complete five test builds.", "Verify pricing manually.", "Review security documentation.", "Capture screenshots and evidence.", "Run production-readiness checks.", "Pass Content Quality Gate before publication."]]
+    ]
+  }
+};
+
+function lovableMicrositeNav(activePage) {
+  const pages = [
+    ["overview", "Hub", "#tool/lovable"],
+    ["review", "Review", "#tool/lovable/review"],
+    ["pricing", "Pricing", "#tool/lovable/pricing"],
+    ["security", "Security", "#tool/lovable/security"],
+    ["autonomy", "Autonomy", "#tool/lovable/autonomy"],
+    ["test-lab", "Test Lab", "#tool/lovable/test-lab"],
+    ["prompts", "Prompts", "#tool/lovable/prompts"],
+    ["templates", "Templates", "#tool/lovable/templates"],
+    ["alternatives", "Alternatives", "#tool/lovable/alternatives"],
+    ["final-verdict", "Final Verdict", "#tool/lovable/final-verdict"]
+  ];
+
+  return `
+    <nav class="lovable-micro-nav">
+      ${pages.map(([slug, label, href]) => `
+        <a class="${slug === activePage ? "active" : ""}" href="${href}">${label}</a>
+      `).join("")}
+    </nav>
+  `;
+}
+
+function lovableMicrositePanel(pageSlug = "overview") {
+  const page = lovableMicrositePages[pageSlug] || lovableMicrositePages.overview;
+  const activePage = lovableMicrositePages[pageSlug] ? pageSlug : "overview";
+
+  return `
+    <section class="lovable-microsite">
+      <div class="lovable-hero">
+        <div>
+          <p class="eyebrow">${page.eyebrow}</p>
+          <h1>${page.title}</h1>
+          <p class="lede">${page.summary}</p>
+          <div class="status-row">
+            <span class="status-pill warning">${page.status}</span>
+            <span class="status-pill">No fake scores</span>
+            <span class="status-pill">Evidence-first</span>
+          </div>
+        </div>
+        <div class="lovable-score-card">
+          <strong>Current NoCodeReviewed Position</strong>
+          <p>Lovable is approved for evidence collection and planned testing, not final verdict publication.</p>
+          <a href="#tool/lovable/test-lab">View Test Lab Plan →</a>
+        </div>
+      </div>
+
+      ${lovableMicrositeNav(activePage)}
+
+      <div class="lovable-grid">
+        ${page.sections.map(([heading, items]) => `
+          <article class="lovable-card">
+            <h2>${heading}</h2>
+            <ul>
+              ${items.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          </article>
+        `).join("")}
+      </div>
+
+      <div class="lovable-footer-cta">
+        <h2>Evidence gate</h2>
+        <p>Before this becomes a final review, NoCodeReviewed needs manual pricing verification, screenshots, repeatable test builds, and a production-readiness audit.</p>
+        <div class="status-row">
+          <a class="button" href="#review/lovable">Open existing Lovable review</a>
+          <a class="button secondary" href="#tool/lovable/final-verdict">View pending verdict</a>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderPanel() {
+  const lovableToolRoute = window.location.hash.match(/^#tool\/lovable(?:\/([^/?#]+))?$/);
+  if (lovableToolRoute) {
+    return lovableMicrositePanel(lovableToolRoute[1] || "overview");
+  }
   const reportRoute = window.location.hash.match(/^#report\/([^/?#]+)/);
   if (reportRoute) {
     const report = authorityReportBySlug(reportRoute[1]);

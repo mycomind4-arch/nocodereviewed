@@ -6731,3 +6731,130 @@ svg {
     gap: 3px;
   }
 }
+
+
+/* Lovable microsite evidence pages */
+.lovable-microsite {
+  display: grid;
+  gap: 24px;
+}
+
+.lovable-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.7fr);
+  gap: 20px;
+  align-items: stretch;
+}
+
+.lovable-hero h1 {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 4vw, 4rem);
+  letter-spacing: -0.04em;
+}
+
+.lovable-hero .lede {
+  max-width: 860px;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  opacity: 0.9;
+}
+
+.status-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  background: rgba(255,255,255,0.05);
+}
+
+.status-pill.warning {
+  border-color: rgba(255, 191, 87, 0.45);
+  background: rgba(255, 191, 87, 0.12);
+}
+
+.lovable-score-card,
+.lovable-card,
+.lovable-footer-cta {
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 22px;
+  padding: 22px;
+  background: rgba(255,255,255,0.045);
+  box-shadow: 0 16px 50px rgba(0,0,0,0.18);
+}
+
+.lovable-score-card p,
+.lovable-footer-cta p {
+  line-height: 1.65;
+  opacity: 0.88;
+}
+
+.lovable-score-card a,
+.lovable-footer-cta a {
+  color: inherit;
+}
+
+.lovable-micro-nav {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 18px;
+  padding: 10px;
+  background: rgba(255,255,255,0.035);
+}
+
+.lovable-micro-nav a {
+  text-decoration: none;
+  color: inherit;
+  border-radius: 999px;
+  padding: 9px 12px;
+  font-size: 0.86rem;
+  opacity: 0.78;
+}
+
+.lovable-micro-nav a.active,
+.lovable-micro-nav a:hover {
+  opacity: 1;
+  background: rgba(255,255,255,0.11);
+}
+
+.lovable-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.lovable-card h2,
+.lovable-footer-cta h2 {
+  margin-top: 0;
+}
+
+.lovable-card ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.lovable-card li {
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+.button.secondary {
+  opacity: 0.85;
+}
+
+@media (max-width: 900px) {
+  .lovable-hero,
+  .lovable-grid {
+    grid-template-columns: 1fr;
+  }
+}
