@@ -3099,8 +3099,8 @@ function reviewDetailPanel(tool) {
             <a href="#compare">Compare platforms</a>
             ${tool.slug === "lovable" ? `<a class="button" href="#tool/lovable">Open Lovable Ultimate Microsite →</a>` : ""}
             ${tool.slug === "bolt-new" ? `<a class="button" href="#tool/bolt-new">Open Bolt.new Ultimate Microsite →</a>` : ""}
-            ${tool.slug === "replit-agent" ? `<a class="button" href="#tool/replit-agent">Open Replit Agent Ultimate Microsite →</a>` : ""}
-            ${tool.slug === "v0" ? `<a class="button" href="#tool/v0">Open v0 Ultimate Microsite →</a>` : ""}
+            ${tool.slug === "replit-agent" ? `<a class="button" href="#tool/replit-agent">Open Replit Agent Ultimate Microsite →</a>` : ""}            ${tool.slug === "v0" ? `<a class="button" href="#tool/v0">Open v0 Ultimate Microsite →</a>` : ""}
+            ${["lovable", "bolt-new", "replit-agent", "v0"].includes(tool.slug) ? "" : `<a class="button" href="#tool/${tool.slug}">Open ${tool.name} Microsite →</a>`}
           </div>
         </div>
         <div class="review-scorecard">
@@ -6711,6 +6711,203 @@ function v0MicrositePanel(pageSlug = "overview") {
   `;
 }
 
+
+const genericMicrositePageLabels = [
+  ["overview", "Hub"],
+  ["review", "Review"],
+  ["pricing", "Pricing"],
+  ["security", "Security"],
+  ["autonomy", "Autonomy"],
+  ["test-lab", "Test Lab"],
+  ["prompts", "Prompts"],
+  ["templates", "Templates"],
+  ["alternatives", "Alternatives"],
+  ["final-verdict", "Final Verdict"]
+];
+
+function genericToolMicrositeNav(tool, activePage) {
+  return `
+    <nav class="lovable-micro-nav">
+      ${genericMicrositePageLabels.map(([slug, label]) => {
+        const href = slug === "overview" ? `#tool/${tool.slug}` : `#tool/${tool.slug}/${slug}`;
+        return `<a class="${slug === activePage ? "active" : ""}" href="${href}">${label}</a>`;
+      }).join("")}
+    </nav>
+  `;
+}
+
+function genericToolMicrositePage(tool, pageSlug = "overview") {
+  const category = tool.category || "AI builder";
+  const name = tool.name;
+  const scoreText = tool.score ? `Existing provisional score: ${tool.score}` : "No final score yet";
+  const bestFor = tool.bestFor || `${category} workflows that need hands-on evaluation before a final recommendation.`;
+  const caution = tool.caution || "Needs evidence collection, pricing verification, security review, and repeatable test builds before final verdict publication.";
+
+  const pages = {
+    overview: {
+      eyebrow: `${name} evidence hub`,
+      title: `${name} Review Hub`,
+      status: "Evidence status: pending hands-on testing",
+      summary: `${name} is part of the NoCodeReviewed ${category} review system. This automated microsite is an evidence-first draft until hands-on testing, pricing verification, security review, and production-readiness checks are complete.`,
+      sections: [
+        ["What this hub is for", [`Organize ${name} review evidence in one place.`, "Separate safe observations from unverified claims.", "Prepare pricing, security, autonomy, prompt, template, and final-verdict pages before publication."]],
+        ["Current review posture", ["contentStatus: needs-evidence", "evidenceStatus: pending-hands-on-testing", "pricingStatus: needs-verification", scoreText]],
+        ["Best current fit", [bestFor, caution]]
+      ]
+    },
+    review: {
+      eyebrow: "Review in progress",
+      title: `${name} Review: Evidence Draft`,
+      status: "No final verdict yet",
+      summary: `This is not a final ${name} review. It is a structured review draft that should be upgraded after repeatable hands-on tests.`,
+      sections: [
+        ["Safe preliminary framing", [`${name} belongs in the ${category} category.`, "The review should focus on real user outcomes, generated output quality, exportability, maintainability, security, and pricing transparency.", "Any strong claims should be held until screenshots, logs, generated files, and test notes exist."]],
+        ["Do not claim yet", [`Do not claim ${name} is the best option in its category.`, "Do not claim production-readiness without manual review.", "Do not publish pricing or usage limits without official verification.", "Do not publish performance, user-count, funding, or scale claims without sources."]]
+      ]
+    },
+    pricing: {
+      eyebrow: "Pricing verification",
+      title: `${name} Pricing: Verification Required`,
+      status: "pricingStatus: needs-verification",
+      summary: `${name} pricing, plan limits, usage credits, export rules, collaboration features, and commercial-use terms may change. This page should only publish verified pricing with a last-checked date.`,
+      sections: [
+        ["Manual verification checklist", [`Check ${name}'s official pricing page.`, "Capture screenshots of each plan.", "Record free plan limits if available.", "Record paid plan limits, usage limits, credits, seats, export rules, and deployment restrictions.", "Add lastChecked date after verification."]],
+        ["Publishing rule", ["Do not invent pricing.", "Do not rely on memory.", "Do not publish plan limits without official verification."]]
+      ]
+    },
+    security: {
+      eyebrow: "Security and production readiness",
+      title: `${name} Security Questions`,
+      status: "Security outcome not yet verified",
+      summary: `${name} output needs review before real production use. NoCodeReviewed should evaluate secrets, auth, database access, dependencies, generated code, deployment behavior, and privacy exposure.`,
+      sections: [
+        ["Security questions", ["Are API keys or secrets exposed in client code?", "How are environment variables handled?", "Are auth and permission checks real or only visual?", "Are database rules and API routes protected?", "Are dependencies current and safe?", "Can normal users access admin-only behavior?", "Are payments, webhooks, or third-party integrations protected?", "Does error handling expose sensitive details?", "Can the generated output be audited, exported, and maintained?"]],
+        ["Production-readiness rule", [`Do not call ${name} production-ready until it passes code review, auth review, dependency review, deployment review, secrets review, privacy review, and maintainability review.`]]
+      ]
+    },
+    autonomy: {
+      eyebrow: "Autonomy testing",
+      title: `How Autonomous Is ${name}?`,
+      status: "Autonomy rating pending",
+      summary: `${name} should be evaluated by how far it can move from prompt to usable output, how well it fixes errors, and where human work remains necessary.`,
+      sections: [
+        ["Autonomy questions", ["Can it create a usable result from a single prompt?", "Can it revise accurately after feedback?", "Can it debug broken output?", "Can it handle multiple files, pages, or flows?", "Can it prepare a deployable or exportable project?", "Where does manual architecture, security, or coding remain necessary?"]],
+        ["Important distinction", ["Autonomy does not equal correctness.", "A generated project can look impressive while still needing engineering review, testing, and security hardening."]]
+      ]
+    },
+    "test-lab": {
+      eyebrow: "NoCodeReviewed test lab",
+      title: `${name} Test Lab Plan`,
+      status: "All tests planned, not completed",
+      summary: `This is the authority centerpiece for ${name}. Run repeatable tests, capture prompts, screenshots, generated files, runtime errors, pricing notes, and final outcomes.`,
+      sections: [
+        ["Test 1: SaaS dashboard", ["Evaluate dashboard generation, routing, tables, charts, settings, auth assumptions, and maintainability."]],
+        ["Test 2: Client portal", ["Evaluate private user flows, admin/client separation, messaging, documents, and route protection assumptions."]],
+        ["Test 3: Marketplace MVP", ["Evaluate listings, seller/buyer flows, moderation, data assumptions, and payment placeholders."]],
+        ["Test 4: Internal CRM", ["Evaluate CRUD behavior, filters, notes, persistence, timeline, and generated structure."]],
+        ["Test 5: AI content tool", ["Evaluate prompt input, saved outputs, folders, API settings, secrets handling, and error states."]]
+      ]
+    },
+    prompts: {
+      eyebrow: "Testing prompts",
+      title: `${name} Starter Prompts`,
+      status: "Prompt set ready for testing",
+      summary: `Use these prompts to produce controlled ${name} test evidence. Every result still needs manual review.`,
+      sections: [
+        ["SaaS dashboard prompt", ["Build a SaaS analytics dashboard with workspace navigation, KPI cards, charts, customer table, settings, and billing placeholder."]],
+        ["Client portal prompt", ["Build a client portal with project status, messages, documents, invoices, profile settings, and admin/client views."]],
+        ["Marketplace MVP prompt", ["Build a two-sided marketplace MVP with listings, seller profiles, buyer inquiry flow, saved listings, moderation, and payment placeholder."]],
+        ["Internal CRM prompt", ["Build an internal CRM with contacts, deals, tasks, notes, filters, activity timeline, and persistent storage assumptions."]],
+        ["AI content tool prompt", ["Build an AI content generator with prompt templates, saved outputs, project folders, settings, and safe API configuration."]]
+      ]
+    },
+    templates: {
+      eyebrow: "Template notes",
+      title: `${name} Templates and Test Patterns`,
+      status: "Template performance unverified",
+      summary: `This page should collect reusable ${name} templates only after hands-on testing.`,
+      sections: [
+        ["Potential template categories", ["SaaS dashboard", "Client portal", "Marketplace MVP", "Internal CRM", "AI tool interface", "Landing page", "Admin console"]],
+        ["Evidence needed", ["Prompt used", "Generated screenshots", "Generated file/component structure", "What worked", "What failed", "Security findings", "Production-readiness notes"]]
+      ]
+    },
+    alternatives: {
+      eyebrow: "Alternatives",
+      title: `${name} Alternatives`,
+      status: "Neutral comparison page",
+      summary: `This page should compare ${name} against nearby tools without declaring a winner until test evidence exists.`,
+      sections: [
+        ["Comparison categories", ["Prompt app builders", "Agentic coding tools", "UI generators", "Visual builders", "Cloud app builders"]],
+        ["Comparison rule", ["Compare by use case, security, autonomy, pricing, exportability, maintainability, deployment, and handoff quality.", "Do not declare a winner without test evidence."]]
+      ]
+    },
+    "final-verdict": {
+      eyebrow: "Verdict pending",
+      title: `${name} Final Verdict Pending`,
+      status: "No final verdict yet",
+      summary: `NoCodeReviewed should not publish a final ${name} verdict until test builds, pricing verification, security checks, and production-readiness review are complete.`,
+      sections: [
+        ["What can be said now", [`${name} is approved for evidence collection and structured testing.`, "The final rating depends on hands-on results, not assumptions."]],
+        ["What must happen first", ["Complete five test builds.", "Verify pricing manually.", "Capture screenshots, prompt logs, and generated output notes.", "Review security and maintainability.", "Pass Content Quality Gate before publication."]]
+      ]
+    }
+  };
+
+  return pages[pageSlug] || pages.overview;
+}
+
+function genericToolMicrositePanel(toolSlug, pageSlug = "overview") {
+  const tool = toolBySlug(toolSlug);
+  if (!tool) return reviewsPanel();
+
+  const page = genericToolMicrositePage(tool, pageSlug);
+  const activePage = genericMicrositePageLabels.some(([slug]) => slug === pageSlug) ? pageSlug : "overview";
+
+  return `
+    <section class="lovable-microsite">
+      <div class="lovable-hero">
+        <div>
+          <p class="eyebrow">${page.eyebrow}</p>
+          <h1>${page.title}</h1>
+          <p class="lede">${page.summary}</p>
+          <div class="status-row">
+            <span class="status-pill warning">${page.status}</span>
+            <span class="status-pill">Generic engine</span>
+            <span class="status-pill">Evidence-first</span>
+          </div>
+        </div>
+        <div class="lovable-score-card">
+          <strong>Current NoCodeReviewed Position</strong>
+          <p>${tool.name} is approved for evidence collection and planned testing, not final verdict publication.</p>
+          <a href="#tool/${tool.slug}/test-lab">View Test Lab Plan →</a>
+        </div>
+      </div>
+
+      ${genericToolMicrositeNav(tool, activePage)}
+
+      <div class="lovable-grid">
+        ${page.sections.map(([heading, items]) => `
+          <article class="lovable-card">
+            <h2>${heading}</h2>
+            <ul>
+              ${items.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          </article>
+        `).join("")}
+      </div>
+
+      <div class="lovable-footer-cta">
+        <h2>Evidence gate</h2>
+        <p>Before this becomes a final review, NoCodeReviewed needs pricing verification, screenshots, repeatable test builds, generated-output review, security review, and production-readiness analysis.</p>
+        <div class="status-row">
+          <a class="button" href="#review/${tool.slug}">Open existing ${tool.name} review</a>
+          <a class="button secondary" href="#tool/${tool.slug}/final-verdict">View pending verdict</a>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderPanel() {
   const clusterRoute = window.location.hash.match(/^#cluster\/([^/?#]+)$/);
   if (clusterRoute) {
@@ -6732,6 +6929,10 @@ function renderPanel() {
   const v0ToolRoute = window.location.hash.match(/^#tool\/v0(?:\/([^/?#]+))?$/);
   if (v0ToolRoute) {
     return v0MicrositePanel(v0ToolRoute[1] || "overview");
+  }
+  const genericToolRoute = window.location.hash.match(/^#tool\/([^/?#]+)(?:\/([^/?#]+))?$/);
+  if (genericToolRoute) {
+    return genericToolMicrositePanel(genericToolRoute[1], genericToolRoute[2] || "overview");
   }
   const reportRoute = window.location.hash.match(/^#report\/([^/?#]+)/);
   if (reportRoute) {
