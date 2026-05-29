@@ -1,0 +1,852 @@
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root { --accent: #e8541a; --accent-dim: rgba(232,84,26,0.10); --mono: 'Courier New', monospace; }
+
+  .shell {
+    display: flex; flex-direction: column; gap: 0;
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background: var(--color-background-primary);
+  }
+
+  /* TOP BAR */
+  .top-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--color-background-secondary);
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+  }
+  .logo { display: flex; align-items: center; gap: 8px; }
+  .logo-icon { width: 26px; height: 26px; border-radius: 6px; background: var(--accent); display: flex; align-items: center; justify-content: center; }
+  .logo-icon i { color: #fff; font-size: 14px; }
+  .logo-text { font-size: 13px; font-weight: 500; color: var(--color-text-primary); letter-spacing: 0.04em; }
+  .logo-sub { font-size: 11px; color: var(--color-text-tertiary); }
+  .status-pill { font-size: 11px; padding: 3px 10px; border-radius: 99px; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-secondary); display: flex; align-items: center; gap: 5px; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #888; transition: background 0.4s; }
+  .status-dot.live { background: #3a9e3a; }
+  .status-dot.running { background: var(--accent); animation: pulse-dot 1s infinite; }
+  @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* INPUT ROW */
+  .input-panel { padding: 14px 16px; border-bottom: 0.5px solid var(--color-border-tertiary); display: flex; flex-direction: column; gap: 10px; }
+  .input-row { display: flex; gap: 8px; align-items: center; }
+  .pill-label { font-size: 11px; color: var(--color-text-tertiary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; min-width: 60px; }
+  .input-row input[type=text] { flex: 1; font-size: 13px; padding: 7px 10px; border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-md); background: var(--color-background-primary); color: var(--color-text-primary); }
+  .input-row input[type=text]::placeholder { color: var(--color-text-tertiary); }
+  .btn { font-size: 12px; padding: 7px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); color: var(--color-text-primary); cursor: pointer; white-space: nowrap; transition: background 0.15s; }
+  .btn:hover { background: var(--color-background-tertiary); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
+  .btn.primary:hover { opacity: 0.88; }
+  .intensity-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .intensity-btn { font-size: 11px; padding: 4px 10px; border-radius: 99px; border: 0.5px solid var(--color-border-secondary); background: transparent; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+  .intensity-btn.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); font-weight: 500; }
+
+  /* DROP ZONE */
+  .drop-zone {
+    border: 1.5px dashed var(--color-border-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--color-background-secondary);
+    position: relative;
+  }
+  .drop-zone.over { border-color: var(--accent); background: var(--accent-dim); }
+  .drop-zone.loaded { border-style: solid; border-color: #3a9e3a; background: rgba(58,158,58,0.06); }
+  .drop-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .drop-icon { font-size: 28px; color: var(--color-text-tertiary); margin-bottom: 8px; }
+  .drop-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+  .drop-sub { font-size: 12px; color: var(--color-text-tertiary); }
+
+  /* MAIN LAYOUT */
+  .main-layout { display: grid; grid-template-columns: 1fr 1fr; min-height: 400px; }
+
+  /* LEFT: FILE EXPLORER */
+  .explorer-pane { border-right: 0.5px solid var(--color-border-tertiary); display: flex; flex-direction: column; overflow: hidden; }
+  .pane-header { padding: 8px 14px; font-size: 11px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.05em; text-transform: uppercase; border-bottom: 0.5px solid var(--color-border-tertiary); display: flex; align-items: center; justify-content: space-between; }
+  .file-tree { flex: 1; overflow-y: auto; font-size: 12px; font-family: var(--mono); padding: 8px 0; }
+  .file-tree::-webkit-scrollbar { width: 4px; }
+  .file-tree::-webkit-scrollbar-thumb { background: var(--color-border-secondary); border-radius: 2px; }
+  .tree-item { display: flex; align-items: center; gap: 6px; padding: 3px 12px; cursor: pointer; color: var(--color-text-secondary); transition: background 0.1s; user-select: none; }
+  .tree-item:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+  .tree-item.selected { background: var(--accent-dim); color: var(--accent); }
+  .tree-item.folder { font-weight: 500; color: var(--color-text-primary); }
+  .tree-item i { font-size: 13px; flex-shrink: 0; }
+  .tree-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tree-size { font-size: 10px; color: var(--color-text-tertiary); margin-left: auto; flex-shrink: 0; }
+  .tree-empty { padding: 32px; text-align: center; color: var(--color-text-tertiary); font-size: 12px; }
+
+  /* FILE STATS */
+  .stats-bar { display: flex; gap: 12px; padding: 8px 14px; border-top: 0.5px solid var(--color-border-tertiary); flex-wrap: wrap; }
+  .stat-item { font-size: 11px; color: var(--color-text-tertiary); }
+  .stat-val { font-weight: 500; color: var(--color-text-secondary); }
+
+  /* RIGHT: AUDIT PANEL */
+  .audit-pane { display: flex; flex-direction: column; overflow: hidden; }
+  .audit-tabs { display: flex; border-bottom: 0.5px solid var(--color-border-tertiary); overflow-x: auto; scrollbar-width: none; }
+  .audit-tabs::-webkit-scrollbar { display: none; }
+  .tab { font-size: 11px; padding: 8px 14px; white-space: nowrap; border-right: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.15s; }
+  .tab:hover { color: var(--color-text-primary); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+  .audit-content { flex: 1; overflow-y: auto; padding: 14px; font-size: 13px; line-height: 1.6; color: var(--color-text-primary); }
+  .audit-content::-webkit-scrollbar { width: 4px; }
+  .audit-content::-webkit-scrollbar-thumb { background: var(--color-border-secondary); border-radius: 2px; }
+
+  /* FILE VIEWER */
+  .file-viewer { font-family: var(--mono); font-size: 11px; line-height: 1.6; color: var(--color-text-secondary); white-space: pre-wrap; word-break: break-all; background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; max-height: 320px; overflow-y: auto; }
+  .file-viewer::-webkit-scrollbar { width: 4px; }
+  .file-viewer::-webkit-scrollbar-thumb { background: var(--color-border-secondary); border-radius: 2px; }
+  .viewer-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 6px; font-family: var(--mono); }
+
+  /* SCORE CARDS */
+  .score-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .score-card { border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 12px; background: var(--color-background-secondary); }
+  .score-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 4px; }
+  .score-val { font-size: 20px; font-weight: 500; }
+  .score-bar-wrap { height: 4px; background: var(--color-border-tertiary); border-radius: 2px; margin-top: 5px; }
+  .score-bar { height: 4px; border-radius: 2px; transition: width 0.8s ease; }
+
+  /* FINDINGS */
+  .finding { border-left: 2px solid var(--color-border-tertiary); padding: 8px 10px; margin-bottom: 8px; border-radius: 0 4px 4px 0; background: var(--color-background-secondary); }
+  .finding.critical { border-color: #c93535; }
+  .finding.warn { border-color: #c47a00; }
+  .finding.ok { border-color: #2d8a2d; }
+  .finding.info { border-color: var(--accent); }
+  .finding-badge { display: inline-block; font-size: 10px; padding: 1px 7px; border-radius: 99px; margin-bottom: 4px; font-weight: 500; }
+  .badge-critical { background: rgba(201,53,53,0.12); color: #c93535; }
+  .badge-warn { background: rgba(196,122,0,0.12); color: #c47a00; }
+  .badge-ok { background: rgba(45,138,45,0.12); color: #2d8a2d; }
+  .badge-info { background: var(--accent-dim); color: var(--accent); }
+  .finding-title { font-size: 12px; font-weight: 500; margin-bottom: 3px; }
+  .finding-body { font-size: 12px; color: var(--color-text-secondary); line-height: 1.5; }
+
+  /* REPORT */
+  .report-section { margin-bottom: 16px; }
+  .report-h { font-size: 13px; font-weight: 500; margin-bottom: 6px; }
+  .report-body { font-size: 12px; color: var(--color-text-secondary); line-height: 1.65; }
+  .report-callout { border: 0.5px solid var(--accent); border-radius: var(--border-radius-md); padding: 10px 12px; background: var(--accent-dim); font-size: 12px; color: var(--color-text-primary); margin: 10px 0; font-style: italic; }
+
+  /* AI STREAM */
+  .ai-stream { font-size: 12px; color: var(--color-text-secondary); font-family: var(--mono); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+  .stream-cursor { display: inline-block; width: 7px; height: 13px; background: var(--accent); animation: blink 1s step-end infinite; vertical-align: -2px; margin-left: 2px; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .thinking-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--color-text-tertiary); }
+  .thinking-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: think-bounce 1.2s ease-in-out infinite; }
+  .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+  .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes think-bounce { 0%,100%{opacity:0.2;transform:translateY(0)} 50%{opacity:1;transform:translateY(-4px)} }
+
+  /* LLM MODAL */
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 999; }
+  .modal { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); width: 300px; padding: 18px; }
+  .modal-title { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .modal-sub { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 14px; }
+  .prompt-preview { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px; font-size: 11px; font-family: var(--mono); color: var(--color-text-secondary); margin-bottom: 14px; max-height: 80px; overflow-y: auto; line-height: 1.5; }
+  .llm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .llm-btn { padding: 8px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-secondary); cursor: pointer; text-align: center; transition: all 0.15s; }
+  .llm-btn:hover { border-color: var(--accent); background: var(--accent-dim); }
+  .llm-name { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+  .llm-action { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; }
+  .modal-actions { display: flex; gap: 6px; justify-content: flex-end; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--color-background-secondary); border: 0.5px solid var(--color-border-primary); border-radius: var(--border-radius-md); padding: 8px 16px; font-size: 12px; color: var(--color-text-primary); z-index: 9999; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+
+  /* MODULES */
+  .modules-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .module-tag { font-size: 11px; padding: 3px 9px; border-radius: 99px; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-secondary); background: transparent; }
+  .module-tag.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+  /* PLACEHOLDERS */
+  .placeholder-list { display: flex; flex-direction: column; gap: 6px; }
+  .placeholder-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); background: var(--color-background-secondary); }
+  .ph-label { font-size: 12px; flex: 1; color: var(--color-text-primary); }
+  .ph-route { font-size: 11px; padding: 3px 8px; border-radius: 99px; border: 0.5px solid var(--accent); color: var(--accent); background: var(--accent-dim); cursor: pointer; }
+  .ph-route:hover { background: var(--accent); color: #fff; }
+</style>
+
+<h2 class="sr-only">Vibe Code Auditor — Supreme Overseer with zip file loader. Drop your project zip to begin structural analysis.</h2>
+
+<div class="shell">
+
+  <!-- TOP BAR -->
+  <div class="top-bar">
+    <div class="logo">
+      <div class="logo-icon"><i class="ti ti-eye-code" aria-hidden="true"></i></div>
+      <div>
+        <div class="logo-text">VIBE CODE AUDITOR</div>
+        <div class="logo-sub">Supreme Overseer · v2.1 — Zip Loader</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <div class="status-pill"><div class="status-dot" id="status-dot"></div><span id="status-text">Ready</span></div>
+      <button class="btn primary" onclick="runAudit()" id="run-btn" disabled>
+        <i class="ti ti-player-play" aria-hidden="true"></i> Run Audit
+      </button>
+    </div>
+  </div>
+
+  <!-- INPUT PANEL -->
+  <div class="input-panel">
+    <!-- DROP ZONE -->
+    <div class="drop-zone" id="drop-zone" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+      <input type="file" accept=".zip" onchange="onFileSelect(this.files[0])" id="file-input" />
+      <div class="drop-icon"><i class="ti ti-file-zip" aria-hidden="true"></i></div>
+      <div class="drop-title" id="drop-title">Drop your project .zip here</div>
+      <div class="drop-sub" id="drop-sub">or click to browse · any zip up to ~50MB</div>
+    </div>
+
+    <div class="input-row">
+      <span class="pill-label">Site URL</span>
+      <input type="text" id="site-url" placeholder="https://yourproject.com  (optional)" />
+    </div>
+
+    <div class="intensity-row">
+      <span style="font-size:11px;color:var(--color-text-tertiary);min-width:60px">Intensity:</span>
+      <button class="intensity-btn" onclick="setIntensity(1,this)">L1 Quick</button>
+      <button class="intensity-btn active" onclick="setIntensity(2,this)">L2 Standard</button>
+      <button class="intensity-btn" onclick="setIntensity(3,this)">L3 Deep</button>
+      <button class="intensity-btn" onclick="setIntensity(4,this)">L4 Catastrophic</button>
+    </div>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="main-layout">
+
+    <!-- LEFT: FILE EXPLORER -->
+    <div class="explorer-pane">
+      <div class="pane-header">
+        Project Files
+        <span id="file-count" style="font-size:10px;color:var(--color-text-tertiary)"></span>
+      </div>
+      <div class="file-tree" id="file-tree">
+        <div class="tree-empty">
+          <i class="ti ti-folder" aria-hidden="true" style="font-size:22px;display:block;margin-bottom:6px;opacity:0.3"></i>
+          Load a zip to explore your project
+        </div>
+      </div>
+      <div class="stats-bar" id="stats-bar" style="display:none">
+        <div class="stat-item">Files: <span class="stat-val" id="stat-files">0</span></div>
+        <div class="stat-item">JS/TS: <span class="stat-val" id="stat-js">0</span></div>
+        <div class="stat-item">Config: <span class="stat-val" id="stat-cfg">0</span></div>
+        <div class="stat-item">Size: <span class="stat-val" id="stat-size">0kb</span></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: AUDIT PANEL -->
+    <div class="audit-pane">
+      <div class="audit-tabs">
+        <div class="tab active" onclick="switchTab('viewer',this)">File Viewer</div>
+        <div class="tab" onclick="switchTab('dashboard',this)">Dashboard</div>
+        <div class="tab" onclick="switchTab('findings',this)">Findings</div>
+        <div class="tab" onclick="switchTab('report',this)">Report</div>
+        <div class="tab" onclick="switchTab('placeholders',this)">Prompts</div>
+        <div class="tab" onclick="switchTab('stream',this)">AI Stream</div>
+        <div class="tab" onclick="switchTab('modules',this)">Modules</div>
+      </div>
+      <div class="audit-content" id="audit-content">
+
+        <!-- FILE VIEWER TAB -->
+        <div id="tab-viewer">
+          <div style="text-align:center;padding:32px 0;color:var(--color-text-tertiary);font-size:13px">
+            <i class="ti ti-file-code" aria-hidden="true" style="font-size:26px;display:block;margin-bottom:8px;opacity:0.3"></i>
+            Click any file in the explorer to preview it
+          </div>
+        </div>
+
+        <!-- DASHBOARD TAB -->
+        <div id="tab-dashboard" style="display:none">
+          <div class="score-grid">
+            <div class="score-card"><div class="score-label">Survivability</div><div class="score-val" id="sc-surv" style="color:var(--color-text-tertiary)">—</div><div class="score-bar-wrap"><div class="score-bar" id="bar-surv" style="width:0%;background:var(--color-border-secondary)"></div></div></div>
+            <div class="score-card"><div class="score-label">Deployment</div><div class="score-val" id="sc-dep" style="color:var(--color-text-tertiary)">—</div><div class="score-bar-wrap"><div class="score-bar" id="bar-dep" style="width:0%;background:var(--color-border-secondary)"></div></div></div>
+            <div class="score-card"><div class="score-label">Economic Health</div><div class="score-val" id="sc-econ" style="color:var(--color-text-tertiary)">—</div><div class="score-bar-wrap"><div class="score-bar" id="bar-econ" style="width:0%;background:var(--color-border-secondary)"></div></div></div>
+            <div class="score-card"><div class="score-label">Entropy Risk</div><div class="score-val" id="sc-entr" style="color:var(--color-text-tertiary)">—</div><div class="score-bar-wrap"><div class="score-bar" id="bar-entr" style="width:0%;background:var(--color-border-secondary)"></div></div></div>
+            <div class="score-card"><div class="score-label">Org Survivability</div><div class="score-val" id="sc-org" style="color:var(--color-text-tertiary)">—</div><div class="score-bar-wrap"><div class="score-bar" id="bar-org" style="width:0%;background:var(--color-border-secondary)"></div></div></div>
+            <div class="score-card"><div class="score-label">Hallucination Risk</div><div class="score-val" id="sc-hall" style="color:var(--color-text-tertiary)">—</div><div class="score-bar-wrap"><div class="score-bar" id="bar-hall" style="width:0%;background:var(--color-border-secondary)"></div></div></div>
+          </div>
+          <div id="dash-empty" style="text-align:center;padding:16px 0;color:var(--color-text-tertiary);font-size:12px">Run the audit to populate scores</div>
+        </div>
+
+        <!-- FINDINGS TAB -->
+        <div id="tab-findings" style="display:none">
+          <div id="findings-list"><div style="text-align:center;padding:32px 0;color:var(--color-text-tertiary);font-size:13px"><i class="ti ti-search" aria-hidden="true" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.3"></i>No findings yet</div></div>
+        </div>
+
+        <!-- REPORT TAB -->
+        <div id="tab-report" style="display:none">
+          <div id="report-content"><div style="text-align:center;padding:32px 0;color:var(--color-text-tertiary);font-size:13px"><i class="ti ti-file-analytics" aria-hidden="true" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.3"></i>Full report appears after audit</div></div>
+          <div id="report-actions" style="display:none;margin-top:12px;display:flex;gap:6px">
+            <button class="btn" onclick="copyReport()"><i class="ti ti-copy" aria-hidden="true"></i> Copy</button>
+            <button class="btn" onclick="downloadReport()"><i class="ti ti-download" aria-hidden="true"></i> Download .md</button>
+          </div>
+        </div>
+
+        <!-- PLACEHOLDERS TAB -->
+        <div id="tab-placeholders" style="display:none">
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;line-height:1.5">
+            Route specific prompts from your project to any LLM. Auto-generated from your zip contents.
+          </div>
+          <div class="placeholder-list" id="placeholder-list">
+            <div class="placeholder-row"><span class="ph-label"><i class="ti ti-sparkles" aria-hidden="true"></i> Load a project to generate prompts</span></div>
+          </div>
+        </div>
+
+        <!-- AI STREAM TAB -->
+        <div id="tab-stream" style="display:none">
+          <div id="stream-content"><div style="text-align:center;padding:32px 0;color:var(--color-text-tertiary);font-size:13px"><i class="ti ti-terminal" aria-hidden="true" style="font-size:24px;display:block;margin-bottom:8px;opacity:0.3"></i>Live Claude analysis stream</div></div>
+        </div>
+
+        <!-- MODULES TAB -->
+        <div id="tab-modules" style="display:none">
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:10px">Modules auto-activate based on what's detected in your project.</div>
+          <div class="modules-grid" id="modules-grid"></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LLM MODAL -->
+<div id="llm-modal" style="display:none">
+  <div class="modal-backdrop">
+    <div class="modal">
+      <div class="modal-title" id="modal-title">Route this prompt</div>
+      <div class="modal-sub">Choose where to send it</div>
+      <div class="prompt-preview" id="modal-prompt"></div>
+      <div class="llm-grid">
+        <div class="llm-btn" onclick="routeTo('claude')"><div class="llm-name">Claude</div><div class="llm-action">Open + copy prompt</div></div>
+        <div class="llm-btn" onclick="routeTo('chatgpt')"><div class="llm-name">ChatGPT</div><div class="llm-action">Open + copy prompt</div></div>
+        <div class="llm-btn" onclick="routeTo('gemini')"><div class="llm-name">Gemini</div><div class="llm-action">Open + copy prompt</div></div>
+        <div class="llm-btn" onclick="routeTo('grok')"><div class="llm-name">Grok</div><div class="llm-action">Open + copy prompt</div></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" onclick="copyModalPrompt()"><i class="ti ti-copy" aria-hidden="true"></i> Copy only</button>
+        <button class="btn primary" onclick="closeLLMModal()">Done</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const ALL_MODULES = [
+  'infrastructure-reliability','queue-dynamics','ai-agent-governance',
+  'economic-survivability','deployment-reality','archaeology',
+  'runtime-validation','hallucination-forensics','organizational-survivability',
+  'longitudinal-drift','structural-intelligence','security-analysis',
+  'temporal-analysis','economic-modeling','deployment-intelligence',
+  'prompt-archaeology','longitudinal-memory','repo-scale-indexing',
+  'evidence-verification','organizational-match','market-intelligence',
+  'intervention-engine','autonomous-reaudit'
+];
+
+let currentIntensity = 2;
+let projectFiles = {};    // path -> {content, size, type}
+let projectSummary = '';  // condensed text fed to Claude
+let fullReportText = '';
+let detectedModules = new Set();
+
+// ─── DRAG & DROP ───
+function onDragOver(e) { e.preventDefault(); document.getElementById('drop-zone').classList.add('over'); }
+function onDragLeave() { document.getElementById('drop-zone').classList.remove('over'); }
+function onDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').classList.remove('over');
+  const file = e.dataTransfer.files[0];
+  if (file && file.name.endsWith('.zip')) loadZip(file);
+  else showToast('Please drop a .zip file');
+}
+function onFileSelect(file) { if (file) loadZip(file); }
+
+// ─── ZIP LOADER ───
+async function loadZip(file) {
+  setStatus('running', 'Reading zip…');
+  document.getElementById('drop-title').textContent = file.name;
+  document.getElementById('drop-sub').textContent = 'Parsing…';
+
+  try {
+    const zip = await JSZip.loadAsync(file);
+    projectFiles = {};
+
+    const SKIP = /node_modules|\.git\/|\.DS_Store|__pycache__|\.pyc$|\.min\.js$|\.map$|dist\/|build\//;
+    const TEXT_EXT = /\.(js|ts|jsx|tsx|json|md|txt|env|yaml|yml|toml|css|scss|html|py|rb|go|rs|sh|sql|prisma|graphql|vue|svelte|config|rc|lock|gitignore|dockerfile)$/i;
+    const MAX_FILE_SIZE = 80000; // chars
+
+    const entries = Object.entries(zip.files).filter(([p, f]) => !f.dir && !SKIP.test(p));
+
+    let totalSize = 0;
+    let jsCount = 0, cfgCount = 0;
+
+    for (const [path, zipFile] of entries) {
+      const ext = path.split('.').pop().toLowerCase();
+      const isText = TEXT_EXT.test(path);
+      const size = zipFile._data ? (zipFile._data.uncompressedSize || 0) : 0;
+      totalSize += size;
+
+      if (isText && size < MAX_FILE_SIZE) {
+        try {
+          const content = await zipFile.async('string');
+          projectFiles[path] = { content: content.slice(0, MAX_FILE_SIZE), size, type: ext };
+          if (['js','ts','jsx','tsx','py','rb','go','rs','vue','svelte'].includes(ext)) jsCount++;
+          if (['json','yaml','yml','toml','env','config','rc','gitignore','dockerfile','lock'].includes(ext)) cfgCount++;
+        } catch(e) {}
+      } else {
+        projectFiles[path] = { content: null, size, type: ext };
+      }
+    }
+
+    buildFileTree(Object.keys(projectFiles).sort());
+    detectModules();
+    buildProjectSummary();
+    buildPlaceholders();
+    populateModulesUI();
+
+    const fileCount = Object.keys(projectFiles).length;
+    document.getElementById('stat-files').textContent = fileCount;
+    document.getElementById('stat-js').textContent = jsCount;
+    document.getElementById('stat-cfg').textContent = cfgCount;
+    document.getElementById('stat-size').textContent = Math.round(totalSize / 1024) + 'kb';
+    document.getElementById('stats-bar').style.display = 'flex';
+    document.getElementById('file-count').textContent = fileCount + ' files';
+
+    document.getElementById('drop-zone').classList.remove('over');
+    document.getElementById('drop-zone').classList.add('loaded');
+    document.getElementById('drop-sub').textContent = `${fileCount} files loaded · ${Math.round(totalSize/1024)}kb`;
+
+    document.getElementById('run-btn').disabled = false;
+    setStatus('live', 'Project loaded');
+    showToast('Project loaded — ' + fileCount + ' files parsed');
+
+  } catch(err) {
+    showToast('Failed to parse zip: ' + err.message);
+    setStatus('', 'Error');
+    document.getElementById('drop-sub').textContent = 'Failed to parse. Try a different zip.';
+  }
+}
+
+// ─── FILE TREE ───
+function buildFileTree(paths) {
+  const tree = document.getElementById('file-tree');
+  tree.innerHTML = '';
+
+  // Group by directory
+  const dirs = {};
+  paths.forEach(p => {
+    const parts = p.split('/');
+    if (parts.length === 1) {
+      if (!dirs['']) dirs[''] = [];
+      dirs[''].push(p);
+    } else {
+      const dir = parts.slice(0, -1).join('/');
+      if (!dirs[dir]) dirs[dir] = [];
+      dirs[dir].push(p);
+    }
+  });
+
+  const sortedDirs = Object.keys(dirs).sort();
+
+  sortedDirs.forEach(dir => {
+    if (dir) {
+      const row = document.createElement('div');
+      row.className = 'tree-item folder';
+      row.innerHTML = `<i class="ti ti-folder" aria-hidden="true"></i><span class="tree-name">${dir}</span>`;
+      tree.appendChild(row);
+    }
+
+    dirs[dir].forEach(path => {
+      const name = path.split('/').pop();
+      const info = projectFiles[path];
+      const indent = dir ? '24px' : '12px';
+      const icon = getFileIcon(name);
+      const sizeStr = info && info.size > 0 ? (info.size > 1024 ? Math.round(info.size/1024)+'k' : info.size+'b') : '';
+
+      const row = document.createElement('div');
+      row.className = 'tree-item';
+      row.style.paddingLeft = indent;
+      row.innerHTML = `<i class="ti ${icon}" aria-hidden="true"></i><span class="tree-name">${name}</span><span class="tree-size">${sizeStr}</span>`;
+      row.onclick = () => previewFile(path, row);
+      tree.appendChild(row);
+    });
+  });
+}
+
+function getFileIcon(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  const map = {
+    js:'ti-brand-javascript', ts:'ti-brand-typescript', jsx:'ti-brand-react', tsx:'ti-brand-react',
+    json:'ti-braces', md:'ti-markdown', css:'ti-palette', scss:'ti-palette',
+    html:'ti-brand-html5', py:'ti-brand-python', env:'ti-lock', yaml:'ti-settings',
+    yml:'ti-settings', sql:'ti-database', prisma:'ti-database', dockerfile:'ti-container',
+    sh:'ti-terminal', gitignore:'ti-git-branch', lock:'ti-lock',
+    vue:'ti-brand-vue', svelte:'ti-brand-svelte', go:'ti-brand-golang'
+  };
+  return map[ext] || 'ti-file-text';
+}
+
+function previewFile(path, rowEl) {
+  document.querySelectorAll('.tree-item').forEach(r => r.classList.remove('selected'));
+  rowEl.classList.add('selected');
+
+  const info = projectFiles[path];
+  const viewer = document.getElementById('tab-viewer');
+
+  // Switch to viewer tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('[id^="tab-"]').forEach(d => d.style.display = 'none');
+  document.querySelectorAll('.tab')[0].classList.add('active');
+  viewer.style.display = '';
+
+  if (!info || !info.content) {
+    viewer.innerHTML = `<div class="viewer-label">${path}</div><div class="file-viewer" style="color:var(--color-text-tertiary)">Binary or skipped file — not readable as text</div>`;
+    return;
+  }
+
+  viewer.innerHTML = `
+    <div class="viewer-label">${path} · ${info.type} · ${info.size > 1024 ? Math.round(info.size/1024)+'kb' : info.size+'b'}</div>
+    <div class="file-viewer">${escHtml(info.content.slice(0, 6000))}</div>
+    <div style="margin-top:8px;display:flex;gap:6px">
+      <button class="btn" onclick="includeInAudit('${path}')"><i class="ti ti-antenna" aria-hidden="true"></i> Flag for audit focus</button>
+      <button class="btn" onclick="routeFileTo('${path}')"><i class="ti ti-send" aria-hidden="true"></i> Route to LLM</button>
+    </div>
+  `;
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+let flaggedFiles = new Set();
+function includeInAudit(path) { flaggedFiles.add(path); showToast('Flagged for audit focus: ' + path.split('/').pop()); }
+
+function routeFileTo(path) {
+  const info = projectFiles[path];
+  const prompt = `Review this file for survivability issues, hallucinations, or operational risks:\n\n// ${path}\n${(info.content||'').slice(0,3000)}`;
+  openLLMModal('File review: ' + path.split('/').pop(), prompt);
+}
+
+// ─── MODULE DETECTION ───
+function detectModules() {
+  detectedModules = new Set(['hallucination-forensics','intervention-engine','organizational-survivability']);
+  const allContent = Object.entries(projectFiles).map(([p,f]) => p + ' ' + (f.content||'')).join('\n').toLowerCase();
+  const paths = Object.keys(projectFiles).join('\n').toLowerCase();
+
+  if (/queue|worker|bull|redis|rabbitmq|celery|sqs/.test(allContent)) detectedModules.add('queue-dynamics');
+  if (/agent|langchain|openai|anthropic|llm|gpt|prompt/.test(allContent)) { detectedModules.add('ai-agent-governance'); detectedModules.add('prompt-archaeology'); }
+  if (/stripe|pricing|subscription|revenue|billing/.test(allContent)) { detectedModules.add('economic-survivability'); detectedModules.add('economic-modeling'); }
+  if (/dockerfile|\.github|ci\.yml|deploy|vercel|netlify|railway/.test(allContent + paths)) { detectedModules.add('deployment-reality'); detectedModules.add('deployment-intelligence'); }
+  if (/secret|env|api[_-]key|password|token/.test(allContent)) detectedModules.add('security-analysis');
+  if (/legacy|old|deprecated|todo|fixme|hack/.test(allContent)) detectedModules.add('archaeology');
+  if (/package\.json|requirements\.txt|gemfile|cargo\.toml/.test(paths)) detectedModules.add('structural-intelligence');
+  if (currentIntensity >= 3) { detectedModules.add('temporal-analysis'); detectedModules.add('evidence-verification'); }
+  if (currentIntensity >= 4) { detectedModules.add('autonomous-reaudit'); detectedModules.add('market-intelligence'); detectedModules.add('repo-scale-indexing'); }
+}
+
+// ─── PROJECT SUMMARY ───
+function buildProjectSummary() {
+  const PRIORITY = ['package.json','requirements.txt','cargo.toml','go.mod','readme.md','readme.txt','.env.example','docker-compose.yml','dockerfile'];
+  const parts = [];
+
+  // File manifest
+  const paths = Object.keys(projectFiles).sort();
+  parts.push('=== FILE MANIFEST ===\n' + paths.join('\n'));
+
+  // Priority files first
+  PRIORITY.forEach(name => {
+    const match = paths.find(p => p.toLowerCase().endsWith(name));
+    if (match && projectFiles[match].content) {
+      parts.push(`\n=== ${match} ===\n${projectFiles[match].content.slice(0, 2000)}`);
+    }
+  });
+
+  // Flagged files
+  flaggedFiles.forEach(path => {
+    if (projectFiles[path] && projectFiles[path].content) {
+      parts.push(`\n=== FLAGGED: ${path} ===\n${projectFiles[path].content.slice(0, 3000)}`);
+    }
+  });
+
+  // Sample key source files (up to 8)
+  const sourceFiles = paths.filter(p => /\.(js|ts|jsx|tsx|py|rb|go|rs)$/.test(p) && !PRIORITY.some(n => p.toLowerCase().endsWith(n)));
+  sourceFiles.slice(0, 8).forEach(path => {
+    const info = projectFiles[path];
+    if (info && info.content) {
+      parts.push(`\n=== ${path} ===\n${info.content.slice(0, 1500)}`);
+    }
+  });
+
+  projectSummary = parts.join('\n\n').slice(0, 28000);
+}
+
+// ─── PLACEHOLDERS ───
+function buildPlaceholders() {
+  const list = document.getElementById('placeholder-list');
+  const paths = Object.keys(projectFiles);
+
+  const prompts = [
+    { label: 'Auth & security audit', prompt: `Audit the authentication and security posture of this project. Identify unsafe patterns, exposed secrets, injection surfaces, and missing protections.` },
+    { label: 'Deployment survivability', prompt: `Audit this project's deployment readiness. Can it actually ship? What breaks first? Identify missing CI/CD, env parity issues, and rollback gaps.` },
+    { label: 'Economic scaling model', prompt: `Model the economics of this project at current scale, 10x, and 100x. Where do costs explode? What becomes the margin killer?` },
+    { label: 'Hallucination forensics', prompt: `Scan this codebase for signs of AI-generated hallucinations: dead code, impossible abstractions, fake implementations, copied APIs that don't exist.` },
+    { label: 'Minimum survivable next step', prompt: `Given the full project context, what is the single most important thing to build or fix next to ensure operational survival?` },
+    { label: 'Overengineering audit', prompt: `Identify all complexity in this project that isn't operationally justified. What should be removed or simplified before adding anything new?` },
+  ];
+
+  // Add file-specific prompts for key files
+  ['package.json','schema.prisma','docker-compose.yml'].forEach(name => {
+    const match = paths.find(p => p.toLowerCase().endsWith(name));
+    if (match && projectFiles[match].content) {
+      prompts.push({ label: `Deep dive: ${name}`, prompt: `Analyze this file for operational risks, version problems, and survivability issues:\n\n${projectFiles[match].content.slice(0,2000)}` });
+    }
+  });
+
+  list.innerHTML = prompts.map((p,i) => `
+    <div class="placeholder-row">
+      <span class="ph-label">${p.label}</span>
+      <button class="ph-route" onclick="openLLMModal('${p.label}', PROMPTS[${i}].prompt)">Route →</button>
+    </div>
+  `).join('');
+
+  window.PROMPTS = prompts;
+}
+
+// ─── MODULES UI ───
+function populateModulesUI() {
+  const grid = document.getElementById('modules-grid');
+  grid.innerHTML = ALL_MODULES.map(m => `<span class="module-tag ${detectedModules.has(m)?'active':''}">${m}</span>`).join('');
+}
+
+// ─── AUDIT ENGINE ───
+async function runAudit() {
+  if (!Object.keys(projectFiles).length) { showToast('Load a project zip first'); return; }
+
+  detectModules();
+  buildProjectSummary();
+  populateModulesUI();
+
+  setStatus('running', 'Auditing…');
+  document.getElementById('run-btn').disabled = true;
+  document.getElementById('run-btn').textContent = 'Auditing…';
+
+  // Switch to stream tab
+  switchTabById('stream');
+
+  const streamEl = document.getElementById('stream-content');
+  streamEl.innerHTML = '<div class="thinking-row"><div class="thinking-dot"></div><div class="thinking-dot"></div><div class="thinking-dot"></div><span style="margin-left:6px">Initializing survivability analysis…</span></div>';
+
+  const intensityLabel = ['','Quick Signal','Standard Audit','Deep Survivability Review','Catastrophic Failure Audit'][currentIntensity];
+  const activeModStr = [...detectedModules].join(', ');
+  const siteUrl = document.getElementById('site-url').value.trim();
+
+  const systemPrompt = `You are an Autonomous Vibe-Coding Auditor — the Supreme Overseer. Your purpose: determine whether AI-generated systems survive reality. You think like a reliability engineer, systems operator, and survivability auditor. Be direct, adversarial but constructive. The primary question is always: "What happens after the demo?" Answer not just "what is wrong" but "what is the minimum survivable next step." Tone: clinical and precise by default. Fire up with urgency on critical risks. Genuinely energize on real strengths. Active modules for this audit: ${activeModStr}.`;
+
+  const userPrompt = `Run a Level ${currentIntensity} ${intensityLabel} on this project.
+${siteUrl ? `Live site: ${siteUrl}` : ''}
+
+PROJECT CONTENTS:
+${projectSummary}
+
+Output these sections in order:
+1. EXECUTIVE SUMMARY — Can this survive deployment, scaling, maintenance, economic pressure? (4-6 sentences, direct)
+2. REALITY CHECK — What is genuinely production-capable vs scaffold illusion vs only-works-locally?
+3. TOP SURVIVABILITY RISKS — List top risks with severity (CRITICAL/HIGH/MEDIUM) and minimum survivable fix for each
+4. OPERATIONAL STRENGTHS — What is actually solid? Be honest, not performative. If it's strong, say so with energy.
+5. ENTROPY FORECAST — Where is this heading in 6 months if nothing changes? Be specific.
+6. ECONOMIC SURVIVABILITY — Cost structure at current / 10x / 100x scale. Where does margin collapse?
+7. DEPLOYMENT REALITY — Can this actually ship? What breaks in production that works locally?
+8. MINIMUM SURVIVABLE NEXT STEP — The single most important action. Make it actionable and specific.
+9. OVERENGINEERING TO AVOID — What complexity should NOT be added yet.
+
+End with a line formatted exactly like this (no extra text on that line):
+SCORES:{"survivability":72,"deployment":55,"economic":68,"entropy":40,"org":80,"hallucination":30}
+
+Be the supreme overseer. No flattery. No hedging. Real structural intelligence.`;
+
+  let fullText = '';
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userPrompt }]
+      })
+    });
+
+    const data = await resp.json();
+    fullText = data.content?.filter(b => b.type === 'text').map(b => b.text).join('') || 'No response received.';
+
+    const scoreMatch = fullText.match(/SCORES:(\{[^}]+\})/);
+    let scores = null;
+    if (scoreMatch) { try { scores = JSON.parse(scoreMatch[1]); } catch(e){} }
+    const cleanText = fullText.replace(/SCORES:\{[^}]+\}/, '').trim();
+
+    streamEl.innerHTML = '';
+    const pre = document.createElement('div');
+    pre.className = 'ai-stream';
+    streamEl.appendChild(pre);
+    const cursor = document.createElement('span');
+    cursor.className = 'stream-cursor';
+    streamEl.appendChild(cursor);
+
+    let i = 0;
+    function typeNext() {
+      if (i < cleanText.length) {
+        pre.textContent += cleanText[i++];
+        setTimeout(typeNext, i < 300 ? 5 : 1);
+      } else {
+        cursor.remove();
+        fullReportText = cleanText;
+        populateReport(cleanText);
+        populateFindings(cleanText);
+        if (scores) applyScores(scores);
+        document.getElementById('report-actions').style.display = 'flex';
+        setStatus('live', 'Audit complete');
+        document.getElementById('run-btn').disabled = false;
+        document.getElementById('run-btn').innerHTML = '<i class="ti ti-refresh" aria-hidden="true"></i> Re-Audit';
+      }
+    }
+    typeNext();
+
+  } catch(err) {
+    streamEl.innerHTML = `<div style="color:var(--color-text-secondary);font-size:12px">Audit error: ${err.message}</div>`;
+    setStatus('', 'Error');
+    document.getElementById('run-btn').disabled = false;
+    document.getElementById('run-btn').innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run Audit';
+  }
+}
+
+function applyScores(s) {
+  document.getElementById('dash-empty').style.display = 'none';
+  const pairs = [['surv',s.survivability],['dep',s.deployment],['econ',s.economic],['entr',s.entropy],['org',s.org],['hall',s.hallucination]];
+  pairs.forEach(([k,v]) => {
+    if (v == null) return;
+    const el = document.getElementById('sc-'+k);
+    const bar = document.getElementById('bar-'+k);
+    el.textContent = v+'/100';
+    const isRisk = k==='entr'||k==='hall';
+    const eff = isRisk ? 100-v : v;
+    const cls = eff>=75?'great':eff>=55?'ok':eff>=35?'warn':'danger';
+    const colorMap = {great:'var(--accent)',ok:'#2d8a2d',warn:'#c47a00',danger:'#c93535'};
+    el.style.color = colorMap[cls];
+    bar.style.width = v+'%';
+    bar.style.background = colorMap[cls];
+  });
+}
+
+function populateFindings(text) {
+  const list = document.getElementById('findings-list');
+  const findings = [];
+  const lines = text.split('\n');
+  lines.forEach(line => {
+    const t = line.trim();
+    if (!t || t.length < 12) return;
+    const isCrit = /critical|fatal|broken|catastrophic|no auth|no test|no deploy/i.test(t);
+    const isWarn = /high|warn|risk|missing|debt|fragile|not production/i.test(t);
+    const isOk = /strength|solid|well|good|strong|genuine|working/i.test(t);
+    if (isCrit || isWarn || isOk) {
+      findings.push({
+        severity: isCrit?'critical':isWarn?'warn':'ok',
+        badge: isCrit?'CRITICAL':isWarn?'HIGH':'STRENGTH',
+        title: t.replace(/^[-*•\d.]+\s*/,'').slice(0,90)
+      });
+    }
+  });
+  const unique = findings.filter((f,i,a) => a.findIndex(x=>x.title===f.title)===i).slice(0,12);
+  if (!unique.length) { list.innerHTML = '<div style="font-size:12px;color:var(--color-text-secondary)">See Report tab for full analysis.</div>'; return; }
+  list.innerHTML = unique.map(f => `<div class="finding ${f.severity}"><span class="finding-badge badge-${f.severity}">${f.badge}</span><div class="finding-title">${f.title}</div></div>`).join('');
+}
+
+function populateReport(text) {
+  const el = document.getElementById('report-content');
+  const paras = text.split('\n\n').filter(s=>s.trim());
+  el.innerHTML = paras.map(sec => {
+    const lines = sec.split('\n');
+    const head = lines[0];
+    const body = lines.slice(1).join('\n').trim();
+    if (/^(\d\.|[A-Z]{3,})/.test(head) && body) {
+      return `<div class="report-section"><div class="report-h">${head.replace(/^\d+\.\s*/,'')}</div><div class="report-body">${escHtml(body).replace(/\n/g,'<br>')}</div></div>`;
+    }
+    const isCallout = /minimum|next step|survive|critical|warning/i.test(sec);
+    return isCallout
+      ? `<div class="report-callout">${escHtml(sec).replace(/\n/g,'<br>')}</div>`
+      : `<div class="report-body" style="margin-bottom:10px">${escHtml(sec).replace(/\n/g,'<br>')}</div>`;
+  }).join('');
+}
+
+function copyReport() {
+  if (fullReportText) { navigator.clipboard.writeText(fullReportText).catch(()=>{}); showToast('Report copied'); }
+}
+function downloadReport() {
+  if (!fullReportText) return;
+  const blob = new Blob([fullReportText], {type:'text/markdown'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'audit-report.md'; a.click();
+}
+
+// ─── LLM MODAL ───
+function openLLMModal(title, prompt) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-prompt').textContent = prompt.slice(0,400) + (prompt.length>400?'…':'');
+  window._currentModalPrompt = prompt;
+  document.getElementById('llm-modal').style.display = 'flex';
+}
+function closeLLMModal() { document.getElementById('llm-modal').style.display = 'none'; }
+function copyModalPrompt() { navigator.clipboard.writeText(window._currentModalPrompt||'').catch(()=>{}); showToast('Prompt copied'); }
+const LLM_URLS = { claude:'https://claude.ai/new', chatgpt:'https://chat.openai.com/', gemini:'https://gemini.google.com/', grok:'https://grok.com/' };
+function routeTo(llm) {
+  navigator.clipboard.writeText(window._currentModalPrompt||'').catch(()=>{});
+  showToast('Prompt copied — opening ' + llm);
+  setTimeout(()=>openLink(LLM_URLS[llm]), 300);
+  closeLLMModal();
+}
+
+// ─── UTILS ───
+function setIntensity(n, btn) {
+  currentIntensity = n;
+  document.querySelectorAll('.intensity-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  if (Object.keys(projectFiles).length) { detectModules(); populateModulesUI(); }
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('[id^="tab-"]').forEach(d=>d.style.display='none');
+  const t = document.getElementById('tab-'+tab);
+  if (t) t.style.display='';
+}
+
+function switchTabById(tab) {
+  document.querySelectorAll('[id^="tab-"]').forEach(d=>d.style.display='none');
+  const t = document.getElementById('tab-'+tab);
+  if (t) t.style.display='';
+  const tabs = ['viewer','dashboard','findings','report','placeholders','stream','modules'];
+  const idx = tabs.indexOf(tab);
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+}
+
+function setStatus(state, label) {
+  const dot = document.getElementById('status-dot');
+  const txt = document.getElementById('status-text');
+  dot.className = 'status-dot ' + (state==='running'?'running':state==='live'?'live':'');
+  txt.textContent = label || (state==='live'?'Ready':state==='running'?'Running…':'Ready');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+// init
+populateModulesUI();
+</script>
