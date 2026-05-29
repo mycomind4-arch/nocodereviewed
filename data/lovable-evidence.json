@@ -1,0 +1,102 @@
+{
+  "name": "Lovable",
+  "slug": "lovable",
+  "category": "AI app builder / no-code and AI-assisted web app builder",
+  "website": "https://lovable.dev",
+  "contentStatus": "needs-evidence",
+  "evidenceStatus": "pending-hands-on-testing",
+  "pricingStatus": "needs-verification",
+  "lastChecked": "2026-05-29",
+  "summary": "Evidence-backed Lovable research hub for NoCodeReviewed. Final review, security verdict, autonomy score, and production-readiness claims remain pending hands-on testing.",
+  "safeClaims": [
+    "Lovable is positioned as an AI app builder for creating apps and websites through chat.",
+    "Lovable can be described as a prompt-driven app and website builder based on its official positioning.",
+    "Lovable supports Supabase integration for database, auth, storage, realtime, and edge functions according to official documentation.",
+    "Lovable supports GitHub sync/export for code backup, collaboration, local IDE work, and external deployment according to official documentation.",
+    "Lovable projects can be published to a live URL, with updates requiring a new publish action according to official publishing documentation.",
+    "Lovable provides public security, privacy, and compliance documentation; app-level security outcomes still require hands-on testing."
+  ],
+  "claimsRequiringTesting": [
+    "Lovable can build a complete SaaS dashboard from one prompt.",
+    "Lovable reliably creates secure auth and role-based access.",
+    "Lovable generates correct Supabase RLS policies.",
+    "Lovable can build production-ready marketplace flows.",
+    "Lovable can safely integrate Stripe payments and webhooks.",
+    "Lovable fixes its own bugs without regressions.",
+    "Lovable-generated code is clean, maintainable, and easy for developers to extend.",
+    "Lovable apps perform well under realistic usage.",
+    "Lovable security scanner catches common app vulnerabilities.",
+    "Lovable is easier, faster, or more autonomous than competitors."
+  ],
+  "securityQuestions": {
+    "Authentication": "Does Lovable create secure signup, login, logout, password reset, session handling, and protected routes?",
+    "Database rules": "Does it create correct row-level security policies for every user-owned table?",
+    "API keys": "Does it avoid exposing secrets client-side and route sensitive calls through secure server-side functions?",
+    "Environment variables": "Are secrets environment-scoped, encrypted, and hidden from generated frontend code?",
+    "Admin routes": "Are admin pages protected server-side, not just hidden in the UI?",
+    "Role-based access": "Can user, admin, owner, client, and vendor permissions be bypassed through direct URLs or API calls?",
+    "Payments/webhooks": "Are payment webhooks verified server-side with idempotency, signature checks, and failure handling?",
+    "Deployment settings": "Are public/private publishing controls clear for each plan and project type?",
+    "Error messages": "Do generated apps leak stack traces, table names, keys, user IDs, or implementation details?",
+    "Privacy": "What user data is sent to Lovable, Supabase, AI models, analytics, or third-party services?"
+  },
+  "autonomyQuestions": [
+    "Can it create a working app from a short prompt?",
+    "Can it refine a generated app from user feedback without breaking previous functionality?",
+    "Can it build multi-page flows with consistent navigation and state?",
+    "Can it create backend logic and database schema safely enough for realistic apps?",
+    "Can it diagnose and fix its own errors without regressions?",
+    "Can it deploy a usable live version with clear publish/update behavior?",
+    "Where does human review remain mandatory before launch?"
+  ],
+  "testPlans": [
+    {
+      "name": "SaaS dashboard",
+      "starterPrompt": "Build a subscription analytics dashboard with auth, organizations, user roles, revenue charts, customer table, billing settings, and admin-only controls.",
+      "whatToMeasure": "Measure prompt-to-app completeness, schema quality, protected routes, dashboard state, role separation, and deploy behavior."
+    },
+    {
+      "name": "Client portal",
+      "starterPrompt": "Build a client portal where clients can log in, view project status, upload files, message the team, approve deliverables, and see invoices.",
+      "whatToMeasure": "Measure auth flows, file permissions, client isolation, admin access, notifications, and data privacy."
+    },
+    {
+      "name": "Marketplace MVP",
+      "starterPrompt": "Build a local services marketplace with vendor profiles, listings, search filters, booking requests, reviews, and admin moderation.",
+      "whatToMeasure": "Measure multi-role complexity, vendor/customer permissions, moderation, form validation, and workflow durability."
+    },
+    {
+      "name": "Internal CRM",
+      "starterPrompt": "Build an internal CRM with lead stages, task assignments, notes, tags, saved filters, activity history, and manager-only reporting.",
+      "whatToMeasure": "Measure CRUD reliability, relational data model, permissions, auditability, search/filter usability, and realistic team workflow."
+    },
+    {
+      "name": "AI content tool",
+      "starterPrompt": "Build an AI content planner with project folders, saved prompts, generated drafts, approval status, export options, and API-key-safe AI integration.",
+      "whatToMeasure": "Measure API key handling, prompt workflow quality, data persistence, revision history, and safe AI feature configuration."
+    }
+  ],
+  "comparisonCandidates": {
+    "Bolt.new": "browser-based app generation, backend/deployment workflow, code access, autonomy, security review",
+    "Replit Agent": "agentic full-stack building, hosting, debugging, database, logs, deployment",
+    "Cursor": "developer-centric AI coding versus Lovable chat/no-code workflow, control, maintainability, engineering fit",
+    "v0 by Vercel": "frontend/UI generation, React/Next.js workflow, design fidelity, handoff to developer deployment",
+    "Bubble AI": "visual no-code app building, database/workflow control, plugin ecosystem, production app maturity",
+    "FlutterFlow AI": "cross-platform/mobile app building, Firebase/Supabase integrations, visual development, export options"
+  },
+  "recommendedPages": [
+    "/tools/lovable",
+    "/tools/lovable/review",
+    "/tools/lovable/pricing",
+    "/tools/lovable/security",
+    "/tools/lovable/autonomy",
+    "/tools/lovable/test-lab",
+    "/tools/lovable/prompts",
+    "/tools/lovable/templates",
+    "/tools/lovable/alternatives",
+    "/tools/lovable/vs/bolt-new",
+    "/tools/lovable/vs/replit-agent",
+    "/tools/lovable/vs/cursor",
+    "/tools/lovable/final-verdict"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "benchmarkRuns": [],
+  "articleBriefs": [
+    {
+      "id": "23c35c89-e856-4b32-9ed4-8b5147ca8dde",
+      "title": "Lovable Review",
+      "targetKeyword": "lovable review",
+      "articleType": "review",
+      "requiredEvidence": "SaaS MVP benchmark run, current pricing snapshot, screenshots, deploy notes, generated app limitations, security and handoff notes.",
+      "angle": "Determine whether Lovable is the best prompt-to-app builder for nontechnical founders in 2026 using repeatable build evidence instead of marketing claims.",
+      "publishGate": "Do not publish until benchmark evidence, pricing evidence, screenshots, and production-readiness notes are attached.",
+      "status": "Briefed",
+      "createdAt": "2026-05-26T22:17:46.537Z"
+    }
+  ],
+  "evidenceSnapshots": [],
+  "reviewRecords": [],
+  "artifacts": [],
+  "qualityChecks": []
+}

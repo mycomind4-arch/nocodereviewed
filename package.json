@@ -1,0 +1,13 @@
+{
+  "name": "nocode-empire-site1",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "build": "node scripts/verify-static-app.mjs",
+    "preview": "node server.mjs"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}

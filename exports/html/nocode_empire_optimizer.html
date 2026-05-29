@@ -1,0 +1,366 @@
+
+<h2 class="sr-only">No-Code Empire optimization dashboard — interactive plan review across strategy, revenue, SEO, automation, and execution.</h2>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; padding: 1rem 0 0.75rem; border-bottom: 0.5px solid var(--color-border-tertiary); margin-bottom: 1.25rem; }
+.tab { padding: 6px 14px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); font-size: 13px; cursor: pointer; background: transparent; color: var(--color-text-secondary); transition: all 0.15s; }
+.tab.active { background: var(--color-text-primary); color: var(--color-background-primary); border-color: transparent; font-weight: 500; }
+.tab:hover:not(.active) { background: var(--color-background-secondary); color: var(--color-text-primary); }
+.panel { display: none; }
+.panel.active { display: block; }
+.section-title { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--color-text-tertiary); margin-bottom: 10px; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; margin-bottom: 10px; }
+.card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.card-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.card-body { font-size: 13px; color: var(--color-text-secondary); line-height: 1.6; margin-top: 8px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: var(--border-radius-md); font-size: 11px; font-weight: 500; white-space: nowrap; }
+.badge-red { background: #FCEBEB; color: #A32D2D; }
+.badge-amber { background: #FAEEDA; color: #854F0B; }
+.badge-green { background: #EAF3DE; color: #3B6D11; }
+.badge-blue { background: #E6F1FB; color: #185FA5; }
+@media (prefers-color-scheme: dark) {
+  .badge-red { background: #501313; color: #F7C1C1; }
+  .badge-amber { background: #412402; color: #FAC775; }
+  .badge-green { background: #173404; color: #C0DD97; }
+  .badge-blue { background: #042C53; color: #B5D4F4; }
+}
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.25rem; }
+.metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 0.85rem 1rem; }
+.metric-label { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 4px; }
+.metric-value { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.metric-sub { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+.site-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; }
+.site-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 0.85rem; }
+.site-num { font-size: 10px; color: var(--color-text-tertiary); margin-bottom: 2px; }
+.site-name { font-size: 12px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; line-height: 1.3; }
+.site-meta { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.site-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.priority-row { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.priority-row:last-child { border-bottom: none; }
+.priority-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; flex-shrink: 0; margin-top: 1px; }
+.priority-num.urgent { background: #FCEBEB; color: #A32D2D; }
+.priority-num.week { background: #FAEEDA; color: #854F0B; }
+.priority-num.ongoing { background: #EAF3DE; color: #3B6D11; }
+@media (prefers-color-scheme: dark) {
+  .priority-num.urgent { background: #501313; color: #F7C1C1; }
+  .priority-num.week { background: #412402; color: #FAC775; }
+  .priority-num.ongoing { background: #173404; color: #C0DD97; }
+}
+.priority-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.priority-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 3px; line-height: 1.5; }
+.gap-row { display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.gap-row:last-child { border-bottom: none; }
+.gap-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.gap-desc { font-size: 12px; color: var(--color-text-secondary); margin-top: 3px; line-height: 1.5; }
+.rev-bar-wrap { margin-bottom: 14px; }
+.rev-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; }
+.rev-label span:first-child { color: var(--color-text-secondary); }
+.rev-label span:last-child { font-weight: 500; color: var(--color-text-primary); }
+.rev-track { background: var(--color-background-secondary); border-radius: 4px; height: 6px; }
+.rev-fill { height: 6px; border-radius: 4px; }
+.toggle-row { display: flex; gap: 8px; margin-bottom: 1rem; }
+.toggle-btn { padding: 5px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary); font-size: 12px; cursor: pointer; background: transparent; color: var(--color-text-secondary); }
+.toggle-btn.on { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-secondary); }
+.send-btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); font-size: 12px; cursor: pointer; background: transparent; color: var(--color-text-secondary); margin-top: 10px; }
+.send-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+</style>
+
+<div class="tabs">
+  <button class="tab active" onclick="showPanel('action')">Action stack</button>
+  <button class="tab" onclick="showPanel('gaps')">Critical gaps</button>
+  <button class="tab" onclick="showPanel('revenue')">Revenue model</button>
+  <button class="tab" onclick="showPanel('sites')">10 sites</button>
+  <button class="tab" onclick="showPanel('agents')">6 agents</button>
+</div>
+
+<div id="panel-action" class="panel active">
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Year 1 realistic</div><div class="metric-value">$79k</div><div class="metric-sub">mo 12 / blended 0.2%</div></div>
+    <div class="metric"><div class="metric-label">Conservative floor</div><div class="metric-value">$35k</div><div class="metric-sub">downside scenario</div></div>
+    <div class="metric"><div class="metric-label">Affiliate programs</div><div class="metric-value">25+</div><div class="metric-sub">mapped across 10 sites</div></div>
+    <div class="metric"><div class="metric-label">Content velocity</div><div class="metric-value">1,200</div><div class="metric-sub">articles/month at scale</div></div>
+  </div>
+
+  <p class="section-title">Priority action stack</p>
+
+  <div class="card" style="padding: 0.85rem 1.25rem;">
+    <div class="priority-row">
+      <div class="priority-num urgent">1</div>
+      <div><div class="priority-title">Submit all affiliate applications — today</div><div class="priority-desc">ShareASale, Impact, PartnerStack, CJ Affiliate all take 2–4 weeks. Waiting = 5 weeks without live links. Do this before writing a single article.</div></div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num urgent">2</div>
+      <div><div class="priority-title">Verify GSC + GA4 on every existing site — today</div><div class="priority-desc">Agents 1 and 4 are blind without baseline data. No GSC = no rank tracking, no keyword gap analysis, no feedback loop.</div></div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num urgent">3</div>
+      <div><div class="priority-title">Start expired domain search — today</div><div class="priority-desc">Longest lead time of any task. ODYS + GoDaddy Auctions. Target DR 20+, TF:CF &gt;0.5, SaaS/software topical history. Budget $200–800. Can compress 6 months of SEO into 6 weeks.</div></div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num week">4</div>
+      <div><div class="priority-title">Build Agent 4 (Rank Monitor) before 20 articles publish</div><div class="priority-desc">Simple n8n → GSC API daily ping, alert on position drop &gt;5. Ranking decay you miss in week 1 compounds silently for months.</div></div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num week">5</div>
+      <div><div class="priority-title">Add "Last verified" timestamps + factual accuracy checks</div><div class="priority-desc">Outdated pricing is the #1 trigger for Google HCU penalties on AI review sites. Non-optional. Second Gemini call per article before publish.</div></div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num week">6</div>
+      <div><div class="priority-title">Cold email 10 no-code tool companies for sponsored slots</div><div class="priority-desc">Fastest path to cash before SEO traffic arrives. Start at $199/mo. Tools already in your database = warm outreach with a product demo built in.</div></div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num ongoing">7</div>
+      <div><div class="priority-title">Build email list from day one — every site</div><div class="priority-desc">10k subscribers = $200k–400k added to acquisition price, independent of traffic. Newsletter capture above the fold on every site, week one.</div></div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num ongoing">8</div>
+      <div><div class="priority-title">Monthly cross-site similarity audit from month 3</div><div class="priority-desc">Cosine similarity check between any two sites. Above 60% = rebuild voice prompts for both. Prevents HCU-triggering duplication across the network.</div></div>
+    </div>
+  </div>
+  <button class="send-btn" onclick="sendPrompt('Give me a detailed week-by-week build plan for the first 4 weeks of No-Code Empire')">Get week-by-week build plan ↗</button>
+</div>
+
+<div id="panel-gaps" class="panel">
+  <p class="section-title">Critical gaps the plan underestimates</p>
+  <div class="card" style="padding: 0.85rem 1.25rem;">
+    <div class="gap-row">
+      <div><div class="gap-title">HCU site-wide suppression risk</div><div class="gap-desc">Google's Helpful Content classifier is domain-level, not page-level. One section of thin content can suppress your best articles. The 800-word floor in the original plan is too low — competing review sites at top positions average 2,400–3,800 words. New floors: reviews ≥1,500, comparisons ≥2,000, tutorials ≥1,000.</div></div>
+      <span class="badge badge-red">Critical</span>
+    </div>
+    <div class="gap-row">
+      <div><div class="gap-title">PBN footprint — identical Lovable structure</div><div class="gap-desc">10 sites with the same nav structure, footer format, font choices, and component library are detectable by Google's crawler regardless of domain separation. Each site needs a different nav pattern, footer structure, font system, and color accent. Monthly visual audit: open all 10 side-by-side.</div></div>
+      <span class="badge badge-red">Critical</span>
+    </div>
+    <div class="gap-row">
+      <div><div class="gap-title">Voice drift by article 50</div><div class="gap-desc">A 20-rule system prompt isn't enough — Gemini reverts to generic patterns fast. Fix: write 5 real articles per site manually, store as few-shot examples, append 2–3 paragraphs to every prompt. Also maintain a per-site banned phrase registry (seed: "leverage," "seamlessly," "game-changer," "delve into"). Drift reduction: ~70%.</div></div>
+      <span class="badge badge-amber">High</span>
+    </div>
+    <div class="gap-row">
+      <div><div class="gap-title">Affiliate conversion rate too optimistic</div><div class="gap-desc">The original 0.4% blended rate is realistic only for bottom-of-funnel content. Top-of-funnel traffic (40–50% of volume) converts at 0.05–0.1%. Realistic blended rate: 0.15–0.25%. Models should use 0.2%, not 0.4% — halves the affiliate projection but prevents false confidence in unit economics.</div></div>
+      <span class="badge badge-amber">High</span>
+    </div>
+    <div class="gap-row">
+      <div><div class="gap-title">Missing revenue stream: paid research reports</div><div class="gap-desc">Tool companies pay $2,000–8,000 for sponsored "State of No-Code" reports they use in their own sales cycles. At Month 6 traffic levels, you have the audience authority to sell 2–4/year per site. Potential: $40k–160k/year with near-zero marginal cost once the content pipeline runs.</div></div>
+      <span class="badge badge-blue">Opportunity</span>
+    </div>
+    <div class="gap-row">
+      <div><div class="gap-title">Affiliate compliance risk</div><div class="gap-desc">Most common violation: affiliate links without proper disclosure. Getting banned from PartnerStack and Impact simultaneously can crater acquisition value. Read every program TOS before publishing. Clean compliance documentation is worth $50k+ at exit.</div></div>
+      <span class="badge badge-amber">High</span>
+    </div>
+    <div class="gap-row">
+      <div><div class="gap-title">Expired domain — critical sequencing error</div><div class="gap-desc">A 301 redirect from the expired domain to a subdomain destroys authority transfer. The expired domain must BE the primary domain. Also: spot-checking archive.org misses months of spam. Run the CDX API on Wayback Machine for full URL history — any pharma/gambling/adult period = disqualify immediately.</div></div>
+      <span class="badge badge-amber">High</span>
+    </div>
+  </div>
+  <button class="send-btn" onclick="sendPrompt('Walk me through exactly how to vet an expired domain using the CDX API and Majestic Trust Flow — step by step')">How to vet an expired domain ↗</button>
+</div>
+
+<div id="panel-revenue" class="panel">
+  <p class="section-title">Month 12 revenue projection — stress-tested</p>
+  <div class="metric-grid">
+    <div class="metric"><div class="metric-label">Realistic</div><div class="metric-value">$79k</div><div class="metric-sub">blended 0.2% CVR</div></div>
+    <div class="metric"><div class="metric-label">Conservative</div><div class="metric-value">$35k</div><div class="metric-sub">downside</div></div>
+    <div class="metric"><div class="metric-label">Optimistic</div><div class="metric-value">$142k</div><div class="metric-sub">upside</div></div>
+    <div class="metric"><div class="metric-label">Monthly visitors</div><div class="metric-value">600k</div><div class="metric-sub">target at month 12</div></div>
+  </div>
+
+  <p class="section-title" style="margin-bottom: 12px;">Revenue stream breakdown — realistic scenario</p>
+  <div class="card">
+    <div class="rev-bar-wrap">
+      <div class="rev-label"><span>Affiliate (0.2% CVR, $35 avg)</span><span>$42,000 / mo</span></div>
+      <div class="rev-track"><div class="rev-fill" style="width:53%; background:#378ADD;"></div></div>
+    </div>
+    <div class="rev-bar-wrap">
+      <div class="rev-label"><span>Sponsored listings (25 slots, $500 avg)</span><span>$12,500 / mo</span></div>
+      <div class="rev-track"><div class="rev-fill" style="width:16%; background:#1D9E75;"></div></div>
+    </div>
+    <div class="rev-bar-wrap">
+      <div class="rev-label"><span>Display ads ($22 RPM × 600k visitors)</span><span>$13,200 / mo</span></div>
+      <div class="rev-track"><div class="rev-fill" style="width:17%; background:#BA7517;"></div></div>
+    </div>
+    <div class="rev-bar-wrap">
+      <div class="rev-label"><span>Paid research reports (2/mo, $4k avg)</span><span>$8,000 / mo</span></div>
+      <div class="rev-track"><div class="rev-fill" style="width:10%; background:#D85A30;"></div></div>
+    </div>
+    <div class="rev-bar-wrap">
+      <div class="rev-label"><span>Newsletter sponsorships (3 sites × 2 slots)</span><span>$3,200 / mo</span></div>
+      <div class="rev-track"><div class="rev-fill" style="width:4%; background:#7F77DD;"></div></div>
+    </div>
+  </div>
+
+  <p class="section-title" style="margin-top: 1rem;">Top affiliate programs by payout</p>
+  <div class="card" style="padding: 0.85rem 1.25rem;">
+    <div class="priority-row">
+      <div style="width:90px; flex-shrink:0;"><span class="badge badge-green">$150/sale</span></div>
+      <div><div class="priority-title">Shopify affiliate</div><div class="priority-desc">Highest single payout. 10 referrals/month = $1,500 from one program. Site 4 priority.</div></div>
+    </div>
+    <div class="priority-row">
+      <div style="width:90px; flex-shrink:0;"><span class="badge badge-green">$200/sale</span></div>
+      <div><div class="priority-title">SEMrush (Berush)</div><div class="priority-desc">Outstanding payout. Site 7 anchor program. Pair with Mangools 30% recurring.</div></div>
+    </div>
+    <div class="priority-row">
+      <div style="width:90px; flex-shrink:0;"><span class="badge badge-blue">50% yr1</span></div>
+      <div><div class="priority-title">Webflow</div><div class="priority-desc">Highest priority for Sites 1, 6, 10. Agency plan referrals are highest per-click value in network.</div></div>
+    </div>
+    <div class="priority-row">
+      <div style="width:90px; flex-shrink:0;"><span class="badge badge-blue">~30% rec</span></div>
+      <div><div class="priority-title">Bubble, Softr, Memberstack, Pabbly</div><div class="priority-desc">Recurring commissions compound fast. Bubble + Softr alone cover Sites 1, 3, 6, 8.</div></div>
+    </div>
+  </div>
+  <button class="send-btn" onclick="sendPrompt('Build me a spreadsheet model for the No-Code Empire revenue projections across all 12 months, with conservative / realistic / optimistic columns')">Build revenue model spreadsheet ↗</button>
+</div>
+
+<div id="panel-sites" class="panel">
+  <p class="section-title">All 10 sites — platform, priority, anchor affiliate</p>
+  <div class="site-grid">
+    <div class="site-card">
+      <div class="site-num">Site 1</div>
+      <div class="site-name">No-Code Platform Reviews</div>
+      <div class="site-meta"><i class="ti ti-layout" aria-hidden="true"></i> Webflow</div>
+      <div class="site-meta" style="color: var(--color-text-tertiary);">18k–33k/mo keywords</div>
+      <div class="site-badges"><span class="badge badge-blue">Anchor</span><span class="badge badge-green">Webflow 50%</span></div>
+    </div>
+    <div class="site-card">
+      <div class="site-num">Site 2</div>
+      <div class="site-name">No-Code Automation & Workflows</div>
+      <div class="site-meta"><i class="ti ti-layout" aria-hidden="true"></i> Webflow or Astro</div>
+      <div class="site-meta" style="color: var(--color-text-tertiary);">12k/mo top keyword</div>
+      <div class="site-badges"><span class="badge badge-blue">High vol</span><span class="badge badge-green">Make 20%</span></div>
+    </div>
+    <div class="site-card">
+      <div class="site-num">Site 3</div>
+      <div class="site-name">No-Code Database & Backend</div>
+      <div class="site-meta"><i class="ti ti-layout" aria-hidden="true"></i> Lovable → Vercel</div>
+      <div class="site-meta" style="color: var(--color-text-tertiary);">High conversion rate</div>
+      <div class="site-badges"><span class="badge badge-amber">Technical</span><span class="badge badge-green">Supabase 20%</span></div>
+    </div>
+    <div class="site-card">
+      <div class="site-num">Site 4</div>
+      <div class="site-name">No-Code for Ecommerce</div>
+      <div class="site-meta"><i class="ti ti-layout" aria-hidden="true"></i> Webflow</div>
+      <div class="site-meta" style="color: var(--color-text-tertiary);">33k/mo top keyword</div>
+      <div class="site-badges"><span class="badge badge-red">Top rev</span><span class="badge badge-green">Shopify $150</span></div>
+    </div>
+    <div class="site-card">
+      <div class="site-num">Site 5</div>
+      <div class="site-name">No-Code AI Integration</div>
+      <div class="site-meta"><i class="ti ti-layout" aria-hidden="true"></i> Lovable → Vercel</div>
+      <div class="site-meta" style="color: var(--color-text-tertiary);">Fastest growing niche</div>
+      <div class="site-badges"><span class="badge badge-blue">Trending</span><span class="badge badge-green">ElevenLabs 22%</span></div>
+    </div>
+    <div class="site-card">
+      <div class="site-num">Site 6</div>
+      <div class="site-name">No-Code for Agencies</div>
+      <div class="site-meta"><i class="ti ti-layout" aria-hidden="true"></i> Webflow</div>
+      <div class="site-meta" style="color: var(--color-text-tertiary);">Highest LTV audience</div>
+      <div class="site-badges"><span class="badge badge-amber">Premium</span><span class="badge badge-green">Webflow 50%</span></div>
+    </div>
+    <div class="site-card">
+      <div class="site-num">Site 7</div>
+      <div class="site-name">No-Code Analytics & SEO</div>
+      <div class="site-meta"><i class="ti ti-layout" aria-hidden="true"></i> Astro + Vercel</div>
+      <div class="site-meta" style="color: var(--color-text-tertiary);">33k/mo top keyword</div>
+      <div class="site-badges"><span class="badge badge-blue">Perfect SEO</span><span class="badge badge-green">SEMrush $200</span></div>
+    </div>
+    <div class="site-card">
+      <div class="site-num">Site 8</div>
+      <div class="site-name">No-Code for SaaS Founders</div>
+      <div class="site-meta"><i class="ti ti-layout" aria-hidden="true"></i> Lovable → Vercel</div>
+      <div class="site-meta" style="color: var(--color-text-tertiary);">Highest CVR audience</div>
+      <div class="site-badges"><span class="badge badge-amber">High CVR</span><span class="badge badge-green">Bubble 30%</span></div>
+    </div>
+    <div class="site-card">
+      <div class="site-num">Site 9</div>
+      <div class="site-name">No-Code Design & UI</div>
+      <div class="site-meta"><i class="ti ti-layout" aria-hidden="true"></i> Framer</div>
+      <div class="site-meta" style="color: var(--color-text-tertiary);">40k/mo color palette kw</div>
+      <div class="site-badges"><span class="badge badge-blue">Viral tools</span><span class="badge badge-green">Framer 20%</span></div>
+    </div>
+    <div class="site-card">
+      <div class="site-num">Site 10</div>
+      <div class="site-name">No-Code for Solopreneurs</div>
+      <div class="site-meta"><i class="ti ti-layout" aria-hidden="true"></i> Webflow</div>
+      <div class="site-meta" style="color: var(--color-text-tertiary);">27k/mo top keyword</div>
+      <div class="site-badges"><span class="badge badge-red">Top funnel</span><span class="badge badge-green">Webflow 50%</span></div>
+    </div>
+  </div>
+  <button class="send-btn" onclick="sendPrompt('Write the full Lovable build prompt for Site 1 — No-Code Platform Reviews — with the complete Supabase schema, webhook endpoints, and admin dashboard spec')">Build Site 1 prompt ↗</button>
+</div>
+
+<div id="panel-agents" class="panel">
+  <p class="section-title">6-agent swarm — corrected build order</p>
+  <div class="card" style="padding: 0.85rem 1.25rem;">
+    <div class="priority-row">
+      <div class="priority-num urgent" style="background:#E6F1FB; color:#185FA5;">1</div>
+      <div>
+        <div class="priority-title">Agent 4 — Rank Monitor <span class="badge badge-blue" style="margin-left:6px;">Build first</span></div>
+        <div class="priority-desc">n8n → GSC API daily. Alert on position drop &gt;5 for tracked keywords. Build before anything publishes at scale. Ranking drops you miss in week 1 compound for months.</div>
+      </div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num urgent" style="background:#EAF3DE; color:#3B6D11;">2</div>
+      <div>
+        <div class="priority-title">Agent 2 upgrade — Competitor Analysis Layer</div>
+        <div class="priority-desc">Before building Agent 3, upgrade Agent 2 to write against the #1 ranking competitor per keyword. Pull word count, heading structure, PAA coverage. Worth more than 50 extra articles.</div>
+      </div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num urgent" style="background:#FAEEDA; color:#854F0B;">3</div>
+      <div>
+        <div class="priority-title">Agent 3 — Interlink Architect</div>
+        <div class="priority-desc">As planned. Addition: identify internal links within a single site first — they carry more immediate ranking weight than cross-site links. Log all links to link_map table in Supabase.</div>
+      </div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num week">4</div>
+      <div>
+        <div class="priority-title">Agent 6 — Distribution Agent <span class="badge badge-amber" style="margin-left:6px;">Move earlier</span></div>
+        <div class="priority-desc">Social signals accelerate Google indexing. Every article indexing in 24hr vs 14 days compounds your content advantage. Targets: r/nocode, r/webflow, r/bubble.</div>
+      </div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num week">5</div>
+      <div>
+        <div class="priority-title">Agent 1 — Keyword Scout</div>
+        <div class="priority-desc">Only valuable once Agent 4 has rank data. Sort keyword queue by: (1) current position 8–20 for easy wins, (2) comparison keywords by buyer intent, (3) volume &gt;100 / KD &lt;40.</div>
+      </div>
+    </div>
+    <div class="priority-row">
+      <div class="priority-num ongoing">6</div>
+      <div>
+        <div class="priority-title">Agent 5 — Monetisation Optimizer</div>
+        <div class="priority-desc">Last, as planned. Needs traffic and click data to optimize. Running before 10k monthly visitors produces noise, not signal. Wire to affiliate_clicks table in Supabase.</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="section-title" style="margin-top: 1rem;">Quality gateway — full check list</p>
+  <div class="card" style="padding: 0.85rem 1.25rem; font-size: 12px; color: var(--color-text-secondary); line-height: 2;">
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0 16px;">
+      <div>✓ Word count ≥1,500 (reviews)</div>
+      <div>✓ Word count ≥2,000 (comparisons)</div>
+      <div>✓ Readability Flesch-Kincaid &gt;50</div>
+      <div>✓ Banned phrases &lt;3 hits</div>
+      <div>✓ Affiliate link present if tool mentioned</div>
+      <div>✓ Internal links 2–5 per article</div>
+      <div>✓ Factual accuracy (2nd Gemini call)</div>
+      <div>✓ PAA coverage ≥3 questions answered</div>
+      <div>✓ "Last verified" timestamp present</div>
+      <div>✓ Cross-site similarity &lt;60%</div>
+      <div>✓ Competitor word count met or exceeded</div>
+      <div>✓ 90%+ feature coverage vs competitor</div>
+    </div>
+  </div>
+  <button class="send-btn" onclick="sendPrompt('Write the full n8n workflow spec for Agent 4, the Rank Monitor — including the GSC API call, alert logic, and Supabase logging')">Build Agent 4 spec ↗</button>
+</div>
+
+<script>
+function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+</script>

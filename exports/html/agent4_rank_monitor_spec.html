@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent 4 — Rank Monitor Spec</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
+
+  :root {
+    --bg: #0d0f0e;
+    --surface: #141716;
+    --surface2: #1c1f1d;
+    --border: #2a2e2b;
+    --border2: #363c38;
+    --text: #e8ede9;
+    --text2: #8a9489;
+    --text3: #5a635c;
+    --green: #4ade80;
+    --green-dim: #1a3326;
+    --green-mid: #2d5c40;
+    --amber: #fbbf24;
+    --amber-dim: #332200;
+    --red: #f87171;
+    --red-dim: #3a1010;
+    --blue: #60a5fa;
+    --blue-dim: #0f2040;
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'Libre Baskerville', Georgia, serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ─── Layout ─── */
+  .shell {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--surface);
+  }
+
+  .sidebar-logo {
+    padding: 0 20px 20px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .sidebar-logo .label {
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 4px;
+  }
+  .sidebar-logo .title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--green);
+  }
+
+  .nav-section {
+    padding: 0 12px;
+    margin-bottom: 8px;
+  }
+  .nav-section-label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 0 8px;
+    margin-bottom: 4px;
+    margin-top: 12px;
+  }
+  .nav-item {
+    display: block;
+    padding: 5px 8px;
+    border-radius: 4px;
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 11px;
+    transition: all 0.1s;
+    cursor: pointer;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+  }
+  .nav-item:hover, .nav-item.active {
+    background: var(--surface2);
+    color: var(--text);
+  }
+  .nav-item.active { color: var(--green); }
+
+  .main {
+    padding: 40px 48px;
+    max-width: 900px;
+  }
+
+  /* ─── Sections ─── */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* ─── Typography ─── */
+  .page-tag {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .page-tag::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--green-dim);
+    max-width: 60px;
+  }
+
+  .page-title {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+  .page-sub {
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 32px;
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  h2 {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 36px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  h2::before {
+    content: attr(data-n);
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 500;
+    color: var(--text3);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 2px 5px;
+    flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text2);
+    margin: 20px 0 10px;
+  }
+
+  p {
+    color: var(--text2);
+    margin-bottom: 12px;
+    line-height: 1.7;
+    font-size: 12px;
+  }
+
+  /* ─── Cards & Boxes ─── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-body {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.7;
+  }
+
+  .alert-box {
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    line-height: 1.6;
+    border-left: 3px solid;
+  }
+  .alert-box.green { background: var(--green-dim); border-color: var(--green); color: #a7f3c0; }
+  .alert-box.amber { background: var(--amber-dim); border-color: var(--amber); color: #fde68a; }
+  .alert-box.red { background: var(--red-dim); border-color: var(--red); color: #fca5a5; }
+  .alert-box.blue { background: var(--blue-dim); border-color: var(--blue); color: #93c5fd; }
+
+  /* ─── Code blocks ─── */
+  pre {
+    background: #0a0c0b;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+    font-size: 11.5px;
+    line-height: 1.65;
+    tab-size: 2;
+  }
+  code {
+    font-family: var(--mono);
+  }
+  .code-label {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 6px;
+    padding-left: 2px;
+  }
+
+  /* Syntax colors */
+  .kw { color: #c084fc; }
+  .str { color: #86efac; }
+  .num { color: #fbbf24; }
+  .cmt { color: #4a5c4d; font-style: italic; }
+  .key { color: #93c5fd; }
+  .fn { color: #f9a8d4; }
+  .op { color: #67e8f9; }
+  .punct { color: var(--text3); }
+
+  /* ─── Tables ─── */
+  .table-wrap { overflow-x: auto; margin-bottom: 16px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11.5px;
+  }
+  th {
+    text-align: left;
+    padding: 8px 12px;
+    background: var(--surface2);
+    color: var(--text3);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  tr:last-child td { border-bottom: none; }
+  td code {
+    font-size: 11px;
+    background: var(--surface2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--green);
+  }
+  td.green-text { color: var(--green); font-weight: 500; }
+  td.amber-text { color: var(--amber); }
+
+  /* ─── Workflow nodes ─── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 24px;
+  }
+  .flow-node {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .flow-spine {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 36px;
+    flex-shrink: 0;
+  }
+  .flow-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+    border: 1px solid;
+    z-index: 1;
+  }
+  .flow-line {
+    width: 1px;
+    flex: 1;
+    min-height: 16px;
+    background: var(--border);
+  }
+  .flow-node:last-child .flow-line { display: none; }
+
+  .dot-trigger { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .dot-fetch  { background: var(--blue-dim);  border-color: var(--blue);  color: var(--blue); }
+  .dot-logic  { background: #1c1610;          border-color: var(--amber); color: var(--amber); }
+  .dot-write  { background: #1a1040;          border-color: #a78bfa;      color: #a78bfa; }
+  .dot-alert  { background: var(--red-dim);   border-color: var(--red);   color: var(--red); }
+  .dot-done   { background: var(--surface2);  border-color: var(--border2); color: var(--text3); }
+
+  .flow-content {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    margin-left: 8px;
+  }
+  .node-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .node-type {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+  .node-body {
+    font-size: 11.5px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+
+  /* ─── Badge row ─── */
+  .badge-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+  .badge {
+    padding: 3px 9px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .badge-g { background: var(--green-dim); color: var(--green); border: 1px solid var(--green-mid); }
+  .badge-a { background: var(--amber-dim); color: var(--amber); }
+  .badge-b { background: var(--blue-dim); color: var(--blue); }
+  .badge-r { background: var(--red-dim); color: var(--red); }
+
+  /* ─── Divider ─── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 32px 0;
+  }
+
+  /* ─── Inline code ─── */
+  p code, li code {
+    font-size: 11px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--green);
+  }
+
+  ul, ol {
+    padding-left: 20px;
+    color: var(--text2);
+    font-size: 12px;
+    line-height: 1.8;
+    margin-bottom: 12px;
+  }
+
+  /* ─── Slack preview ─── */
+  .slack-preview {
+    background: #1a1d21;
+    border: 1px solid #2d3136;
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+  }
+  .slack-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .slack-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: #36c5f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .slack-name { color: #fff; font-weight: 600; font-size: 13px; }
+  .slack-time { color: #616061; font-size: 11px; }
+  .slack-body { color: #d1d2d3; line-height: 1.7; }
+  .slack-attach {
+    border-left: 4px solid;
+    padding-left: 12px;
+    margin-top: 10px;
+  }
+  .slack-attach.red { border-color: #e01e5a; }
+  .slack-attach.green { border-color: #2eb67d; }
+  .slack-attach-title { color: #fff; font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .slack-field-row { display: flex; gap: 24px; margin-top: 8px; flex-wrap: wrap; }
+  .slack-field { }
+  .slack-field-label { color: #616061; font-size: 10px; margin-bottom: 1px; text-transform: uppercase; }
+  .slack-field-val { color: #d1d2d3; font-size: 12px; }
+  .red-text { color: #e01e5a; }
+  .green-text-s { color: #2eb67d; }
+
+  /* Weekly digest */
+  .digest-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .digest-header {
+    background: var(--surface2);
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+  }
+  .digest-title { font-weight: 600; color: var(--text); font-size: 12px; }
+  .digest-date { color: var(--text3); font-size: 11px; }
+  .digest-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 80px 80px;
+    gap: 0;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11.5px;
+    align-items: center;
+  }
+  .digest-row:last-child { border-bottom: none; }
+  .digest-row.header { background: var(--surface2); color: var(--text3); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+  .digest-kw { color: var(--text2); }
+  .digest-site { color: var(--text3); font-size: 10px; }
+  .digest-pos { text-align: right; color: var(--text2); }
+  .digest-delta { text-align: right; font-weight: 600; }
+  .delta-up { color: var(--green); }
+  .delta-down { color: var(--red); }
+</style>
+</head>
+<body>
+<div class="shell">
+
+<!-- ─── Sidebar ─── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="label">No-Code Empire</div>
+    <div class="title">Agent 4 — Rank Monitor</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Overview</div>
+    <button class="nav-item active" onclick="show('overview', this)">Overview & scope</button>
+    <button class="nav-item" onclick="show('auth', this)">Authentication setup</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Data layer</div>
+    <button class="nav-item" onclick="show('schema', this)">Supabase schema</button>
+    <button class="nav-item" onclick="show('gsc', this)">GSC API calls</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Workflows</div>
+    <button class="nav-item" onclick="show('daily', this)">Daily workflow</button>
+    <button class="nav-item" onclick="show('weekly', this)">Weekly digest</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Alerts</div>
+    <button class="nav-item" onclick="show('alerts', this)">Alert formats</button>
+    <button class="nav-item" onclick="show('deploy', this)">Deploy checklist</button>
+  </div>
+</nav>
+
+<!-- ─── Main content ─── -->
+<main class="main">
+
+<!-- ════════════════════════════════════════════
+     OVERVIEW
+════════════════════════════════════════════ -->
+<section id="sec-overview" class="section active">
+  <div class="page-tag">Agent 4</div>
+  <h1 class="page-title">Rank Monitor</h1>
+  <p class="page-sub">
+    Daily position tracking across 10 sites and all tracked keywords via the Google Search Console API. Instant Slack/email alerts on drops &gt;5 positions. Full history in Supabase. Weekly mover digest every Monday.
+  </p>
+
+  <div class="badge-row">
+    <span class="badge badge-g">Daily trigger — 06:00 UTC</span>
+    <span class="badge badge-b">GSC Search Analytics API</span>
+    <span class="badge badge-b">Supabase rank_history</span>
+    <span class="badge badge-r">Slack + Email alerts</span>
+    <span class="badge badge-a">Weekly digest — Monday 07:00 UTC</span>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📐 What this agent does</div>
+    <div class="card-body">
+      <ol style="padding-left:18px; line-height:2;">
+        <li>Triggers daily at 06:00 UTC (after GSC data refreshes)</li>
+        <li>Loops over all 10 sites × all tracked keywords</li>
+        <li>Fetches yesterday's average position from GSC Search Analytics API</li>
+        <li>Fetches the position from 2 days ago out of Supabase for comparison</li>
+        <li>If drop &gt; 5 positions → fires Slack alert + email immediately</li>
+        <li>Writes today's position record to <code>rank_history</code> table</li>
+        <li>On Mondays at 07:00 UTC → runs weekly digest of biggest movers</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗂 Prerequisites</div>
+    <div class="card-body">
+      <ul>
+        <li>All 10 sites verified in Google Search Console under a single Google account (or a service account with access to each property)</li>
+        <li>GSC OAuth 2.0 credentials created in Google Cloud Console (project: <code>nocode-empire</code>)</li>
+        <li>Supabase project running with <code>rank_history</code> table (see Schema section)</li>
+        <li>A <code>tracked_keywords</code> table already populated (covered in schema section)</li>
+        <li>Slack workspace with a <code>#seo-alerts</code> channel and incoming webhook configured</li>
+        <li>SMTP or Resend credentials for email fallback</li>
+        <li>n8n instance (self-hosted or n8n.cloud) with credentials store access</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert-box amber">
+    <strong>GSC data latency:</strong> GSC Search Analytics data has a 2–3 day lag. Scheduling the workflow at 06:00 UTC and querying for <code>date = today - 2 days</code> (not yesterday) gives you the freshest complete dataset. Querying for yesterday will return incomplete or zero rows for most sites.
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     AUTH
+════════════════════════════════════════════ -->
+<section id="sec-auth" class="section">
+  <div class="page-tag">Setup</div>
+  <h1 class="page-title">Authentication Setup</h1>
+  <p class="page-sub">Agent 4 needs two auth paths: a service account for unattended GSC access, and a Supabase service key for DB writes.</p>
+
+  <h2 data-n="1">Google Cloud — Service Account</h2>
+  <p>A service account is preferable to OAuth refresh tokens for an automated agent because it never expires and requires no manual re-authentication.</p>
+
+  <h3>Step 1 — Create the project & enable APIs</h3>
+  <div class="code-label">Google Cloud Console</div>
+  <pre><code><span class="cmt"># 1. Create or select a project</span>
+gcloud projects create nocode-empire-seo --name="No-Code Empire SEO"
+gcloud config set project nocode-empire-seo
+
+<span class="cmt"># 2. Enable the Search Console API</span>
+gcloud services enable searchconsole.googleapis.com
+
+<span class="cmt"># 3. Create the service account</span>
+gcloud iam service-accounts create rank-monitor \
+  --display-name="Rank Monitor Agent"
+
+<span class="cmt"># 4. Create & download the JSON key</span>
+gcloud iam service-accounts keys create rank-monitor-key.json \
+  --iam-account=rank-monitor@nocode-empire-seo.iam.gserviceaccount.com</code></pre>
+
+  <h3>Step 2 — Grant access to each GSC property</h3>
+  <p>In Google Search Console UI: for each of the 10 sites, go to <strong>Settings → Users and permissions → Add user</strong>. Enter the service account email and set permission to <strong>Full</strong>.</p>
+  <div class="code-label">Service account email format</div>
+  <pre><code>rank-monitor@nocode-empire-seo.iam.gserviceaccount.com</code></pre>
+
+  <div class="alert-box amber">
+    <strong>Domain properties vs URL-prefix properties:</strong> If your sites are set up as Domain properties in GSC (e.g. <code>sc-domain:example.com</code>), the service account must be added as a user to each domain property individually — domain properties don't inherit access from the Google account owner.
+  </div>
+
+  <h3>Step 3 — Add credentials to n8n</h3>
+  <p>In n8n, go to <strong>Credentials → New → Google Service Account</strong>. Paste the entire contents of <code>rank-monitor-key.json</code> into the <em>Service Account Key</em> field. Name it <code>GSC Rank Monitor</code>. This credential is referenced by the HTTP Request nodes in the daily workflow.</p>
+
+  <hr class="divider">
+
+  <h2 data-n="2">Supabase — Service Role Key</h2>
+  <p>Use the <strong>service_role</strong> key (not the anon key) so the n8n workflow can bypass Row Level Security and write to the <code>rank_history</code> table without user context.</p>
+
+  <div class="code-label">Supabase Dashboard → Project Settings → API</div>
+  <pre><code><span class="cmt"># Copy the service_role key — it looks like:</span>
+<span class="str">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb2xlIjoic2VydmljZV9yb2xlIi...</span>
+
+<span class="cmt"># In n8n: Credentials → New → Header Auth</span>
+<span class="key">Name</span><span class="punct">:</span>    <span class="str">Supabase Rank Monitor</span>
+<span class="key">Header</span><span class="punct">:</span>  <span class="str">apikey</span>
+<span class="key">Value</span><span class="punct">:</span>   <span class="str">&lt;your service_role key&gt;</span>
+
+<span class="cmt"># Also set Authorization header in requests:</span>
+<span class="key">Authorization</span><span class="punct">:</span> <span class="str">Bearer &lt;your service_role key&gt;</span></code></pre>
+
+  <hr class="divider">
+
+  <h2 data-n="3">n8n Environment Variables</h2>
+  <p>Store these in n8n's built-in credential store or as environment variables — never hardcode in workflow nodes.</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Variable</th><th>Value</th><th>Used in</th></tr>
+      <tr><td><code>SUPABASE_URL</code></td><td>https://[project-ref].supabase.co</td><td>All Supabase HTTP nodes</td></tr>
+      <tr><td><code>SUPABASE_SERVICE_KEY</code></td><td>service_role JWT</td><td>All Supabase HTTP nodes</td></tr>
+      <tr><td><code>SLACK_WEBHOOK_URL</code></td><td>https://hooks.slack.com/services/...</td><td>Alert nodes</td></tr>
+      <tr><td><code>ALERT_EMAIL_TO</code></td><td>you@yourdomain.com</td><td>Email fallback node</td></tr>
+      <tr><td><code>GSC_SA_KEY_JSON</code></td><td>Full JSON string of service account key</td><td>GSC HTTP Request nodes</td></tr>
+    </table>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     SCHEMA
+════════════════════════════════════════════ -->
+<section id="sec-schema" class="section">
+  <div class="page-tag">Data layer</div>
+  <h1 class="page-title">Supabase Schema</h1>
+  <p class="page-sub">Two tables: <code>tracked_keywords</code> (the source list) and <code>rank_history</code> (the append-only log). A view wires them together for the weekly digest query.</p>
+
+  <h2 data-n="1">rank_history — Primary log table</h2>
+  <div class="code-label">SQL — run in Supabase SQL Editor</div>
+  <pre><code><span class="kw">CREATE TABLE</span> <span class="fn">rank_history</span> <span class="punct">(</span>
+  <span class="key">id</span>          <span class="op">BIGSERIAL</span>     <span class="kw">PRIMARY KEY</span><span class="punct">,</span>
+  <span class="key">keyword</span>     <span class="op">TEXT</span>          <span class="kw">NOT NULL</span><span class="punct">,</span>
+  <span class="key">site</span>        <span class="op">TEXT</span>          <span class="kw">NOT NULL</span><span class="punct">,</span>   <span class="cmt">-- GSC siteUrl, e.g. 'sc-domain:example.com'</span>
+  <span class="key">position</span>    <span class="op">NUMERIC(6,2)</span>  <span class="kw">NOT NULL</span><span class="punct">,</span>   <span class="cmt">-- GSC average position (can be fractional)</span>
+  <span class="key">date</span>        <span class="op">DATE</span>          <span class="kw">NOT NULL</span><span class="punct">,</span>   <span class="cmt">-- The data date (not insert date)</span>
+  <span class="key">clicks</span>      <span class="op">INTEGER</span>       <span class="kw">DEFAULT</span> <span class="num">0</span><span class="punct">,</span>
+  <span class="key">impressions</span> <span class="op">INTEGER</span>       <span class="kw">DEFAULT</span> <span class="num">0</span><span class="punct">,</span>
+  <span class="key">ctr</span>         <span class="op">NUMERIC(5,4)</span>  <span class="kw">DEFAULT</span> <span class="num">0</span><span class="punct">,</span>  <span class="cmt">-- e.g. 0.0312 = 3.12%</span>
+  <span class="key">inserted_at</span> <span class="op">TIMESTAMPTZ</span>   <span class="kw">DEFAULT</span> <span class="fn">NOW</span><span class="punct">(),</span>
+
+  <span class="kw">CONSTRAINT</span> rank_history_unique
+    <span class="kw">UNIQUE</span> <span class="punct">(</span>keyword<span class="punct">,</span> site<span class="punct">,</span> date<span class="punct">)</span>       <span class="cmt">-- idempotent upserts safe</span>
+<span class="punct">);</span>
+
+<span class="cmt">-- Indexes for the queries we run most</span>
+<span class="kw">CREATE INDEX</span> idx_rh_site_date
+  <span class="kw">ON</span> rank_history <span class="punct">(</span>site<span class="punct">,</span> date <span class="kw">DESC</span><span class="punct">);</span>
+
+<span class="kw">CREATE INDEX</span> idx_rh_keyword_site
+  <span class="kw">ON</span> rank_history <span class="punct">(</span>keyword<span class="punct">,</span> site<span class="punct">);</span>
+
+<span class="kw">CREATE INDEX</span> idx_rh_date
+  <span class="kw">ON</span> rank_history <span class="punct">(</span>date <span class="kw">DESC</span><span class="punct">);</span></code></pre>
+
+  <h2 data-n="2">tracked_keywords — Source of truth</h2>
+  <pre><code><span class="kw">CREATE TABLE</span> <span class="fn">tracked_keywords</span> <span class="punct">(</span>
+  <span class="key">id</span>          <span class="op">BIGSERIAL</span>    <span class="kw">PRIMARY KEY</span><span class="punct">,</span>
+  <span class="key">keyword</span>     <span class="op">TEXT</span>         <span class="kw">NOT NULL</span><span class="punct">,</span>
+  <span class="key">site</span>        <span class="op">TEXT</span>         <span class="kw">NOT NULL</span><span class="punct">,</span>   <span class="cmt">-- matches rank_history.site</span>
+  <span class="key">priority</span>    <span class="op">TEXT</span>         <span class="kw">DEFAULT</span> <span class="str">'normal'</span><span class="punct">,</span> <span class="cmt">-- 'high' | 'normal' | 'low'</span>
+  <span class="key">target_url</span>  <span class="op">TEXT</span><span class="punct">,</span>         <span class="cmt">-- the page you want ranking for this keyword</span>
+  <span class="key">active</span>      <span class="op">BOOLEAN</span>      <span class="kw">DEFAULT</span> <span class="kw">TRUE</span><span class="punct">,</span>
+  <span class="key">created_at</span>  <span class="op">TIMESTAMPTZ</span>  <span class="kw">DEFAULT</span> <span class="fn">NOW</span><span class="punct">(),</span>
+
+  <span class="kw">CONSTRAINT</span> tk_unique <span class="kw">UNIQUE</span> <span class="punct">(</span>keyword<span class="punct">,</span> site<span class="punct">)</span>
+<span class="punct">);</span></code></pre>
+
+  <div class="alert-box blue">
+    <strong>Populating tracked_keywords:</strong> Insert one row per (keyword, site) pair. Start with your 20–30 highest-priority keywords per site. The daily workflow reads this table at runtime — adding or removing rows immediately affects what Agent 4 monitors, no workflow edits needed.
+  </div>
+
+  <h2 data-n="3">weekly_movers view</h2>
+  <p>This view powers the Monday digest by self-joining <code>rank_history</code> to compare last 7 days vs the prior 7 days.</p>
+  <pre><code><span class="kw">CREATE VIEW</span> <span class="fn">weekly_movers</span> <span class="kw">AS</span>
+<span class="kw">WITH</span>
+  this_week <span class="kw">AS</span> <span class="punct">(</span>
+    <span class="kw">SELECT</span> keyword<span class="punct">,</span> site<span class="punct">,</span>
+           <span class="fn">AVG</span><span class="punct">(</span>position<span class="punct">)</span> <span class="kw">AS</span> avg_pos_this
+    <span class="kw">FROM</span>   rank_history
+    <span class="kw">WHERE</span>  date <span class="op">&gt;=</span> <span class="fn">CURRENT_DATE</span> <span class="op">-</span> <span class="num">7</span>
+      <span class="kw">AND</span>  date <span class="op">&lt;</span>  <span class="fn">CURRENT_DATE</span>
+    <span class="kw">GROUP BY</span> keyword<span class="punct">,</span> site
+  <span class="punct">),</span>
+  prior_week <span class="kw">AS</span> <span class="punct">(</span>
+    <span class="kw">SELECT</span> keyword<span class="punct">,</span> site<span class="punct">,</span>
+           <span class="fn">AVG</span><span class="punct">(</span>position<span class="punct">)</span> <span class="kw">AS</span> avg_pos_prior
+    <span class="kw">FROM</span>   rank_history
+    <span class="kw">WHERE</span>  date <span class="op">&gt;=</span> <span class="fn">CURRENT_DATE</span> <span class="op">-</span> <span class="num">14</span>
+      <span class="kw">AND</span>  date <span class="op">&lt;</span>  <span class="fn">CURRENT_DATE</span> <span class="op">-</span> <span class="num">7</span>
+    <span class="kw">GROUP BY</span> keyword<span class="punct">,</span> site
+  <span class="punct">)</span>
+<span class="kw">SELECT</span>
+  t.keyword<span class="punct">,</span>
+  t.site<span class="punct">,</span>
+  <span class="fn">ROUND</span><span class="punct">(</span>t.avg_pos_this<span class="punct">::</span>numeric<span class="punct">,</span> <span class="num">1</span><span class="punct">)</span>   <span class="kw">AS</span> pos_this_week<span class="punct">,</span>
+  <span class="fn">ROUND</span><span class="punct">(</span>p.avg_pos_prior<span class="punct">::</span>numeric<span class="punct">,</span> <span class="num">1</span><span class="punct">)</span>  <span class="kw">AS</span> pos_prior_week<span class="punct">,</span>
+  <span class="fn">ROUND</span><span class="punct">((</span>p.avg_pos_prior <span class="op">-</span> t.avg_pos_this<span class="punct">)::numeric,</span> <span class="num">1</span><span class="punct">)</span> <span class="kw">AS</span> delta  <span class="cmt">-- positive = improved</span>
+<span class="kw">FROM</span>  this_week t
+<span class="kw">JOIN</span>  prior_week p <span class="kw">USING</span> <span class="punct">(</span>keyword<span class="punct">,</span> site<span class="punct">)</span>
+<span class="kw">ORDER BY</span> <span class="fn">ABS</span><span class="punct">(</span>delta<span class="punct">)</span> <span class="kw">DESC</span><span class="punct">;</span></code></pre>
+
+  <h2 data-n="4">RLS policy</h2>
+  <pre><code><span class="cmt">-- Enable RLS on both tables</span>
+<span class="kw">ALTER TABLE</span> rank_history       <span class="kw">ENABLE ROW LEVEL SECURITY</span><span class="punct">;</span>
+<span class="kw">ALTER TABLE</span> tracked_keywords   <span class="kw">ENABLE ROW LEVEL SECURITY</span><span class="punct">;</span>
+
+<span class="cmt">-- Service role bypasses RLS automatically (no policy needed for it)</span>
+<span class="cmt">-- Block anon reads from rank_history (optional but recommended)</span>
+<span class="kw">CREATE POLICY</span> <span class="str">"No anon access"</span>
+  <span class="kw">ON</span> rank_history
+  <span class="kw">FOR ALL</span>
+  <span class="kw">TO</span> anon
+  <span class="kw">USING</span> <span class="punct">(</span><span class="kw">false</span><span class="punct">);</span></code></pre>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     GSC API
+════════════════════════════════════════════ -->
+<section id="sec-gsc" class="section">
+  <div class="page-tag">API</div>
+  <h1 class="page-title">GSC API Calls</h1>
+  <p class="page-sub">Exact request structure for the Search Analytics: query endpoint. One call per site per run — the keyword filter brings back all tracked keywords in a single request.</p>
+
+  <h2 data-n="1">Endpoint</h2>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Field</th><th>Value</th></tr>
+      <tr><td>Method</td><td class="green-text">POST</td></tr>
+      <tr><td>URL</td><td><code>https://searchconsole.googleapis.com/webmasters/v3/sites/{siteUrl}/searchAnalytics/query</code></td></tr>
+      <tr><td>Auth</td><td>Bearer token from service account JWT (scope: <code>https://www.googleapis.com/auth/webmasters.readonly</code>)</td></tr>
+      <tr><td>Content-Type</td><td><code>application/json</code></td></tr>
+    </table>
+  </div>
+
+  <p>The <code>{siteUrl}</code> path parameter must be URL-encoded. Examples:</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Site type</th><th>Raw siteUrl</th><th>URL-encoded for path</th></tr>
+      <tr><td>Domain property</td><td><code>sc-domain:example.com</code></td><td><code>sc-domain%3Aexample.com</code></td></tr>
+      <tr><td>URL-prefix property</td><td><code>https://example.com/</code></td><td><code>https%3A%2F%2Fexample.com%2F</code></td></tr>
+    </table>
+  </div>
+
+  <h2 data-n="2">Request body</h2>
+  <p>This single request fetches all tracked keywords for one site in one call, returning per-query rows. The <code>dimensionFilterGroups</code> filters to <em>only</em> the keywords in your tracked list — no need to loop per keyword.</p>
+  <div class="code-label">JSON body — constructed dynamically in n8n Code node</div>
+  <pre><code><span class="punct">{</span>
+  <span class="key">"startDate"</span><span class="punct">:</span>  <span class="str">"2025-05-20"</span><span class="punct">,</span>   <span class="cmt">// TODAY - 4 days (safest for complete data)</span>
+  <span class="key">"endDate"</span><span class="punct">:</span>    <span class="str">"2025-05-20"</span><span class="punct">,</span>   <span class="cmt">// same as startDate — single day snapshot</span>
+  <span class="key">"dimensions"</span><span class="punct">:</span> <span class="punct">[</span><span class="str">"query"</span><span class="punct">],</span>
+  <span class="key">"rowLimit"</span><span class="punct">:</span>   <span class="num">25000</span><span class="punct">,</span>
+  <span class="key">"dimensionFilterGroups"</span><span class="punct">:</span> <span class="punct">[{</span>
+    <span class="key">"filters"</span><span class="punct">:</span> <span class="punct">[{</span>
+      <span class="key">"dimension"</span><span class="punct">:</span>  <span class="str">"query"</span><span class="punct">,</span>
+      <span class="key">"operator"</span><span class="punct">:</span>   <span class="str">"includingRegex"</span><span class="punct">,</span>
+      <span class="key">"expression"</span><span class="punct">:</span> <span class="str">"best zapier alternatives|no code automation tools|..."</span>
+      <span class="cmt">// pipe-separated regex of all tracked keywords for this site</span>
+      <span class="cmt">// built dynamically from tracked_keywords table</span>
+    <span class="punct">}]</span>
+  <span class="punct">}]</span>
+<span class="punct">}</span></code></pre>
+
+  <div class="alert-box blue">
+    <strong>Why <code>includingRegex</code> instead of per-keyword calls?</strong> The GSC API allows max 200 API calls per 100 seconds per user. With 10 sites × 50 keywords = 500 calls/day if you loop per keyword. Using <code>includingRegex</code> collapses this to 10 calls total — one per site. The regex pipe limit is well above 50 keywords per site.
+  </div>
+
+  <h2 data-n="3">Response structure</h2>
+  <pre><code><span class="punct">{</span>
+  <span class="key">"rows"</span><span class="punct">:</span> <span class="punct">[</span>
+    <span class="punct">{</span>
+      <span class="key">"keys"</span><span class="punct">:</span>        <span class="punct">[</span><span class="str">"best zapier alternatives"</span><span class="punct">],</span>
+      <span class="key">"clicks"</span><span class="punct">:</span>      <span class="num">42</span><span class="punct">,</span>
+      <span class="key">"impressions"</span><span class="punct">:</span> <span class="num">1840</span><span class="punct">,</span>
+      <span class="key">"ctr"</span><span class="punct">:</span>          <span class="num">0.0228</span><span class="punct">,</span>
+      <span class="key">"position"</span><span class="punct">:</span>    <span class="num">4.3</span>     <span class="cmt">// average position for that day</span>
+    <span class="punct">},</span>
+    <span class="cmt">// ... one row per keyword that had impressions that day</span>
+  <span class="punct">]</span>
+<span class="punct">}</span></code></pre>
+
+  <div class="alert-box amber">
+    <strong>Zero-impression keywords:</strong> If a keyword had <em>no</em> impressions on the target date, GSC omits it from the response entirely. The n8n Code node must handle missing keywords by setting <code>position = null</code> (not 0) in the Supabase insert. A null position means "not seen," not "position 0."
+  </div>
+
+  <h2 data-n="4">n8n HTTP Request node config</h2>
+  <pre><code><span class="cmt">// n8n HTTP Request node settings</span>
+<span class="key">Method</span><span class="punct">:</span>          <span class="str">POST</span>
+<span class="key">URL</span><span class="punct">:</span>             <span class="str">https://searchconsole.googleapis.com/webmasters/v3/sites/</span>
+                 <span class="str">{{ encodeURIComponent($json.siteUrl) }}/searchAnalytics/query</span>
+<span class="key">Authentication</span><span class="punct">:</span>  <span class="str">Generic Credential Type → OAuth2</span>
+<span class="key">Credential</span><span class="punct">:</span>     <span class="str">GSC Rank Monitor</span>  <span class="cmt">(the service account credential)</span>
+<span class="key">Body</span><span class="punct">:</span>            <span class="str">JSON</span>
+<span class="key">Body content</span><span class="punct">:</span>   <span class="str">{{ $json.requestBody }}</span>  <span class="cmt">(built in prior Code node)</span>
+<span class="key">Options</span><span class="punct">:</span>
+  <span class="str">Continue On Fail</span><span class="punct">:</span> <span class="kw">true</span>   <span class="cmt">(don't halt entire run if one site errors)</span>
+  <span class="str">Retry On Fail</span><span class="punct">:</span>    <span class="kw">true</span><span class="punct">,</span> Max <span class="num">3</span></code></pre>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     DAILY WORKFLOW
+════════════════════════════════════════════ -->
+<section id="sec-daily" class="section">
+  <div class="page-tag">n8n workflow</div>
+  <h1 class="page-title">Daily Workflow</h1>
+  <p class="page-sub">Runs every day at 06:00 UTC. The complete node-by-node spec you can build in n8n's visual editor.</p>
+
+  <div class="alert-box green">
+    <strong>Workflow name:</strong> <code>Agent4_RankMonitor_Daily</code> — Schedule trigger: <strong>06:00 UTC daily</strong>
+  </div>
+
+  <div class="flow">
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-trigger">①</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">Schedule Trigger</div>
+        <div class="node-title">Daily trigger — 06:00 UTC</div>
+        <div class="node-body">
+          Cron: <code>0 6 * * *</code><br>
+          Timezone: UTC<br>
+          Outputs: timestamp only — no data payload needed
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-fetch">②</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">HTTP Request → Supabase</div>
+        <div class="node-title">Fetch tracked_keywords + site list</div>
+        <div class="node-body">
+          <code>GET {{SUPABASE_URL}}/rest/v1/tracked_keywords?active=eq.true&select=keyword,site</code><br>
+          Headers: <code>apikey</code> + <code>Authorization: Bearer</code> (service key)<br>
+          Returns all active (keyword, site) pairs. Group by site in next node.
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-logic">③</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">Code Node (JavaScript)</div>
+        <div class="node-title">Build per-site GSC request objects</div>
+        <div class="node-body">
+          Groups keywords by site. For each site, builds the regex string and request body. Outputs one item per site.
+          <pre style="margin-top:10px; background:#0a0c0b;"><code><span class="kw">const</span> rows <span class="op">=</span> <span class="fn">$input</span><span class="punct">.</span><span class="fn">all</span><span class="punct">();</span>
+<span class="kw">const</span> targetDate <span class="op">=</span> <span class="kw">new</span> <span class="fn">Date</span><span class="punct">();</span>
+targetDate<span class="punct">.</span><span class="fn">setDate</span><span class="punct">(</span>targetDate<span class="punct">.</span><span class="fn">getDate</span><span class="punct">()</span> <span class="op">-</span> <span class="num">4</span><span class="punct">);</span>  <span class="cmt">// D-4 for complete data</span>
+<span class="kw">const</span> dateStr <span class="op">=</span> targetDate<span class="punct">.</span><span class="fn">toISOString</span><span class="punct">().</span><span class="fn">slice</span><span class="punct">(</span><span class="num">0</span><span class="punct">,</span><span class="num">10</span><span class="punct">);</span>
+
+<span class="cmt">// Group by site</span>
+<span class="kw">const</span> bySite <span class="op">=</span> <span class="punct">{};</span>
+<span class="kw">for</span> <span class="punct">(</span><span class="kw">const</span> row <span class="kw">of</span> rows<span class="punct">)</span> <span class="punct">{</span>
+  <span class="kw">const</span> s <span class="op">=</span> row<span class="punct">.</span>json<span class="punct">.</span>site<span class="punct">;</span>
+  <span class="kw">if</span> <span class="punct">(!</span>bySite<span class="punct">[</span>s<span class="punct">])</span> bySite<span class="punct">[</span>s<span class="punct">]</span> <span class="op">=</span> <span class="punct">[];</span>
+  bySite<span class="punct">[</span>s<span class="punct">].</span><span class="fn">push</span><span class="punct">(</span>row<span class="punct">.</span>json<span class="punct">.</span>keyword<span class="punct">);</span>
+<span class="punct">}</span>
+
+<span class="kw">return</span> <span class="fn">Object</span><span class="punct">.</span><span class="fn">entries</span><span class="punct">(</span>bySite<span class="punct">).</span><span class="fn">map</span><span class="punct">(([</span>site<span class="punct">,</span> keywords<span class="punct">])</span> <span class="op">=></span> <span class="punct">({</span>
+  json<span class="punct">:</span> <span class="punct">{</span>
+    siteUrl<span class="punct">:</span> site<span class="punct">,</span>
+    keywords<span class="punct">,</span>
+    targetDate<span class="punct">:</span> dateStr<span class="punct">,</span>
+    requestBody<span class="punct">:</span> <span class="punct">{</span>
+      startDate<span class="punct">:</span> dateStr<span class="punct">,</span>
+      endDate<span class="punct">:</span> dateStr<span class="punct">,</span>
+      dimensions<span class="punct">:</span> <span class="punct">[</span><span class="str">"query"</span><span class="punct">],</span>
+      rowLimit<span class="punct">:</span> <span class="num">25000</span><span class="punct">,</span>
+      dimensionFilterGroups<span class="punct">:</span> <span class="punct">[{</span>
+        filters<span class="punct">:</span> <span class="punct">[{</span>
+          dimension<span class="punct">:</span> <span class="str">"query"</span><span class="punct">,</span>
+          operator<span class="punct">:</span> <span class="str">"includingRegex"</span><span class="punct">,</span>
+          expression<span class="punct">:</span> keywords<span class="punct">.</span><span class="fn">map</span><span class="punct">(</span>k <span class="op">=></span> k<span class="punct">.</span><span class="fn">replace</span><span class="punct">(/[</span><span class="str">.*+?^${}()|[\]\\</span><span class="punct">]/g,</span> <span class="str">'\\$&'</span><span class="punct">)).</span><span class="fn">join</span><span class="punct">(</span><span class="str">'|'</span><span class="punct">)</span>
+        <span class="punct">}]</span>
+      <span class="punct">}]</span>
+    <span class="punct">}</span>
+  <span class="punct">}</span>
+<span class="punct">}));</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-fetch">④</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">HTTP Request → GSC API</div>
+        <div class="node-title">Query GSC Search Analytics (per site)</div>
+        <div class="node-body">
+          Runs once per item (once per site).<br>
+          URL: <code>https://searchconsole.googleapis.com/webmasters/v3/sites/{{ encodeURIComponent($json.siteUrl) }}/searchAnalytics/query</code><br>
+          Method: POST · Body: <code>{{ $json.requestBody }}</code><br>
+          Auth: Service account OAuth2 credential (scope: <code>webmasters.readonly</code>)<br>
+          Continue on fail: ✓ · Retry on fail: 3×
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-fetch">⑤</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">HTTP Request → Supabase</div>
+        <div class="node-title">Fetch previous position (D-5) from rank_history</div>
+        <div class="node-body">
+          For comparison, pull the position recorded 1 day prior to the GSC target date (D-5).<br>
+          <code>GET {{SUPABASE_URL}}/rest/v1/rank_history?site=eq.{{ $json.siteUrl }}&date=eq.{{ $json.prevDate }}&select=keyword,position</code><br>
+          Returns a lookup map: <code>&#123; keyword → position &#125;</code> for the prior day.
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-logic">⑥</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">Code Node (JavaScript)</div>
+        <div class="node-title">Diff positions, flag drops &gt;5</div>
+        <div class="node-body">
+          Merges GSC response with prior-day lookup. Computes delta. Flags any keyword where <code>newPos - prevPos &gt; 5</code> (higher number = worse rank).
+          <pre style="margin-top:10px; background:#0a0c0b;"><code><span class="kw">const</span> gscRows  <span class="op">=</span> <span class="fn">$node</span><span class="punct">[</span><span class="str">"GSC Query"</span><span class="punct">].</span>json<span class="punct">.</span>rows <span class="op">||</span> <span class="punct">[];</span>
+<span class="kw">const</span> prevData  <span class="op">=</span> <span class="fn">$node</span><span class="punct">[</span><span class="str">"Fetch Prev Positions"</span><span class="punct">].</span>json<span class="punct">;</span>
+<span class="kw">const</span> prevMap   <span class="op">=</span> <span class="fn">Object</span><span class="punct">.</span><span class="fn">fromEntries</span><span class="punct">(</span>prevData<span class="punct">.</span><span class="fn">map</span><span class="punct">(</span>r <span class="op">=></span> <span class="punct">[</span>r<span class="punct">.</span>keyword<span class="punct">,</span> r<span class="punct">.</span>position<span class="punct">]));</span>
+<span class="kw">const</span> siteUrl   <span class="op">=</span> <span class="fn">$node</span><span class="punct">[</span><span class="str">"Build Requests"</span><span class="punct">].</span>json<span class="punct">.</span>siteUrl<span class="punct">;</span>
+<span class="kw">const</span> today     <span class="op">=</span> <span class="fn">$node</span><span class="punct">[</span><span class="str">"Build Requests"</span><span class="punct">].</span>json<span class="punct">.</span>targetDate<span class="punct">;</span>
+
+<span class="kw">const</span> results <span class="op">=</span> <span class="punct">[];</span>
+<span class="kw">for</span> <span class="punct">(</span><span class="kw">const</span> row <span class="kw">of</span> gscRows<span class="punct">)</span> <span class="punct">{</span>
+  <span class="kw">const</span> kw      <span class="op">=</span> row<span class="punct">.</span>keys<span class="punct">[</span><span class="num">0</span><span class="punct">];</span>
+  <span class="kw">const</span> newPos  <span class="op">=</span> row<span class="punct">.</span>position<span class="punct">;</span>
+  <span class="kw">const</span> prevPos <span class="op">=</span> prevMap<span class="punct">[</span>kw<span class="punct">]</span> <span class="op">??</span> <span class="kw">null</span><span class="punct">;</span>
+  <span class="kw">const</span> delta   <span class="op">=</span> prevPos <span class="op">!==</span> <span class="kw">null</span> <span class="op">?</span> newPos <span class="op">-</span> prevPos <span class="op">:</span> <span class="kw">null</span><span class="punct">;</span>
+  results<span class="punct">.</span><span class="fn">push</span><span class="punct">({</span>
+    json<span class="punct">:</span> <span class="punct">{</span>
+      keyword<span class="punct">:</span> kw<span class="punct">,</span> site<span class="punct">:</span> siteUrl<span class="punct">,</span>
+      position<span class="punct">:</span> newPos<span class="punct">,</span> prevPosition<span class="punct">:</span> prevPos<span class="punct">,</span>
+      delta<span class="punct">,</span> date<span class="punct">:</span> today<span class="punct">,</span>
+      clicks<span class="punct">:</span> row<span class="punct">.</span>clicks<span class="punct">,</span> impressions<span class="punct">:</span> row<span class="punct">.</span>impressions<span class="punct">,</span>
+      ctr<span class="punct">:</span> row<span class="punct">.</span>ctr<span class="punct">,</span>
+      alert<span class="punct">:</span> delta <span class="op">!==</span> <span class="kw">null</span> <span class="op">&&</span> delta <span class="op">></span> <span class="num">5</span>
+    <span class="punct">}</span>
+  <span class="punct">});</span>
+<span class="punct">}</span>
+<span class="kw">return</span> results<span class="punct">;</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-write">⑦</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">HTTP Request → Supabase (upsert)</div>
+        <div class="node-title">Write all positions to rank_history</div>
+        <div class="node-body">
+          Runs for every keyword row from the diff node. Uses upsert so re-runs don't duplicate.<br>
+          <code>POST {{SUPABASE_URL}}/rest/v1/rank_history</code><br>
+          Headers: <code>Prefer: resolution=merge-duplicates</code><br>
+          Body: <code>&#123; "keyword": "...", "site": "...", "position": 4.3, "date": "2025-05-20", "clicks": 42, "impressions": 1840, "ctr": 0.0228 &#125;</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-logic">⑧</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">IF Node</div>
+        <div class="node-title">Route: drop &gt;5 positions?</div>
+        <div class="node-body">
+          Condition: <code>{{ $json.alert }} === true</code><br>
+          True → Alert branch (nodes ⑨–⑩)<br>
+          False → Done
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-alert">⑨</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">HTTP Request → Slack Webhook</div>
+        <div class="node-title">Fire Slack alert (drop detected)</div>
+        <div class="node-body">
+          POST to <code>{{SLACK_WEBHOOK_URL}}</code><br>
+          Body: structured message block (see Alert Formats section for exact payload)
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-alert">⑩</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">Send Email Node</div>
+        <div class="node-title">Email fallback alert</div>
+        <div class="node-body">
+          To: <code>{{ALERT_EMAIL_TO}}</code><br>
+          Subject: <code>🔴 Rank drop: "{{ $json.keyword }}" on {{ $json.site }}</code><br>
+          Body: HTML email version of alert (see Alert Formats section).<br>
+          Use Resend or SMTP credentials.
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-done">✓</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">No-op / End</div>
+        <div class="node-title">Workflow complete</div>
+        <div class="node-body">All positions logged. Alerts fired where triggered. Run completes in ~30–90 seconds for 10 sites.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     WEEKLY WORKFLOW
+════════════════════════════════════════════ -->
+<section id="sec-weekly" class="section">
+  <div class="page-tag">n8n workflow</div>
+  <h1 class="page-title">Weekly Digest Workflow</h1>
+  <p class="page-sub">Runs every Monday at 07:00 UTC. Queries the <code>weekly_movers</code> view and sends a ranked digest of top gainers and losers across all 10 sites.</p>
+
+  <div class="alert-box green">
+    <strong>Workflow name:</strong> <code>Agent4_RankMonitor_WeeklyDigest</code> — Schedule trigger: <strong>07:00 UTC every Monday</strong>
+  </div>
+
+  <div class="flow">
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-trigger">①</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">Schedule Trigger</div>
+        <div class="node-title">Weekly trigger — Monday 07:00 UTC</div>
+        <div class="node-body">Cron: <code>0 7 * * 1</code></div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-fetch">②</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">HTTP Request → Supabase RPC</div>
+        <div class="node-title">Query weekly_movers view</div>
+        <div class="node-body">
+          <code>GET {{SUPABASE_URL}}/rest/v1/weekly_movers?select=*&order=delta.asc&limit=50</code><br>
+          This returns all movers sorted by delta. The next node splits into gainers (delta &gt; 0) and losers (delta &lt; 0).
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-logic">③</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">Code Node</div>
+        <div class="node-title">Build digest payload</div>
+        <div class="node-body">
+          Splits rows into gainers (delta &lt; 0, improved) and losers (delta &gt; 0, worsened). Takes top 10 of each. Formats Slack blocks.
+          <pre style="margin-top:10px; background:#0a0c0b;"><code><span class="kw">const</span> rows <span class="op">=</span> <span class="fn">$input</span><span class="punct">.</span><span class="fn">all</span><span class="punct">().</span><span class="fn">map</span><span class="punct">(</span>r <span class="op">=></span> r<span class="punct">.</span>json<span class="punct">);</span>
+<span class="kw">const</span> gainers <span class="op">=</span> rows<span class="punct">.</span><span class="fn">filter</span><span class="punct">(</span>r <span class="op">=></span> r<span class="punct">.</span>delta <span class="op">&lt;</span> <span class="num">0</span><span class="punct">)</span>
+  <span class="punct">.</span><span class="fn">sort</span><span class="punct">((</span>a<span class="punct">,</span>b<span class="punct">)</span> <span class="op">=></span> a<span class="punct">.</span>delta <span class="op">-</span> b<span class="punct">.</span>delta<span class="punct">)</span>
+  <span class="punct">.</span><span class="fn">slice</span><span class="punct">(</span><span class="num">0</span><span class="punct">,</span><span class="num">10</span><span class="punct">);</span>          <span class="cmt">// most negative delta = biggest gain</span>
+<span class="kw">const</span> losers  <span class="op">=</span> rows<span class="punct">.</span><span class="fn">filter</span><span class="punct">(</span>r <span class="op">=></span> r<span class="punct">.</span>delta <span class="op">></span> <span class="num">0</span><span class="punct">)</span>
+  <span class="punct">.</span><span class="fn">sort</span><span class="punct">((</span>a<span class="punct">,</span>b<span class="punct">)</span> <span class="op">=></span> b<span class="punct">.</span>delta <span class="op">-</span> a<span class="punct">.</span>delta<span class="punct">)</span>
+  <span class="punct">.</span><span class="fn">slice</span><span class="punct">(</span><span class="num">0</span><span class="punct">,</span><span class="num">10</span><span class="punct">);</span>          <span class="cmt">// most positive delta = biggest loss</span>
+
+<span class="kw">return</span> <span class="punct">[{</span> json<span class="punct">:</span> <span class="punct">{</span> gainers<span class="punct">,</span> losers <span class="punct">}</span> <span class="punct">}];</span></code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-alert">④</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">HTTP Request → Slack Webhook</div>
+        <div class="node-title">Post weekly digest to #seo-weekly</div>
+        <div class="node-body">Uses the weekly digest Slack Block Kit format (see Alert Formats section). Posts to a separate channel from drop alerts to avoid noise.</div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-alert">⑤</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">Send Email</div>
+        <div class="node-title">Weekly digest email</div>
+        <div class="node-body">HTML table email with the same gainer/loser data. Subject: <code>📊 Rank digest — week of {{ $now.toFormat('MMM d') }}</code></div>
+      </div>
+    </div>
+
+    <div class="flow-node">
+      <div class="flow-spine"><div class="flow-dot dot-done">✓</div><div class="flow-line"></div></div>
+      <div class="flow-content">
+        <div class="node-type">End</div>
+        <div class="node-title">Digest sent</div>
+        <div class="node-body">Weekly digest complete. Archive in Supabase <code>digest_log</code> table optionally.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <h2 data-n="preview">Weekly digest preview</h2>
+  <div class="digest-card">
+    <div class="digest-header">
+      <div class="digest-title">📊 Weekly rank digest — week of May 19</div>
+      <div class="digest-date">10 sites · 47 tracked keywords</div>
+    </div>
+    <div style="padding: 10px 16px 4px; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color: var(--green);">↑ Top gainers</div>
+    <div class="digest-row header">
+      <div>Keyword</div><div>Site</div><div class="digest-pos">Position</div><div class="digest-delta">Change</div>
+    </div>
+    <div class="digest-row">
+      <div class="digest-kw">best zapier alternatives</div><div class="digest-site">nocode.tools</div><div class="digest-pos">4.1</div><div class="digest-delta delta-up">▲ 6.2</div>
+    </div>
+    <div class="digest-row">
+      <div class="digest-kw">airtable vs notion</div><div class="digest-site">automatestack.co</div><div class="digest-pos">7.8</div><div class="digest-delta delta-up">▲ 4.9</div>
+    </div>
+    <div class="digest-row">
+      <div class="digest-kw">webflow pricing 2025</div><div class="digest-site">buildbetter.io</div><div class="digest-pos">3.3</div><div class="digest-delta delta-up">▲ 3.7</div>
+    </div>
+    <div style="padding: 10px 16px 4px; font-size:10px; letter-spacing:.08em; text-transform:uppercase; color: var(--red);">↓ Biggest drops</div>
+    <div class="digest-row header">
+      <div>Keyword</div><div>Site</div><div class="digest-pos">Position</div><div class="digest-delta">Change</div>
+    </div>
+    <div class="digest-row">
+      <div class="digest-kw">make vs zapier</div><div class="digest-site">nocode.tools</div><div class="digest-pos">18.4</div><div class="digest-delta delta-down">▼ 7.1</div>
+    </div>
+    <div class="digest-row">
+      <div class="digest-kw">bubble io review</div><div class="digest-site">buildbetter.io</div><div class="digest-pos">22.0</div><div class="digest-delta delta-down">▼ 5.5</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     ALERTS
+════════════════════════════════════════════ -->
+<section id="sec-alerts" class="section">
+  <div class="page-tag">Alert formats</div>
+  <h1 class="page-title">Alert Message Formats</h1>
+  <p class="page-sub">Exact Slack Block Kit JSON and email HTML for drop alerts and the weekly digest.</p>
+
+  <h2 data-n="1">Slack — Drop alert (immediate)</h2>
+  <p>Fires any time a tracked keyword drops more than 5 positions since yesterday's logged data. Uses Block Kit for rich formatting in Slack.</p>
+
+  <div class="slack-preview">
+    <div class="slack-header">
+      <div class="slack-avatar">🤖</div>
+      <div>
+        <div class="slack-name">Rank Monitor</div>
+        <div class="slack-time">Today at 6:14 AM</div>
+      </div>
+    </div>
+    <div class="slack-body">
+      <div class="slack-attach red">
+        <div class="slack-attach-title">🔴 Position drop detected</div>
+        <div style="color:#d1d2d3; margin-top:4px;">Keyword <strong>"best zapier alternatives"</strong> on <strong>nocode.tools</strong> has dropped <span class="red-text">8.3 positions</span> in the last 24h.</div>
+        <div class="slack-field-row">
+          <div class="slack-field"><div class="slack-field-label">Previous</div><div class="slack-field-val">4.1</div></div>
+          <div class="slack-field"><div class="slack-field-label">Current</div><div class="slack-field-val">12.4</div></div>
+          <div class="slack-field"><div class="slack-field-label">Delta</div><div class="slack-field-val red-text">▼ 8.3</div></div>
+          <div class="slack-field"><div class="slack-field-label">Date</div><div class="slack-field-val">May 20, 2025</div></div>
+        </div>
+        <div style="margin-top:8px; font-size:11px; color:#616061;">Review in GSC → Check for crawl errors → Inspect top-ranking page</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="code-label">Slack Block Kit JSON — paste into n8n HTTP Request body</div>
+  <pre><code><span class="punct">{</span>
+  <span class="key">"text"</span><span class="punct">:</span> <span class="str">"🔴 Rank drop: \"{{ $json.keyword }}\" on {{ $json.site }}"</span><span class="punct">,</span>
+  <span class="key">"blocks"</span><span class="punct">:</span> <span class="punct">[</span>
+    <span class="punct">{</span>
+      <span class="key">"type"</span><span class="punct">:</span> <span class="str">"header"</span><span class="punct">,</span>
+      <span class="key">"text"</span><span class="punct">:</span> <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"plain_text"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="str">"🔴 Position Drop Detected"</span> <span class="punct">}</span>
+    <span class="punct">},</span>
+    <span class="punct">{</span>
+      <span class="key">"type"</span><span class="punct">:</span> <span class="str">"section"</span><span class="punct">,</span>
+      <span class="key">"text"</span><span class="punct">:</span> <span class="punct">{</span>
+        <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span>
+        <span class="key">"text"</span><span class="punct">:</span> <span class="str">"Keyword *\"{{ $json.keyword }}\"* on *{{ $json.site }}* dropped *{{ $json.delta.toFixed(1) }} positions* since {{ $json.prevDate }}."</span>
+      <span class="punct">}</span>
+    <span class="punct">},</span>
+    <span class="punct">{</span>
+      <span class="key">"type"</span><span class="punct">:</span> <span class="str">"section"</span><span class="punct">,</span>
+      <span class="key">"fields"</span><span class="punct">:</span> <span class="punct">[</span>
+        <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="str">"*Previous position*\n{{ $json.prevPosition.toFixed(1) }}"</span> <span class="punct">},</span>
+        <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="str">"*Current position*\n{{ $json.position.toFixed(1) }}"</span> <span class="punct">},</span>
+        <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="str">"*Drop*\n▼ {{ $json.delta.toFixed(1) }}"</span> <span class="punct">},</span>
+        <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="str">"*Data date*\n{{ $json.date }}"</span> <span class="punct">},</span>
+        <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="str">"*Impressions*\n{{ $json.impressions }}"</span> <span class="punct">},</span>
+        <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="str">"*Clicks*\n{{ $json.clicks }}"</span> <span class="punct">}</span>
+      <span class="punct">]</span>
+    <span class="punct">},</span>
+    <span class="punct">{</span>
+      <span class="key">"type"</span><span class="punct">:</span> <span class="str">"context"</span><span class="punct">,</span>
+      <span class="key">"elements"</span><span class="punct">:</span> <span class="punct">[{</span>
+        <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span>
+        <span class="key">"text"</span><span class="punct">:</span> <span class="str">"Review in GSC → Check crawl errors → Inspect ranking page → Check competitor SERP"</span>
+      <span class="punct">}]</span>
+    <span class="punct">}</span>
+  <span class="punct">]</span>
+<span class="punct">}</span></code></pre>
+
+  <hr class="divider">
+
+  <h2 data-n="2">Email — Drop alert HTML</h2>
+  <div class="code-label">Subject line</div>
+  <pre><code>🔴 Rank drop: "{{ $json.keyword }}" — {{ $json.site }} (▼{{ $json.delta.toFixed(1) }} positions)</code></pre>
+
+  <div class="code-label">Email body (HTML)</div>
+  <pre><code><span class="op">&lt;div</span> <span class="key">style</span><span class="op">=</span><span class="str">"font-family:monospace;max-width:520px;margin:auto;padding:24px;background:#0d0f0e;color:#e8ede9;"</span><span class="op">&gt;</span>
+  <span class="op">&lt;div</span> <span class="key">style</span><span class="op">=</span><span class="str">"border-left:4px solid #f87171;padding-left:16px;margin-bottom:20px;"</span><span class="op">&gt;</span>
+    <span class="op">&lt;h2</span> <span class="key">style</span><span class="op">=</span><span class="str">"color:#f87171;margin:0 0 8px;"</span><span class="op">&gt;</span>🔴 Position Drop Detected<span class="op">&lt;/h2&gt;</span>
+    <span class="op">&lt;p</span> <span class="key">style</span><span class="op">=</span><span class="str">"color:#8a9489;margin:0;"</span><span class="op">&gt;</span>
+      Keyword <span class="op">&lt;strong</span> <span class="key">style</span><span class="op">=</span><span class="str">"color:#e8ede9;"</span><span class="op">&gt;</span>"{{ $json.keyword }}"<span class="op">&lt;/strong&gt;</span>
+      on <span class="op">&lt;strong</span> <span class="key">style</span><span class="op">=</span><span class="str">"color:#e8ede9;"</span><span class="op">&gt;</span>{{ $json.site }}<span class="op">&lt;/strong&gt;</span>
+    <span class="op">&lt;/p&gt;</span>
+  <span class="op">&lt;/div&gt;</span>
+  <span class="op">&lt;table</span> <span class="key">style</span><span class="op">=</span><span class="str">"width:100%;border-collapse:collapse;font-size:13px;"</span><span class="op">&gt;</span>
+    <span class="op">&lt;tr&gt;&lt;td</span> <span class="key">style</span><span class="op">=</span><span class="str">"padding:8px;color:#5a635c;border-bottom:1px solid #2a2e2b;"</span><span class="op">&gt;</span>Previous<span class="op">&lt;/td&gt;</span>
+        <span class="op">&lt;td</span> <span class="key">style</span><span class="op">=</span><span class="str">"padding:8px;border-bottom:1px solid #2a2e2b;"</span><span class="op">&gt;</span>{{ $json.prevPosition }}<span class="op">&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="op">&lt;tr&gt;&lt;td</span> <span class="key">style</span><span class="op">=</span><span class="str">"padding:8px;color:#5a635c;border-bottom:1px solid #2a2e2b;"</span><span class="op">&gt;</span>Current<span class="op">&lt;/td&gt;</span>
+        <span class="op">&lt;td</span> <span class="key">style</span><span class="op">=</span><span class="str">"padding:8px;border-bottom:1px solid #2a2e2b;"</span><span class="op">&gt;</span>{{ $json.position }}<span class="op">&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="op">&lt;tr&gt;&lt;td</span> <span class="key">style</span><span class="op">=</span><span class="str">"padding:8px;color:#5a635c;border-bottom:1px solid #2a2e2b;"</span><span class="op">&gt;</span>Drop<span class="op">&lt;/td&gt;</span>
+        <span class="op">&lt;td</span> <span class="key">style</span><span class="op">=</span><span class="str">"padding:8px;color:#f87171;border-bottom:1px solid #2a2e2b;"</span><span class="op">&gt;</span>▼ {{ $json.delta }}<span class="op">&lt;/td&gt;&lt;/tr&gt;</span>
+    <span class="op">&lt;tr&gt;&lt;td</span> <span class="key">style</span><span class="op">=</span><span class="str">"padding:8px;color:#5a635c;"</span><span class="op">&gt;</span>Data date<span class="op">&lt;/td&gt;</span>
+        <span class="op">&lt;td</span> <span class="key">style</span><span class="op">=</span><span class="str">"padding:8px;"</span><span class="op">&gt;</span>{{ $json.date }}<span class="op">&lt;/td&gt;&lt;/tr&gt;</span>
+  <span class="op">&lt;/table&gt;</span>
+  <span class="op">&lt;p</span> <span class="key">style</span><span class="op">=</span><span class="str">"color:#5a635c;font-size:11px;margin-top:16px;"</span><span class="op">&gt;</span>
+    Next steps: Review GSC → Check crawl errors → Inspect page → Check competitor SERPs
+  <span class="op">&lt;/p&gt;</span>
+<span class="op">&lt;/div&gt;</span></code></pre>
+
+  <hr class="divider">
+
+  <h2 data-n="3">Slack — Weekly digest format</h2>
+  <div class="code-label">Slack Block Kit JSON — weekly digest</div>
+  <pre><code><span class="punct">{</span>
+  <span class="key">"text"</span><span class="punct">:</span> <span class="str">"📊 Weekly rank digest"</span><span class="punct">,</span>
+  <span class="key">"blocks"</span><span class="punct">:</span> <span class="punct">[</span>
+    <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"header"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"plain_text"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="str">"📊 Weekly Rank Digest — {{ weekLabel }}"</span> <span class="punct">}</span> <span class="punct">},</span>
+    <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"section"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="str">"*↑ Top Gainers*"</span> <span class="punct">}</span> <span class="punct">},</span>
+    <span class="cmt">// one section per gainer:</span>
+    <span class="punct">{</span>
+      <span class="key">"type"</span><span class="punct">:</span> <span class="str">"section"</span><span class="punct">,</span>
+      <span class="key">"text"</span><span class="punct">:</span> <span class="punct">{</span>
+        <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span>
+        <span class="key">"text"</span><span class="punct">:</span> <span class="str">":chart_with_upwards_trend: *\"{{ kw }}\"* — {{ site }}\nPos {{ posThis }} → {{ posPrior }} :arrow_up: *{{ Math.abs(delta) }} positions*"</span>
+      <span class="punct">}</span>
+    <span class="punct">},</span>
+    <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"divider"</span> <span class="punct">},</span>
+    <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"section"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="punct">{</span> <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span> <span class="key">"text"</span><span class="punct">:</span> <span class="str">"*↓ Biggest Drops*"</span> <span class="punct">}</span> <span class="punct">},</span>
+    <span class="cmt">// one section per loser:</span>
+    <span class="punct">{</span>
+      <span class="key">"type"</span><span class="punct">:</span> <span class="str">"section"</span><span class="punct">,</span>
+      <span class="key">"text"</span><span class="punct">:</span> <span class="punct">{</span>
+        <span class="key">"type"</span><span class="punct">:</span> <span class="str">"mrkdwn"</span><span class="punct">,</span>
+        <span class="key">"text"</span><span class="punct">:</span> <span class="str">":chart_with_downwards_trend: *\"{{ kw }}\"* — {{ site }}\nPos {{ posThis }} ← {{ posPrior }} :arrow_down: *{{ delta }} positions*"</span>
+      <span class="punct">}</span>
+    <span class="punct">}</span>
+  <span class="punct">]</span>
+<span class="punct">}</span></code></pre>
+
+  <div class="alert-box blue">
+    <strong>Slack channels:</strong> Use separate channels — <code>#seo-alerts</code> for immediate drop alerts (noisy) and <code>#seo-weekly</code> for the Monday digest (low noise). Add the Rank Monitor as a Slack app to both channels. This prevents digest noise from drowning out urgent drop alerts.
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     DEPLOY
+════════════════════════════════════════════ -->
+<section id="sec-deploy" class="section">
+  <div class="page-tag">Go-live</div>
+  <h1 class="page-title">Deploy Checklist</h1>
+  <p class="page-sub">Complete these in order. Each step has a verification test before moving on.</p>
+
+  <div class="card">
+    <div class="card-title">🔐 Auth & credentials</div>
+    <div class="card-body">
+      <ul>
+        <li>Service account created in Google Cloud Console</li>
+        <li>Service account added to all 10 GSC properties with Full access</li>
+        <li>Service account key JSON downloaded and stored in n8n credentials</li>
+        <li><strong>Test:</strong> Manual HTTP call to GSC API for site 1 returns rows</li>
+        <li>Supabase service key added to n8n credentials</li>
+        <li>Slack webhook URL created for <code>#seo-alerts</code> and <code>#seo-weekly</code></li>
+        <li>SMTP/Resend credentials added to n8n</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🗄 Database</div>
+    <div class="card-body">
+      <ul>
+        <li>Run <code>rank_history</code> table DDL in Supabase SQL Editor</li>
+        <li>Run <code>tracked_keywords</code> table DDL</li>
+        <li>Populate <code>tracked_keywords</code> with your keyword list per site</li>
+        <li>Run <code>weekly_movers</code> view DDL</li>
+        <li>Apply RLS policies</li>
+        <li><strong>Test:</strong> <code>SELECT * FROM tracked_keywords LIMIT 5</code> returns rows</li>
+        <li><strong>Test:</strong> Insert a dummy row to <code>rank_history</code>, confirm upsert works</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⚙️ n8n workflows</div>
+    <div class="card-body">
+      <ul>
+        <li>Import or build <code>Agent4_RankMonitor_Daily</code> workflow</li>
+        <li>Import or build <code>Agent4_RankMonitor_WeeklyDigest</code> workflow</li>
+        <li><strong>Test daily:</strong> Run manually (skip scheduler) — confirm GSC returns data, Supabase writes succeed, no errors</li>
+        <li><strong>Test alert:</strong> Temporarily set alert threshold to 0 (not &gt;5) and run — confirm Slack message arrives in <code>#seo-alerts</code></li>
+        <li>Reset threshold back to &gt;5 and activate both workflows</li>
+        <li><strong>Test weekly:</strong> Trigger manually on a day with 7+ days of history — confirm digest posts to <code>#seo-weekly</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 Ongoing monitoring</div>
+    <div class="card-body">
+      <ul>
+        <li>Check n8n execution log weekly for failed runs</li>
+        <li>GSC quota: 200 requests/100s per user — 10 sites = 10 calls/day, well within limits</li>
+        <li>Supabase row growth: ~500 rows/day (50 keywords × 10 sites) = ~15k rows/month → negligible on free tier</li>
+        <li>Add <code>rank_history</code> retention policy after 12 months if needed: <code>DELETE FROM rank_history WHERE date &lt; NOW() - INTERVAL '365 days'</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert-box green">
+    <strong>First run expectation:</strong> On day 1, there are no "previous" positions in Supabase. The diff node will produce <code>prevPosition = null</code> and <code>alert = false</code> for all keywords — no false alerts will fire. Day 2 onwards, comparisons work normally. After 7 days, the weekly digest view has enough data to produce meaningful movers.
+  </div>
+
+  <div class="alert-box amber">
+    <strong>GSC data gap days:</strong> If a site has zero GSC impressions on the target date (new site, or a holiday weekend anomaly), the API returns an empty <code>rows</code> array. The Code node guards for this with <code>|| []</code>. Nothing gets written to Supabase for that date — intentional. The weekly digest uses AVG so a missing day doesn't skew the numbers.
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  const sec = document.getElementById('sec-' + id);
+  if (sec) sec.classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+</script>
+</body>
+</html>
