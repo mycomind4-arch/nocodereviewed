@@ -3097,6 +3097,7 @@ function reviewDetailPanel(tool) {
           <div class="review-actions">
             <button data-tab="admin">Capture evidence</button>
             <a href="#compare">Compare platforms</a>
+            ${tool.slug === "lovable" ? `<a class="button" href="#tool/lovable">Open Lovable Ultimate Microsite →</a>` : ""}
           </div>
         </div>
         <div class="review-scorecard">
