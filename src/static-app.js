@@ -3100,6 +3100,7 @@ function reviewDetailPanel(tool) {
             ${tool.slug === "lovable" ? `<a class="button" href="#tool/lovable">Open Lovable Ultimate Microsite →</a>` : ""}
             ${tool.slug === "bolt-new" ? `<a class="button" href="#tool/bolt-new">Open Bolt.new Ultimate Microsite →</a>` : ""}
             ${tool.slug === "replit-agent" ? `<a class="button" href="#tool/replit-agent">Open Replit Agent Ultimate Microsite →</a>` : ""}
+            ${tool.slug === "v0" ? `<a class="button" href="#tool/v0">Open v0 Ultimate Microsite →</a>` : ""}
           </div>
         </div>
         <div class="review-scorecard">
@@ -6525,6 +6526,191 @@ function aiAppBuildersClusterPanel() {
   `;
 }
 
+
+const v0MicrositePages = {
+  overview: {
+    eyebrow: "v0 evidence hub",
+    title: "v0 Review Hub",
+    status: "Evidence status: pending hands-on testing",
+    summary: "v0 is positioned as a UI-generation tool for React, Next.js, and component-first interface building. NoCodeReviewed is treating this as an evidence-first review hub until UI quality, code export, accessibility, backend limitations, pricing, and production-readiness are verified.",
+    sections: [
+      ["What can be safely said", ["v0 appears strongest for fast interface generation, landing pages, dashboards, and component scaffolding.", "Its natural evaluation lane is UI quality, React/Next.js fit, shadcn-style component output, accessibility, and handoff quality.", "NoCodeReviewed should not claim v0 is a full app builder until backend, auth, database, and deployment limitations are tested."]],
+      ["Current review status", ["contentStatus: needs-evidence", "evidenceStatus: pending-hands-on-testing", "pricingStatus: needs-verification"]],
+      ["Recommended next pages", ["Review in Progress", "Pricing Verification", "Security Questions", "Autonomy Testing", "Test Lab", "Prompts", "Templates", "Alternatives", "Final Verdict Pending"]]
+    ]
+  },
+  review: {
+    eyebrow: "Review in progress",
+    title: "v0 Review: What We Can Say Before Testing",
+    status: "No final score yet",
+    summary: "This is not a final v0 review. It is a controlled evidence draft until NoCodeReviewed completes repeatable UI-generation, code-quality, accessibility, and handoff tests.",
+    sections: [
+      ["Safe preliminary framing", ["v0 is a serious candidate for AI-assisted UI generation and component scaffolding.", "The likely strength is producing polished frontend starting points faster than building from scratch.", "The key risks to validate are backend limitations, accessibility quality, code maintainability, responsive behavior, dependency assumptions, and production handoff."]],
+      ["Do not claim yet", ["Do not claim v0 is the best AI app builder.", "Do not claim v0 replaces full-stack engineering.", "Do not claim generated interfaces are production-ready without manual review.", "Do not publish pricing, performance, or quality claims without verification."]]
+    ]
+  },
+  pricing: {
+    eyebrow: "Pricing verification",
+    title: "v0 Pricing: Verification Required",
+    status: "pricingStatus: needs-verification",
+    summary: "v0 pricing, credits, usage limits, export rules, and plan features can change. This page should only publish verified pricing with a last-checked date and evidence.",
+    sections: [
+      ["Manual verification checklist", ["Check v0's official pricing page.", "Capture screenshots of each plan.", "Record free plan limits if available.", "Record paid usage limits, credits, seats, export rules, and commercial-use details.", "Verify whether limits affect private projects, generations, components, or deployments.", "Add a lastChecked field after manual verification."]],
+      ["Publishing rule", ["Do not invent pricing.", "Do not rely on memory.", "Do not publish plan limits without official verification."]]
+    ]
+  },
+  security: {
+    eyebrow: "Security and production readiness",
+    title: "v0 Security Questions",
+    status: "Security outcome not yet verified",
+    summary: "v0-generated UI still needs security review when connected to real authentication, APIs, databases, payments, or user data. UI generation does not remove production engineering responsibility.",
+    sections: [
+      ["Security questions", ["Does generated code assume fake data or real API boundaries?", "Are forms wired safely or only visually represented?", "Does the UI imply auth flows that do not actually exist?", "Are admin controls visually present without real permission checks?", "Are API keys or secrets ever suggested in client-side code?", "Are generated dependencies current and safe?", "Does the app expose sensitive data through mocked client state?", "Are accessibility and validation patterns strong enough for production?", "Can the generated components be audited, exported, and maintained?"]],
+      ["Production-readiness rule", ["NoCodeReviewed should not call a v0-generated interface production-ready until it passes code review, accessibility review, responsive review, auth/API integration review, dependency review, and deployment review."]]
+    ]
+  },
+  autonomy: {
+    eyebrow: "Autonomy testing",
+    title: "How Autonomous Is v0?",
+    status: "Autonomy rating pending",
+    summary: "v0 should be evaluated by how well it turns prompts into usable UI, how well it iterates, whether it produces maintainable code, and where human engineering remains necessary.",
+    sections: [
+      ["Autonomy questions", ["Can it create a complete landing page from one prompt?", "Can it create a dashboard with realistic component structure?", "Can it revise UI accurately after feedback?", "Can it maintain consistent design across pages?", "Can it create responsive layouts without manual correction?", "Can it produce accessible forms, buttons, navigation, and tables?", "Where does manual coding remain necessary for backend, auth, state, and deployment?"]],
+      ["Important distinction", ["UI autonomy does not equal full product autonomy.", "A beautiful generated interface can still be nonfunctional, insecure, inaccessible, or incomplete without engineering review."]]
+    ]
+  },
+  "test-lab": {
+    eyebrow: "NoCodeReviewed test lab",
+    title: "v0 Test Lab Plan",
+    status: "All tests planned, not completed",
+    summary: "This is the authority centerpiece for v0. NoCodeReviewed should run repeatable UI-generation tests and document prompts, screenshots, generated code, accessibility issues, responsive behavior, and handoff quality.",
+    sections: [
+      ["Test 1: SaaS landing page", ["Goal: evaluate visual hierarchy, copy structure, CTA clarity, responsive behavior, and production polish.", "Capture: prompt, screenshot, generated code structure, mobile behavior, accessibility issues, manual fixes needed."]],
+      ["Test 2: Analytics dashboard", ["Goal: evaluate charts, tables, cards, filters, navigation, and realistic SaaS layout quality.", "Capture: component structure, mock data assumptions, responsiveness, maintainability, broken UI states."]],
+      ["Test 3: Client portal UI", ["Goal: evaluate multi-page interface quality, profile/settings screens, status cards, messages, and admin/client separation as UI.", "Capture: route assumptions, auth illusions, component reuse, accessibility, missing backend logic."]],
+      ["Test 4: Pricing/comparison page", ["Goal: evaluate conversion-focused layout, plan comparison tables, FAQ sections, trust markers, and responsive design.", "Capture: copy quality, table behavior, CTA logic, mobile layout, design consistency."]],
+      ["Test 5: AI tool interface", ["Goal: evaluate prompt input design, saved-output UI, sidebar navigation, settings screens, and empty/error states.", "Capture: state assumptions, API boundary clarity, component quality, error-state design, handoff notes."]]
+    ]
+  },
+  prompts: {
+    eyebrow: "Testing prompts",
+    title: "v0 Starter Prompts for NoCodeReviewed Tests",
+    status: "Prompt set ready for testing",
+    summary: "These prompts are for controlled UI-generation testing only. Results may vary, and every generated interface needs manual review.",
+    sections: [
+      ["SaaS landing page prompt", ["Create a polished SaaS landing page for an AI project-management app with hero, feature grid, social proof, pricing teaser, FAQ, and final CTA."]],
+      ["Analytics dashboard prompt", ["Create a responsive analytics dashboard with sidebar navigation, KPI cards, line chart, customer table, filters, alerts, and settings entry point."]],
+      ["Client portal UI prompt", ["Create a client portal interface with project status, messages, documents, invoices, profile settings, and admin/client visual separation."]],
+      ["Pricing comparison prompt", ["Create a pricing and comparison page for an AI app-builder tool with three plans, feature matrix, FAQ, trust badges, and upgrade CTA."]],
+      ["AI tool interface prompt", ["Create an AI content-generator app interface with prompt templates, project folders, saved outputs, generation panel, settings, and empty states."]]
+    ]
+  },
+  templates: {
+    eyebrow: "Template notes",
+    title: "v0 Templates and Test Patterns",
+    status: "Template performance unverified",
+    summary: "This page should collect reusable v0 UI patterns only after testing. NoCodeReviewed should avoid template-quality claims until each pattern is tested.",
+    sections: [
+      ["Potential template categories", ["SaaS landing page", "Analytics dashboard", "Client portal UI", "Pricing page", "AI tool interface", "Admin console", "Comparison page"]],
+      ["Evidence needed", ["Prompt used", "Generated screenshots", "Generated component structure", "Responsive screenshots", "Accessibility notes", "What worked", "What failed", "Manual fixes required"]]
+    ]
+  },
+  alternatives: {
+    eyebrow: "Alternatives",
+    title: "v0 Alternatives",
+    status: "Neutral comparison page",
+    summary: "This page compares adjacent UI and app-builder tools without declaring a winner until testing evidence exists.",
+    sections: [
+      ["Prompt app builders", ["Lovable", "Bolt.new", "Replit Agent"]],
+      ["UI generation tools", ["Uizard", "Galileo AI", "Builder.io Visual Copilot", "Framer AI"]],
+      ["Agentic coding tools", ["Cursor", "Windsurf", "Claude Code", "OpenAI Codex"]],
+      ["Comparison rule", ["Do not declare a winner without test evidence. Compare by use case, UI quality, code ownership, accessibility, backend limitations, exportability, and production-readiness."]]
+    ]
+  },
+  "final-verdict": {
+    eyebrow: "Verdict pending",
+    title: "v0 Final Verdict Pending Hands-On Testing",
+    status: "No final verdict yet",
+    summary: "NoCodeReviewed should not publish a final v0 verdict until UI-generation tests, pricing verification, accessibility checks, code review, and handoff analysis are complete.",
+    sections: [
+      ["What can be said now", ["v0 is a serious candidate for AI-assisted UI generation and frontend scaffolding.", "Its final rating depends on evidence from UI quality tests, responsive behavior, accessibility review, generated-code review, backend limitation analysis, and handoff quality."]],
+      ["What must happen first", ["Complete five UI-generation tests.", "Verify pricing manually.", "Capture screenshots, prompt logs, and generated code notes.", "Review accessibility and responsive behavior.", "Document backend and production limitations.", "Pass Content Quality Gate before publication."]]
+    ]
+  }
+};
+
+function v0MicrositeNav(activePage) {
+  const pages = [
+    ["overview", "Hub", "#tool/v0"],
+    ["review", "Review", "#tool/v0/review"],
+    ["pricing", "Pricing", "#tool/v0/pricing"],
+    ["security", "Security", "#tool/v0/security"],
+    ["autonomy", "Autonomy", "#tool/v0/autonomy"],
+    ["test-lab", "Test Lab", "#tool/v0/test-lab"],
+    ["prompts", "Prompts", "#tool/v0/prompts"],
+    ["templates", "Templates", "#tool/v0/templates"],
+    ["alternatives", "Alternatives", "#tool/v0/alternatives"],
+    ["final-verdict", "Final Verdict", "#tool/v0/final-verdict"]
+  ];
+
+  return `
+    <nav class="lovable-micro-nav">
+      ${pages.map(([slug, label, href]) => `
+        <a class="${slug === activePage ? "active" : ""}" href="${href}">${label}</a>
+      `).join("")}
+    </nav>
+  `;
+}
+
+function v0MicrositePanel(pageSlug = "overview") {
+  const page = v0MicrositePages[pageSlug] || v0MicrositePages.overview;
+  const activePage = v0MicrositePages[pageSlug] ? pageSlug : "overview";
+
+  return `
+    <section class="lovable-microsite">
+      <div class="lovable-hero">
+        <div>
+          <p class="eyebrow">${page.eyebrow}</p>
+          <h1>${page.title}</h1>
+          <p class="lede">${page.summary}</p>
+          <div class="status-row">
+            <span class="status-pill warning">${page.status}</span>
+            <span class="status-pill">No fake scores</span>
+            <span class="status-pill">Evidence-first</span>
+          </div>
+        </div>
+        <div class="lovable-score-card">
+          <strong>Current NoCodeReviewed Position</strong>
+          <p>v0 is approved for evidence collection and planned testing, not final verdict publication.</p>
+          <a href="#tool/v0/test-lab">View Test Lab Plan →</a>
+        </div>
+      </div>
+
+      ${v0MicrositeNav(activePage)}
+
+      <div class="lovable-grid">
+        ${page.sections.map(([heading, items]) => `
+          <article class="lovable-card">
+            <h2>${heading}</h2>
+            <ul>
+              ${items.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          </article>
+        `).join("")}
+      </div>
+
+      <div class="lovable-footer-cta">
+        <h2>Evidence gate</h2>
+        <p>Before this becomes a final review, NoCodeReviewed needs manual pricing verification, screenshots, repeatable UI tests, generated-code review, accessibility review, and production-readiness analysis.</p>
+        <div class="status-row">
+          <a class="button" href="#review/v0">Open existing v0 review</a>
+          <a class="button secondary" href="#tool/v0/final-verdict">View pending verdict</a>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderPanel() {
   const clusterRoute = window.location.hash.match(/^#cluster\/([^/?#]+)$/);
   if (clusterRoute) {
@@ -6542,6 +6728,10 @@ function renderPanel() {
   const replitAgentToolRoute = window.location.hash.match(/^#tool\/replit-agent(?:\/([^/?#]+))?$/);
   if (replitAgentToolRoute) {
     return replitAgentMicrositePanel(replitAgentToolRoute[1] || "overview");
+  }
+  const v0ToolRoute = window.location.hash.match(/^#tool\/v0(?:\/([^/?#]+))?$/);
+  if (v0ToolRoute) {
+    return v0MicrositePanel(v0ToolRoute[1] || "overview");
   }
   const reportRoute = window.location.hash.match(/^#report\/([^/?#]+)/);
   if (reportRoute) {
