@@ -6398,7 +6398,139 @@ function replitAgentMicrositePanel(pageSlug = "overview") {
   `;
 }
 
+
+function aiAppBuildersClusterPanel() {
+  const clusterTools = [
+    {
+      name: "Lovable",
+      slug: "lovable",
+      bestFor: "Fast MVPs, app prototypes, founder demos, and prompt-to-product workflows.",
+      caution: "Needs hands-on verification for production security, data handling, and backend assumptions.",
+      microsite: "#tool/lovable",
+      review: "#review/lovable"
+    },
+    {
+      name: "Bolt.new",
+      slug: "bolt-new",
+      bestFor: "Browser-based app building, fast frontend iteration, and WebContainer-style development.",
+      caution: "Needs verification for dependency reliability, deployment handoff, auth patterns, and generated-code quality.",
+      microsite: "#tool/bolt-new",
+      review: "#review/bolt-new"
+    },
+    {
+      name: "Replit Agent",
+      slug: "replit-agent",
+      bestFor: "Agentic coding inside a real cloud workspace with project files, runtime, hosting, and handoff potential.",
+      caution: "Needs verification for deployment reliability, secrets handling, debugging quality, and long-term maintainability.",
+      microsite: "#tool/replit-agent",
+      review: "#review/replit-agent"
+    }
+  ];
+
+  return `
+    <section class="lovable-microsite">
+      <div class="lovable-hero">
+        <div>
+          <p class="eyebrow">Authority cluster</p>
+          <h1>AI App Builders: Lovable vs Bolt.new vs Replit Agent</h1>
+          <p class="lede">This is NoCodeReviewed's first flagship decision hub for AI app builders. The goal is not to crown a winner too early. The goal is to compare these tools by use case, autonomy, security risk, pricing verification, test-lab evidence, and production-readiness.</p>
+          <div class="status-row">
+            <span class="status-pill warning">Cluster status: evidence in progress</span>
+            <span class="status-pill">No fake winner</span>
+            <span class="status-pill">Test-lab driven</span>
+          </div>
+        </div>
+        <div class="lovable-score-card">
+          <strong>Cluster position</strong>
+          <p>Lovable, Bolt.new, and Replit Agent are the first core comparison triangle for NoCodeReviewed's AI app builder authority system.</p>
+          <a href="#compare/lovable/bolt-new">Open existing comparison →</a>
+        </div>
+      </div>
+
+      <div class="lovable-grid">
+        <article class="lovable-card">
+          <h2>Which one should you test first?</h2>
+          <ul>
+            <li><strong>Choose Lovable</strong> when the priority is fast product-shaped prototyping from prompts.</li>
+            <li><strong>Choose Bolt.new</strong> when the priority is browser-based coding, fast iteration, and visible project structure.</li>
+            <li><strong>Choose Replit Agent</strong> when the priority is a real cloud workspace, agentic coding, runtime, hosting, and project handoff.</li>
+          </ul>
+        </article>
+
+        <article class="lovable-card">
+          <h2>Evidence gate before final verdicts</h2>
+          <ul>
+            <li>Complete the five-build test lab for each tool.</li>
+            <li>Verify current pricing manually with screenshots and last-checked dates.</li>
+            <li>Check auth, secrets, environment variables, database access, deployment, and generated-code quality.</li>
+            <li>Publish final recommendations only after evidence exists.</li>
+          </ul>
+        </article>
+
+        <article class="lovable-card">
+          <h2>Security-risk matrix</h2>
+          <ul>
+            <li><strong>Lovable:</strong> validate backend assumptions, database rules, auth, and production deployment details.</li>
+            <li><strong>Bolt.new:</strong> validate client/server boundaries, dependency issues, exposed secrets, and deployment handoff.</li>
+            <li><strong>Replit Agent:</strong> validate secrets handling, generated backend logic, runtime configuration, and hosted app behavior.</li>
+          </ul>
+        </article>
+
+        <article class="lovable-card">
+          <h2>Autonomy comparison</h2>
+          <ul>
+            <li><strong>Prompt-to-app:</strong> all three must be tested from the same baseline prompts.</li>
+            <li><strong>Error recovery:</strong> measure whether the tool fixes its own broken output.</li>
+            <li><strong>Project ownership:</strong> measure how clearly the user can inspect, export, deploy, and maintain the project.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="cluster-table-card">
+        <h2>Flagship app-builder cluster</h2>
+        <table class="cluster-table">
+          <thead>
+            <tr>
+              <th>Tool</th>
+              <th>Best current fit</th>
+              <th>Main caution</th>
+              <th>Microsite</th>
+              <th>Review</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${clusterTools.map((tool) => `
+              <tr>
+                <td><strong>${tool.name}</strong></td>
+                <td>${tool.bestFor}</td>
+                <td>${tool.caution}</td>
+                <td><a href="${tool.microsite}">Open hub</a></td>
+                <td><a href="${tool.review}">Open review</a></td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="lovable-footer-cta">
+        <h2>Next authority move</h2>
+        <p>After this cluster is live, the next step is to run the same five-build test plan across all three tools and turn the results into comparison tables, screenshots, verdict notes, and evidence-backed recommendations.</p>
+        <div class="status-row">
+          <a class="button" href="#tool/lovable/test-lab">Lovable test lab</a>
+          <a class="button" href="#tool/bolt-new/test-lab">Bolt.new test lab</a>
+          <a class="button" href="#tool/replit-agent/test-lab">Replit Agent test lab</a>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderPanel() {
+  const clusterRoute = window.location.hash.match(/^#cluster\/([^/?#]+)$/);
+  if (clusterRoute) {
+    if (clusterRoute[1] === "ai-app-builders") return aiAppBuildersClusterPanel();
+    return reviewsPanel();
+  }
   const lovableToolRoute = window.location.hash.match(/^#tool\/lovable(?:\/([^/?#]+))?$/);
   if (lovableToolRoute) {
     return lovableMicrositePanel(lovableToolRoute[1] || "overview");
