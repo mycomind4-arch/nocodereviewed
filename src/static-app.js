@@ -3098,6 +3098,7 @@ function reviewDetailPanel(tool) {
             <button data-tab="admin">Capture evidence</button>
             <a href="#compare">Compare platforms</a>
             ${tool.slug === "lovable" ? `<a class="button" href="#tool/lovable">Open Lovable Ultimate Microsite →</a>` : ""}
+            ${tool.slug === "bolt-new" ? `<a class="button" href="#tool/bolt-new">Open Bolt.new Ultimate Microsite →</a>` : ""}
           </div>
         </div>
         <div class="review-scorecard">
@@ -6026,10 +6027,199 @@ function lovableMicrositePanel(pageSlug = "overview") {
   `;
 }
 
+
+const boltNewMicrositePages = {
+  overview: {
+    eyebrow: "Bolt.new evidence hub",
+    title: "Bolt.new Review Hub",
+    status: "Evidence status: pending hands-on testing",
+    summary: "Bolt.new is positioned as a browser-based AI app builder powered by WebContainers. NoCodeReviewed is treating this as an evidence-first review hub until pricing, security, autonomy, and hands-on build tests are verified.",
+    sections: [
+      ["What can be safely said", ["Bolt.new appears strongest for fast browser-based prototyping, frontend-heavy apps, and quick iteration from prompts.", "Its WebContainer-based workflow is a major differentiator because development can happen directly in the browser.", "NoCodeReviewed should not claim Bolt.new is production-ready until generated apps are tested for auth, data handling, deployment quality, and maintainability."]],
+      ["Current review status", ["contentStatus: needs-evidence", "evidenceStatus: pending-hands-on-testing", "pricingStatus: needs-verification"]],
+      ["Recommended next pages", ["Review in Progress", "Pricing Verification", "Security Questions", "Autonomy Testing", "Test Lab", "Prompts", "Templates", "Alternatives", "Final Verdict Pending"]]
+    ]
+  },
+  review: {
+    eyebrow: "Review in progress",
+    title: "Bolt.new Review: What We Can Say Before Testing",
+    status: "No final score yet",
+    summary: "This is not a final Bolt.new review. It is a controlled evidence draft until NoCodeReviewed completes repeatable hands-on tests.",
+    sections: [
+      ["Safe preliminary framing", ["Bolt.new is a serious candidate for rapid AI-assisted web app prototyping.", "The likely strength is fast iteration inside a browser development environment.", "The key risks to validate are generated-code quality, backend assumptions, package reliability, deployment handoff, and security defaults."]],
+      ["Do not claim yet", ["Do not claim Bolt.new is the best AI app builder.", "Do not claim Bolt.new apps are secure by default.", "Do not claim Bolt.new is production-ready without manual review.", "Do not publish user counts, funding numbers, or performance claims without sources."]]
+    ]
+  },
+  pricing: {
+    eyebrow: "Pricing verification",
+    title: "Bolt.new Pricing: Verification Required",
+    status: "pricingStatus: needs-verification",
+    summary: "Bolt.new pricing, credits, usage limits, and plan features can change. This page should only publish verified pricing with a last-checked date and evidence.",
+    sections: [
+      ["Manual verification checklist", ["Check Bolt.new's official pricing page.", "Capture screenshots of each plan.", "Record free plan limits.", "Record paid plan limits.", "Verify token/credit limits, project limits, deployment limits, and collaboration features.", "Add a lastChecked field after manual verification."]],
+      ["Publishing rule", ["Do not invent pricing.", "Do not rely on memory.", "Do not publish plan limits without official verification."]]
+    ]
+  },
+  security: {
+    eyebrow: "Security and production readiness",
+    title: "Bolt.new Security Questions",
+    status: "Security outcome not yet verified",
+    summary: "Generated apps need app-level review. Bolt.new may accelerate development, but production readiness depends on the actual generated code, dependencies, auth configuration, and deployment setup.",
+    sections: [
+      ["Security questions", ["Are secrets or API keys exposed in client code?", "How are environment variables handled?", "Does the generated app include authentication?", "Are database rules and API routes protected?", "Are dependencies outdated or vulnerable?", "Can generated admin routes be accessed by normal users?", "How are payments and webhooks protected?", "Does error handling expose sensitive details?", "Can the generated code be exported and audited?", "What deployment safeguards exist?"]],
+      ["Production-readiness rule", ["NoCodeReviewed should not call a Bolt.new app production-ready until it passes code review, auth review, dependency review, deployment review, and privacy checks."]]
+    ]
+  },
+  autonomy: {
+    eyebrow: "Autonomy testing",
+    title: "How Autonomous Is Bolt.new?",
+    status: "Autonomy rating pending",
+    summary: "Bolt.new should be evaluated by how far it can get from prompt to working app, how well it fixes errors, and where human intervention is still required.",
+    sections: [
+      ["Autonomy questions", ["Can it create a working app from a single prompt?", "Can it iterate correctly after user feedback?", "Can it resolve dependency and runtime errors?", "Can it create multi-page app flows?", "Can it handle backend-like behavior or integrations?", "Can it prepare a deployable project?", "Where does manual coding remain necessary?"]],
+      ["Important distinction", ["Autonomy does not equal correctness.", "A tool can produce a running prototype while still requiring manual architecture, security, and production review."]]
+    ]
+  },
+  "test-lab": {
+    eyebrow: "NoCodeReviewed test lab",
+    title: "Bolt.new Test Lab Plan",
+    status: "All tests planned, not completed",
+    summary: "This is the authority centerpiece for Bolt.new. NoCodeReviewed should run repeatable build tests and document screenshots, prompt logs, failures, generated files, and final app behavior.",
+    sections: [
+      ["Test 1: SaaS dashboard", ["Goal: evaluate frontend generation, routing, charts, state management, and deployment handoff.", "Capture: prompt, screenshots, generated file structure, runtime errors, dependency issues, deployment notes."]],
+      ["Test 2: Client portal", ["Goal: evaluate login assumptions, private data flows, user/admin separation, and form handling.", "Capture: auth handling, route protection, data model assumptions, failure signs."]],
+      ["Test 3: Marketplace MVP", ["Goal: evaluate listing flows, seller/buyer views, moderation screens, and payment placeholders.", "Capture: app routes, component structure, API assumptions, broken flows."]],
+      ["Test 4: Internal CRM", ["Goal: evaluate CRUD quality, filters, tables, notes, and local/state persistence.", "Capture: data model, edit/delete behavior, search behavior, maintainability."]],
+      ["Test 5: AI content tool", ["Goal: evaluate API configuration, prompt workflow, saved outputs, and client/server separation.", "Capture: API key placement, generated code boundaries, error handling, deployability."]]
+    ]
+  },
+  prompts: {
+    eyebrow: "Testing prompts",
+    title: "Bolt.new Starter Prompts for NoCodeReviewed Tests",
+    status: "Prompt set ready for testing",
+    summary: "These prompts are for controlled testing only. Results may vary, and every generated app needs manual review.",
+    sections: [
+      ["SaaS dashboard prompt", ["Build a SaaS analytics dashboard with login placeholder, team workspace, charts, customer table, billing placeholder, and settings page."]],
+      ["Client portal prompt", ["Build a secure-looking client portal with project status, messages, profile settings, admin dashboard, and user-facing views."]],
+      ["Marketplace MVP prompt", ["Build a two-sided marketplace MVP with listings, seller profiles, buyer inquiry flow, saved listings, and admin moderation."]],
+      ["Internal CRM prompt", ["Build an internal CRM for a small service business with contacts, deals, tasks, notes, filters, and activity timeline."]],
+      ["AI content tool prompt", ["Build an AI content generator interface with prompt templates, saved outputs, project folders, and API settings screen."]]
+    ]
+  },
+  templates: {
+    eyebrow: "Template notes",
+    title: "Bolt.new Templates and Test Patterns",
+    status: "Template performance unverified",
+    summary: "This page should collect reusable Bolt.new patterns only after testing. NoCodeReviewed should avoid template-quality claims until each pattern is tested.",
+    sections: [
+      ["Potential template categories", ["Frontend SaaS dashboard", "Client portal", "Marketplace MVP", "Internal CRM", "AI content interface", "Landing page plus app shell"]],
+      ["Evidence needed", ["Prompt used", "Generated screenshots", "Generated file structure", "What worked", "What failed", "Security findings", "Production-readiness notes"]]
+    ]
+  },
+  alternatives: {
+    eyebrow: "Alternatives",
+    title: "Bolt.new Alternatives",
+    status: "Neutral comparison page",
+    summary: "This page compares tool categories without declaring a winner until testing evidence exists.",
+    sections: [
+      ["Prompt app builders", ["Lovable", "v0 by Vercel", "Replit Agent"]],
+      ["Agentic coding tools", ["Cursor", "Windsurf", "Claude Code", "OpenAI Codex"]],
+      ["Visual builders", ["Bubble AI", "FlutterFlow AI", "Webflow-related AI workflows"]],
+      ["Comparison rule", ["Do not declare a winner without test evidence. Compare by use case, constraints, exportability, security, autonomy, and production-readiness."]]
+    ]
+  },
+  "final-verdict": {
+    eyebrow: "Verdict pending",
+    title: "Bolt.new Final Verdict Pending Hands-On Testing",
+    status: "No final verdict yet",
+    summary: "NoCodeReviewed should not publish a final Bolt.new verdict until test builds, pricing verification, and security checks are complete.",
+    sections: [
+      ["What can be said now", ["Bolt.new is a serious candidate for fast browser-based AI app prototyping.", "Its final rating depends on evidence from security review, autonomy tests, generated-code review, deployment checks, and maintainability analysis."]],
+      ["What must happen first", ["Complete five test builds.", "Verify pricing manually.", "Capture screenshots and prompt logs.", "Review generated code and dependencies.", "Run production-readiness checks.", "Pass Content Quality Gate before publication."]]
+    ]
+  }
+};
+
+function boltNewMicrositeNav(activePage) {
+  const pages = [
+    ["overview", "Hub", "#tool/bolt-new"],
+    ["review", "Review", "#tool/bolt-new/review"],
+    ["pricing", "Pricing", "#tool/bolt-new/pricing"],
+    ["security", "Security", "#tool/bolt-new/security"],
+    ["autonomy", "Autonomy", "#tool/bolt-new/autonomy"],
+    ["test-lab", "Test Lab", "#tool/bolt-new/test-lab"],
+    ["prompts", "Prompts", "#tool/bolt-new/prompts"],
+    ["templates", "Templates", "#tool/bolt-new/templates"],
+    ["alternatives", "Alternatives", "#tool/bolt-new/alternatives"],
+    ["final-verdict", "Final Verdict", "#tool/bolt-new/final-verdict"]
+  ];
+
+  return `
+    <nav class="lovable-micro-nav">
+      ${pages.map(([slug, label, href]) => `
+        <a class="${slug === activePage ? "active" : ""}" href="${href}">${label}</a>
+      `).join("")}
+    </nav>
+  `;
+}
+
+function boltNewMicrositePanel(pageSlug = "overview") {
+  const page = boltNewMicrositePages[pageSlug] || boltNewMicrositePages.overview;
+  const activePage = boltNewMicrositePages[pageSlug] ? pageSlug : "overview";
+
+  return `
+    <section class="lovable-microsite">
+      <div class="lovable-hero">
+        <div>
+          <p class="eyebrow">${page.eyebrow}</p>
+          <h1>${page.title}</h1>
+          <p class="lede">${page.summary}</p>
+          <div class="status-row">
+            <span class="status-pill warning">${page.status}</span>
+            <span class="status-pill">No fake scores</span>
+            <span class="status-pill">Evidence-first</span>
+          </div>
+        </div>
+        <div class="lovable-score-card">
+          <strong>Current NoCodeReviewed Position</strong>
+          <p>Bolt.new is approved for evidence collection and planned testing, not final verdict publication.</p>
+          <a href="#tool/bolt-new/test-lab">View Test Lab Plan →</a>
+        </div>
+      </div>
+
+      ${boltNewMicrositeNav(activePage)}
+
+      <div class="lovable-grid">
+        ${page.sections.map(([heading, items]) => `
+          <article class="lovable-card">
+            <h2>${heading}</h2>
+            <ul>
+              ${items.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          </article>
+        `).join("")}
+      </div>
+
+      <div class="lovable-footer-cta">
+        <h2>Evidence gate</h2>
+        <p>Before this becomes a final review, NoCodeReviewed needs manual pricing verification, screenshots, repeatable test builds, generated-code review, and a production-readiness audit.</p>
+        <div class="status-row">
+          <a class="button" href="#review/bolt-new">Open existing Bolt.new review</a>
+          <a class="button secondary" href="#tool/bolt-new/final-verdict">View pending verdict</a>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderPanel() {
   const lovableToolRoute = window.location.hash.match(/^#tool\/lovable(?:\/([^/?#]+))?$/);
   if (lovableToolRoute) {
     return lovableMicrositePanel(lovableToolRoute[1] || "overview");
+  }
+  const boltNewToolRoute = window.location.hash.match(/^#tool\/bolt-new(?:\/([^/?#]+))?$/);
+  if (boltNewToolRoute) {
+    return boltNewMicrositePanel(boltNewToolRoute[1] || "overview");
   }
   const reportRoute = window.location.hash.match(/^#report\/([^/?#]+)/);
   if (reportRoute) {
