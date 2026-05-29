@@ -6628,7 +6628,7 @@ function render() {
     <main>
       <header class="topbar">
         <a class="brand" href="#top"><span></span>VibeCode Authority</a>
-        <nav><a href="#reviews">Reviews</a><a href="#compare">Compare</a><a href="#methodology" data-tab="methodology">Methodology</a><a href="#admin" data-tab="admin">Admin</a></nav>
+        <nav><a href="#reviews">Reviews</a><a href="#cluster/ai-app-builders">AI App Builder Cluster</a><a href="#compare">Compare</a><a href="#methodology" data-tab="methodology">Methodology</a><a href="#admin" data-tab="admin">Admin</a></nav>
         <button class="submit-button" data-tab="intake">Submit a Tool</button>
       </header>
       <section class="hero" id="top">
@@ -6636,7 +6636,7 @@ function render() {
           <p class="eyebrow">Vibe code authority</p>
           <h1>Evidence-first reviews for the AI app-builder era.</h1>
           <p>Autonomous, evidence-backed reviews and benchmarks for Lovable, Bolt, Replit, v0, Cursor, Base44, Windsurf, and the full AI app-builder category. No recycled listicles. Every verdict must come from build tests, pricing checks, and production-readiness gates.</p>
-          <div class="hero-actions"><button data-tab="best">Best tools by use case</button><button class="secondary" data-tab="readiness">View evidence gates</button></div>
+          <div class="hero-actions"><button data-tab="best">Best tools by use case</button><a class="button secondary" href="#cluster/ai-app-builders">AI App Builder Cluster</a><button class="secondary" data-tab="readiness">View evidence gates</button></div>
         </div>
         <div class="authority-visual" aria-label="VibeCode Authority benchmark console">
           <div class="vca-mark">VCA</div>
