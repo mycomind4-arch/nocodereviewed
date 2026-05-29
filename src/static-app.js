@@ -3099,6 +3099,7 @@ function reviewDetailPanel(tool) {
             <a href="#compare">Compare platforms</a>
             ${tool.slug === "lovable" ? `<a class="button" href="#tool/lovable">Open Lovable Ultimate Microsite →</a>` : ""}
             ${tool.slug === "bolt-new" ? `<a class="button" href="#tool/bolt-new">Open Bolt.new Ultimate Microsite →</a>` : ""}
+            ${tool.slug === "replit-agent" ? `<a class="button" href="#tool/replit-agent">Open Replit Agent Ultimate Microsite →</a>` : ""}
           </div>
         </div>
         <div class="review-scorecard">
@@ -6212,6 +6213,191 @@ function boltNewMicrositePanel(pageSlug = "overview") {
   `;
 }
 
+
+const replitAgentMicrositePages = {
+  overview: {
+    eyebrow: "Replit Agent evidence hub",
+    title: "Replit Agent Review Hub",
+    status: "Evidence status: pending hands-on testing",
+    summary: "Replit Agent is positioned as an agentic coding environment inside Replit's cloud development workspace. NoCodeReviewed is treating this as an evidence-first review hub until deployment, autonomy, pricing, security, and handoff tests are complete.",
+    sections: [
+      ["What can be safely said", ["Replit Agent appears strongest for builders who want AI assistance inside a real cloud development environment.", "Its key differentiator is the combination of agent workflow, code workspace, hosting, and project handoff potential.", "NoCodeReviewed should not claim Replit Agent is production-ready until generated apps are tested for security, deployment reliability, maintainability, and ownership clarity."]],
+      ["Current review status", ["contentStatus: needs-evidence", "evidenceStatus: pending-hands-on-testing", "pricingStatus: needs-verification"]],
+      ["Recommended next pages", ["Review in Progress", "Pricing Verification", "Security Questions", "Autonomy Testing", "Test Lab", "Prompts", "Templates", "Alternatives", "Final Verdict Pending"]]
+    ]
+  },
+  review: {
+    eyebrow: "Review in progress",
+    title: "Replit Agent Review: What We Can Say Before Testing",
+    status: "No final score yet",
+    summary: "This is not a final Replit Agent review. It is a controlled evidence draft until NoCodeReviewed completes repeatable hands-on tests.",
+    sections: [
+      ["Safe preliminary framing", ["Replit Agent is a serious candidate for AI-assisted app building when the user wants a real code workspace instead of only a visual prompt builder.", "The likely strength is moving from idea to runnable cloud project with less local setup.", "The key risks to validate are reliability, generated-code quality, debugging behavior, deployment handoff, auth/data assumptions, and total cost."]],
+      ["Do not claim yet", ["Do not claim Replit Agent is the best AI coding agent.", "Do not claim Replit Agent apps are secure by default.", "Do not claim Replit Agent is production-ready without manual review.", "Do not publish pricing, performance, or scale claims without verification."]]
+    ]
+  },
+  pricing: {
+    eyebrow: "Pricing verification",
+    title: "Replit Agent Pricing: Verification Required",
+    status: "pricingStatus: needs-verification",
+    summary: "Replit pricing, usage limits, AI credits, hosting costs, and plan features can change. This page should only publish verified pricing with a last-checked date and source evidence.",
+    sections: [
+      ["Manual verification checklist", ["Check Replit's official pricing page.", "Capture screenshots of each plan.", "Record free plan limits if available.", "Record AI/Agent usage limits.", "Verify hosting, deployment, private project, collaboration, and compute restrictions.", "Add a lastChecked field after manual verification."]],
+      ["Publishing rule", ["Do not invent pricing.", "Do not rely on memory.", "Do not publish plan limits without official verification."]]
+    ]
+  },
+  security: {
+    eyebrow: "Security and production readiness",
+    title: "Replit Agent Security Questions",
+    status: "Security outcome not yet verified",
+    summary: "Replit Agent may generate and modify code inside a real development environment, but production readiness depends on the final app architecture, secrets handling, authentication, dependencies, and deployment configuration.",
+    sections: [
+      ["Security questions", ["Are secrets stored safely and excluded from public client code?", "How are environment variables handled?", "Does the app include authentication, and is it configured correctly?", "Are routes, APIs, and database operations protected?", "Are generated dependencies outdated or vulnerable?", "Can normal users access admin-only actions?", "Are payments, webhooks, and third-party integrations protected?", "Does error handling expose sensitive information?", "Can the generated project be audited and exported clearly?", "What deployment safeguards and rollback options exist?"]],
+      ["Production-readiness rule", ["NoCodeReviewed should not call a Replit Agent app production-ready until it passes code review, auth review, dependency review, deployment review, secrets review, and privacy checks."]]
+    ]
+  },
+  autonomy: {
+    eyebrow: "Autonomy testing",
+    title: "How Autonomous Is Replit Agent?",
+    status: "Autonomy rating pending",
+    summary: "Replit Agent should be evaluated by how far it can take a project from prompt to runnable app, how well it debugs, how clearly it explains changes, and where human coding remains necessary.",
+    sections: [
+      ["Autonomy questions", ["Can it create a working app from a single prompt?", "Can it modify an existing project without breaking it?", "Can it debug runtime errors?", "Can it reason across multiple files?", "Can it handle backend logic and environment variables?", "Can it deploy or prepare a deployable project?", "Where does manual architecture or coding remain necessary?"]],
+      ["Important distinction", ["Agentic coding does not equal safe production engineering.", "A tool can produce a runnable app while still requiring manual review for security, maintainability, and correctness."]]
+    ]
+  },
+  "test-lab": {
+    eyebrow: "NoCodeReviewed test lab",
+    title: "Replit Agent Test Lab Plan",
+    status: "All tests planned, not completed",
+    summary: "This is the authority centerpiece for Replit Agent. NoCodeReviewed should run repeatable build tests and document prompts, generated files, runtime errors, deployment behavior, and final app quality.",
+    sections: [
+      ["Test 1: SaaS dashboard", ["Goal: evaluate full-stack project generation, routing, charts, auth assumptions, and deployment readiness.", "Capture: prompt, screenshots, generated file structure, runtime errors, deployment notes, code quality concerns."]],
+      ["Test 2: Client portal", ["Goal: evaluate private user flows, login assumptions, data separation, admin/client views, and form handling.", "Capture: auth handling, route protection, data model assumptions, security concerns, failure signs."]],
+      ["Test 3: Marketplace MVP", ["Goal: evaluate listings, seller/buyer views, moderation screens, database assumptions, and payment placeholders.", "Capture: app routes, file structure, API assumptions, broken flows, deployment blockers."]],
+      ["Test 4: Internal CRM", ["Goal: evaluate CRUD quality, filters, tables, notes, persistence, and maintainability.", "Capture: data model, edit/delete behavior, search behavior, code organization, debugging steps."]],
+      ["Test 5: AI content tool", ["Goal: evaluate API configuration, prompt workflow, saved outputs, server/client separation, and secrets handling.", "Capture: API key placement, generated code boundaries, error handling, deployability, privacy issues."]]
+    ]
+  },
+  prompts: {
+    eyebrow: "Testing prompts",
+    title: "Replit Agent Starter Prompts for NoCodeReviewed Tests",
+    status: "Prompt set ready for testing",
+    summary: "These prompts are for controlled testing only. Results may vary, and every generated project needs manual review.",
+    sections: [
+      ["SaaS dashboard prompt", ["Build a full-stack SaaS analytics dashboard with login placeholder, team workspace, charts, customer table, billing placeholder, and settings page."]],
+      ["Client portal prompt", ["Build a client portal with project status, messages, profile settings, admin dashboard, user-facing views, and protected-route assumptions explained."]],
+      ["Marketplace MVP prompt", ["Build a two-sided marketplace MVP with listings, seller profiles, buyer inquiry flow, saved listings, admin moderation, and payment placeholder."]],
+      ["Internal CRM prompt", ["Build an internal CRM for a small service business with contacts, deals, tasks, notes, filters, activity timeline, and persistent storage."]],
+      ["AI content tool prompt", ["Build an AI content generator with prompt templates, saved outputs, project folders, API settings, and safe environment-variable handling."]]
+    ]
+  },
+  templates: {
+    eyebrow: "Template notes",
+    title: "Replit Agent Templates and Test Patterns",
+    status: "Template performance unverified",
+    summary: "This page should collect reusable Replit Agent patterns only after testing. NoCodeReviewed should avoid template-quality claims until each pattern is tested.",
+    sections: [
+      ["Potential template categories", ["Full-stack SaaS dashboard", "Client portal", "Marketplace MVP", "Internal CRM", "AI content app", "Landing page plus app backend"]],
+      ["Evidence needed", ["Prompt used", "Generated screenshots", "Generated file structure", "Runtime logs", "What worked", "What failed", "Security findings", "Production-readiness notes"]]
+    ]
+  },
+  alternatives: {
+    eyebrow: "Alternatives",
+    title: "Replit Agent Alternatives",
+    status: "Neutral comparison page",
+    summary: "This page compares tool categories without declaring a winner until testing evidence exists.",
+    sections: [
+      ["Prompt app builders", ["Lovable", "Bolt.new", "v0 by Vercel"]],
+      ["Agentic coding tools", ["Cursor", "Windsurf", "Claude Code", "OpenAI Codex"]],
+      ["Cloud and full-stack builders", ["Firebase Studio", "Base44", "Create"]],
+      ["Comparison rule", ["Do not declare a winner without test evidence. Compare by use case, constraints, code ownership, security, autonomy, deployment, and handoff quality."]]
+    ]
+  },
+  "final-verdict": {
+    eyebrow: "Verdict pending",
+    title: "Replit Agent Final Verdict Pending Hands-On Testing",
+    status: "No final verdict yet",
+    summary: "NoCodeReviewed should not publish a final Replit Agent verdict until test builds, pricing verification, security checks, and deployment/handoff review are complete.",
+    sections: [
+      ["What can be said now", ["Replit Agent is a serious candidate for AI-assisted app building in a real cloud code workspace.", "Its final rating depends on evidence from security review, autonomy tests, generated-code review, deployment checks, debugging reliability, and maintainability analysis."]],
+      ["What must happen first", ["Complete five test builds.", "Verify pricing manually.", "Capture screenshots, prompt logs, and runtime logs.", "Review generated code and dependencies.", "Run deployment and handoff checks.", "Pass Content Quality Gate before publication."]]
+    ]
+  }
+};
+
+function replitAgentMicrositeNav(activePage) {
+  const pages = [
+    ["overview", "Hub", "#tool/replit-agent"],
+    ["review", "Review", "#tool/replit-agent/review"],
+    ["pricing", "Pricing", "#tool/replit-agent/pricing"],
+    ["security", "Security", "#tool/replit-agent/security"],
+    ["autonomy", "Autonomy", "#tool/replit-agent/autonomy"],
+    ["test-lab", "Test Lab", "#tool/replit-agent/test-lab"],
+    ["prompts", "Prompts", "#tool/replit-agent/prompts"],
+    ["templates", "Templates", "#tool/replit-agent/templates"],
+    ["alternatives", "Alternatives", "#tool/replit-agent/alternatives"],
+    ["final-verdict", "Final Verdict", "#tool/replit-agent/final-verdict"]
+  ];
+
+  return `
+    <nav class="lovable-micro-nav">
+      ${pages.map(([slug, label, href]) => `
+        <a class="${slug === activePage ? "active" : ""}" href="${href}">${label}</a>
+      `).join("")}
+    </nav>
+  `;
+}
+
+function replitAgentMicrositePanel(pageSlug = "overview") {
+  const page = replitAgentMicrositePages[pageSlug] || replitAgentMicrositePages.overview;
+  const activePage = replitAgentMicrositePages[pageSlug] ? pageSlug : "overview";
+
+  return `
+    <section class="lovable-microsite">
+      <div class="lovable-hero">
+        <div>
+          <p class="eyebrow">${page.eyebrow}</p>
+          <h1>${page.title}</h1>
+          <p class="lede">${page.summary}</p>
+          <div class="status-row">
+            <span class="status-pill warning">${page.status}</span>
+            <span class="status-pill">No fake scores</span>
+            <span class="status-pill">Evidence-first</span>
+          </div>
+        </div>
+        <div class="lovable-score-card">
+          <strong>Current NoCodeReviewed Position</strong>
+          <p>Replit Agent is approved for evidence collection and planned testing, not final verdict publication.</p>
+          <a href="#tool/replit-agent/test-lab">View Test Lab Plan →</a>
+        </div>
+      </div>
+
+      ${replitAgentMicrositeNav(activePage)}
+
+      <div class="lovable-grid">
+        ${page.sections.map(([heading, items]) => `
+          <article class="lovable-card">
+            <h2>${heading}</h2>
+            <ul>
+              ${items.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+          </article>
+        `).join("")}
+      </div>
+
+      <div class="lovable-footer-cta">
+        <h2>Evidence gate</h2>
+        <p>Before this becomes a final review, NoCodeReviewed needs manual pricing verification, screenshots, repeatable test builds, generated-code review, deployment review, and a production-readiness audit.</p>
+        <div class="status-row">
+          <a class="button" href="#review/replit-agent">Open existing Replit Agent review</a>
+          <a class="button secondary" href="#tool/replit-agent/final-verdict">View pending verdict</a>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderPanel() {
   const lovableToolRoute = window.location.hash.match(/^#tool\/lovable(?:\/([^/?#]+))?$/);
   if (lovableToolRoute) {
@@ -6220,6 +6406,10 @@ function renderPanel() {
   const boltNewToolRoute = window.location.hash.match(/^#tool\/bolt-new(?:\/([^/?#]+))?$/);
   if (boltNewToolRoute) {
     return boltNewMicrositePanel(boltNewToolRoute[1] || "overview");
+  }
+  const replitAgentToolRoute = window.location.hash.match(/^#tool\/replit-agent(?:\/([^/?#]+))?$/);
+  if (replitAgentToolRoute) {
+    return replitAgentMicrositePanel(replitAgentToolRoute[1] || "overview");
   }
   const reportRoute = window.location.hash.match(/^#report\/([^/?#]+)/);
   if (reportRoute) {
