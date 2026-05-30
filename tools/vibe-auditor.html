@@ -1,0 +1,2432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Auditor — Survivability Intelligence</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0d0f12;
+  --bg2: #13161a;
+  --bg3: #1a1e24;
+  --bg4: #212730;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text: #e8eaed;
+  --text2: #9aa0ad;
+  --text3: #5a6070;
+  --accent: #e8541a;
+  --accent-dim: rgba(232,84,26,0.12);
+  --accent-glow: rgba(232,84,26,0.25);
+  --green: #3ecf6a;
+  --green-dim: rgba(62,207,106,0.12);
+  --yellow: #f0b429;
+  --yellow-dim: rgba(240,180,41,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.12);
+  --blue: #60a5fa;
+  --blue-dim: rgba(96,165,250,0.12);
+  --font: 'IBM Plex Sans', sans-serif;
+  --mono: 'IBM Plex Mono', monospace;
+  --r: 6px;
+  --r2: 10px;
+}
+
+html, body { height: 100%; font-family: var(--font); background: var(--bg); color: var(--text); font-size: 13px; }
+
+/* ─── SHELL ─── */
+.shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-logo {
+  padding: 16px 14px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-row { display: flex; align-items: center; gap: 9px; }
+.logo-icon {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; flex-shrink: 0;
+}
+.logo-name { font-weight: 600; font-size: 14px; letter-spacing: 0.01em; }
+.logo-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+.sidebar-nav {
+  flex: 1;
+  padding: 10px 8px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 7px 8px;
+  border-radius: var(--r);
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.15s;
+  font-size: 12.5px;
+  user-select: none;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: var(--accent-dim); color: var(--accent); font-weight: 500; }
+.nav-icon { font-size: 14px; width: 18px; text-align: center; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto;
+  font-size: 10px; font-weight: 600;
+  background: var(--red-dim); color: var(--red);
+  border-radius: 99px; padding: 1px 6px;
+  min-width: 20px; text-align: center;
+}
+.nav-badge.warn { background: var(--yellow-dim); color: var(--yellow); }
+
+.sidebar-project {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--text3);
+}
+.sidebar-project .proj-title { font-weight: 500; color: var(--text2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; font-size: 10px; }
+.proj-stat { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.proj-stat-val { color: var(--text2); font-weight: 500; }
+
+.upload-btn {
+  margin: 10px 8px 12px;
+  padding: 8px 12px;
+  border: 1px dashed var(--border2);
+  border-radius: var(--r);
+  cursor: pointer;
+  text-align: center;
+  color: var(--text3);
+  font-size: 11.5px;
+  transition: all 0.15s;
+  background: transparent;
+  position: relative;
+}
+.upload-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.upload-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+
+/* ─── MAIN ─── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ─── TOPBAR ─── */
+.topbar {
+  padding: 10px 20px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.topbar-project { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.topbar-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.status-badge {
+  font-size: 11px; padding: 3px 9px; border-radius: 99px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.status-badge.complete { background: var(--green-dim); color: var(--green); border: 1px solid rgba(62,207,106,0.2); }
+.status-badge.waiting { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+.status-badge.running { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(232,84,26,0.2); }
+.topbar-meta { font-size: 11.5px; color: var(--text3); white-space: nowrap; }
+
+.score-cluster { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+.score-group { text-align: center; }
+.score-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 3px; }
+.score-val { font-size: 22px; font-weight: 700; line-height: 1; }
+.score-val .score-max { font-size: 13px; font-weight: 400; color: var(--text3); }
+.score-val.green { color: var(--green); }
+.score-val.yellow { color: var(--yellow); }
+.score-val.red { color: var(--red); }
+.build-phase-val { font-size: 14px; font-weight: 600; color: var(--accent); }
+.audit-level-val { font-size: 13px; font-weight: 600; color: var(--blue); }
+
+/* ─── TABS ─── */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  padding: 9px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--text3);
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  letter-spacing: 0.04em;
+}
+.tab:hover { color: var(--text2); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ─── CONTENT AREA ─── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px;
+  display: none;
+}
+.content.active { display: block; }
+.content::-webkit-scrollbar { width: 4px; }
+.content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ─── LANDING STATE ─── */
+.landing {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 40px;
+}
+.landing.hidden { display: none; }
+.landing-icon { font-size: 48px; margin-bottom: 8px; opacity: 0.4; }
+.landing-title { font-size: 22px; font-weight: 600; color: var(--text2); }
+.landing-sub { font-size: 14px; color: var(--text3); max-width: 400px; line-height: 1.6; }
+.landing-drop {
+  margin-top: 12px;
+  border: 2px dashed var(--border2);
+  border-radius: var(--r2);
+  padding: 32px 48px;
+  cursor: pointer;
+  color: var(--text3);
+  transition: all 0.2s;
+  position: relative;
+}
+.landing-drop:hover, .landing-drop.over { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.landing-drop input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.landing-drop-icon { font-size: 28px; margin-bottom: 8px; }
+.landing-drop-text { font-size: 13px; font-weight: 500; }
+.landing-drop-sub { font-size: 11px; margin-top: 4px; opacity: 0.7; }
+
+/* ─── GRID LAYOUTS ─── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 16px;
+}
+.card-title {
+  font-size: 11px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--text3);
+  margin-bottom: 12px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.card-title a { color: var(--accent); font-size: 11px; font-weight: 400; cursor: pointer; text-transform: none; letter-spacing: 0; }
+.card-title a:hover { text-decoration: underline; }
+
+/* ─── SCORE METERS ─── */
+.metric-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.metric-row:last-child { margin-bottom: 0; }
+.metric-label { font-size: 12px; color: var(--text2); flex: 0 0 130px; }
+.metric-bar { flex: 1; height: 5px; background: var(--bg4); border-radius: 99px; overflow: hidden; }
+.metric-fill { height: 100%; border-radius: 99px; transition: width 1s ease; }
+.metric-fill.green { background: var(--green); }
+.metric-fill.yellow { background: var(--yellow); }
+.metric-fill.red { background: var(--red); }
+.metric-fill.blue { background: var(--blue); }
+.metric-score { font-size: 12px; font-weight: 600; width: 40px; text-align: right; flex-shrink: 0; }
+
+/* ─── RISK ITEMS ─── */
+.risk-list { display: flex; flex-direction: column; gap: 8px; }
+.risk-item {
+  display: flex; gap: 12px;
+  padding: 12px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  align-items: flex-start;
+}
+.risk-dot {
+  width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px;
+}
+.risk-dot.high { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.risk-dot.medium { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+.risk-dot.low { background: var(--blue); }
+.risk-body { flex: 1; min-width: 0; }
+.risk-title { font-weight: 500; font-size: 12.5px; color: var(--text); margin-bottom: 3px; }
+.risk-desc { font-size: 11.5px; color: var(--text3); line-height: 1.5; }
+.risk-badge {
+  flex-shrink: 0; font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 99px;
+  text-transform: uppercase; letter-spacing: 0.05em;
+}
+.risk-badge.high { background: var(--red-dim); color: var(--red); }
+.risk-badge.medium { background: var(--yellow-dim); color: var(--yellow); }
+.risk-badge.low { background: var(--blue-dim); color: var(--blue); }
+
+/* ─── MISSING ITEMS ─── */
+.missing-list { display: flex; flex-direction: column; gap: 8px; }
+.missing-item {
+  display: flex; gap: 10px;
+  padding: 12px;
+  border-radius: var(--r);
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  align-items: flex-start;
+}
+.missing-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--accent-dim); color: var(--accent);
+  font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.missing-body { flex: 1; min-width: 0; }
+.missing-title { font-weight: 500; font-size: 12.5px; margin-bottom: 3px; }
+.missing-desc { font-size: 11.5px; color: var(--text3); }
+.missing-effort {
+  flex-shrink: 0; font-size: 10.5px; color: var(--text3);
+  background: var(--bg4); border-radius: var(--r);
+  padding: 3px 7px; white-space: nowrap; margin-top: 2px;
+  border: 1px solid var(--border);
+}
+
+/* ─── EXEC SUMMARY ─── */
+.summary-body {
+  font-size: 13px; line-height: 1.7; color: var(--text2);
+  margin-bottom: 14px;
+}
+.tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: 11px; padding: 3px 9px; border-radius: 99px;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+}
+.tag.green { background: var(--green-dim); color: var(--green); border-color: rgba(62,207,106,0.2); }
+.tag.red { background: var(--red-dim); color: var(--red); border-color: rgba(239,68,68,0.2); }
+
+/* ─── STAT CARDS ─── */
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stat-card-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+.stat-card-val { font-size: 28px; font-weight: 700; line-height: 1.1; }
+.stat-card-val.green { color: var(--green); }
+.stat-card-val.red { color: var(--red); }
+.stat-card-val.yellow { color: var(--yellow); }
+.stat-card-sub { font-size: 11.5px; color: var(--text3); }
+
+/* ─── ARCHITECTURE ─── */
+.arch-section { margin-bottom: 16px; }
+.arch-section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 8px; }
+.arch-item { display: flex; justify-content: space-between; padding: 7px 12px; background: var(--bg3); border-radius: var(--r); margin-bottom: 4px; border: 1px solid var(--border); }
+.arch-item-key { font-size: 12px; color: var(--text2); }
+.arch-item-val { font-size: 12px; font-weight: 500; color: var(--text); }
+
+/* ─── ECONOMICS ─── */
+.econ-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.econ-table th { padding: 8px 12px; text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); border-bottom: 1px solid var(--border); }
+.econ-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); color: var(--text2); }
+.econ-table tr:last-child td { border-bottom: none; }
+.econ-table tr:hover td { background: var(--bg3); }
+
+/* ─── ASK CLAUDE ─── */
+.ask-panel {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 120px);
+  max-width: 800px;
+  margin: 0 auto;
+}
+.ask-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 16px;
+}
+.ask-messages::-webkit-scrollbar { width: 4px; }
+.ask-messages::-webkit-scrollbar-thumb { background: var(--border2); }
+.msg {
+  padding: 12px 16px;
+  border-radius: var(--r2);
+  font-size: 13px;
+  line-height: 1.65;
+  max-width: 90%;
+}
+.msg.user {
+  background: var(--accent-dim);
+  border: 1px solid rgba(232,84,26,0.2);
+  color: var(--text);
+  align-self: flex-end;
+}
+.msg.ai {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  align-self: flex-start;
+  white-space: pre-wrap;
+}
+.msg.ai strong { color: var(--text); }
+.msg-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text3);
+  text-align: center;
+}
+.msg-empty-icon { font-size: 32px; opacity: 0.3; }
+.msg-empty-text { font-size: 14px; }
+.quick-prompts { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 12px; }
+.quick-btn {
+  padding: 7px 12px;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text2);
+  font-family: var(--font);
+  transition: all 0.15s;
+}
+.quick-btn:hover { background: var(--bg4); color: var(--text); border-color: var(--accent); }
+
+.ask-input-row {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.ask-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--text);
+  font-family: var(--font);
+  resize: none;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.ask-input:focus { border-color: var(--accent); }
+.ask-input::placeholder { color: var(--text3); }
+.ask-send {
+  padding: 10px 18px;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--r);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.ask-send:hover { opacity: 0.85; }
+.ask-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ─── LOADING ─── */
+.analyzing-overlay {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  flex: 1;
+  padding: 40px;
+  text-align: center;
+}
+.analyzing-overlay.active { display: flex; }
+.analyzing-spinner {
+  width: 42px; height: 42px;
+  border: 3px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.analyzing-title { font-size: 16px; font-weight: 600; color: var(--text2); }
+.analyzing-sub { font-size: 13px; color: var(--text3); }
+.analyzing-log {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  max-width: 480px;
+  text-align: left;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 14px;
+  max-height: 140px;
+  overflow-y: auto;
+  width: 100%;
+}
+.log-line { margin-bottom: 3px; }
+.log-line.ok { color: var(--green); }
+.log-line.info { color: var(--text3); }
+.log-line.warn { color: var(--yellow); }
+
+/* ─── CIRCULAR SCORE ─── */
+.circle-score {
+  position: relative;
+  width: 60px; height: 60px;
+  flex-shrink: 0;
+}
+.circle-score svg { transform: rotate(-90deg); }
+.circle-score .score-text {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700;
+  transform: none;
+}
+
+/* ─── DONUT ─── */
+.donut-wrap { display: flex; align-items: center; gap: 20px; }
+.donut-labels { display: flex; flex-direction: column; gap: 6px; }
+.donut-label-row { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); }
+.donut-label-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─── OVERVIEW LAYOUT ─── */
+.overview-top { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.overview-summary { grid-column: 1 / 2; }
+.overview-meta-grid { grid-column: 2 / 4; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-content: start; }
+
+.overview-bottom { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* ─── SECTION HEADER ─── */
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.section-sub {
+  font-size: 13px;
+  color: var(--text3);
+  margin-bottom: 20px;
+  margin-top: -10px;
+}
+
+/* ─── PLACEHOLDER ─── */
+.placeholder-text {
+  color: var(--text3);
+  font-size: 13px;
+  line-height: 1.7;
+  padding: 20px 0;
+  text-align: center;
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  .sidebar { width: 160px; }
+  .overview-top { grid-template-columns: 1fr; }
+  .overview-summary { grid-column: 1; }
+  .overview-meta-grid { grid-column: 1; grid-template-columns: 1fr 1fr; }
+  .overview-bottom { grid-template-columns: 1fr; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .score-cluster { gap: 12px; }
+}
+/* ─── CODEX INSTRUCTIONS ─── */
+.codex-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.codex-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.codex-action-btn {
+  padding: 7px 14px;
+  border-radius: var(--r);
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 12px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.codex-action-btn:hover { background: var(--bg4); color: var(--text); }
+.codex-action-btn.primary { background: var(--blue-dim); border-color: rgba(96,165,250,0.25); color: var(--blue); }
+.codex-action-btn.primary:hover { background: rgba(96,165,250,0.2); }
+.codex-action-btn.accent { background: var(--accent-dim); border-color: rgba(232,84,26,0.25); color: var(--accent); }
+.codex-action-btn.accent:hover { background: rgba(232,84,26,0.2); }
+
+.codex-selector {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.codex-sel-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-right: 4px; }
+.codex-sel-btn {
+  padding: 5px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text3);
+  font-size: 11.5px;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.codex-sel-btn:hover { border-color: var(--border2); color: var(--text2); }
+.codex-sel-btn.active { background: var(--accent-dim); border-color: rgba(232,84,26,0.3); color: var(--accent); font-weight: 500; }
+
+.codex-editor-wrap {
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  overflow: hidden;
+  background: var(--bg2);
+}
+.codex-editor {
+  width: 100%;
+  min-height: 420px;
+  max-height: 600px;
+  background: var(--bg2);
+  border: none;
+  outline: none;
+  padding: 18px 20px;
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text2);
+  resize: vertical;
+}
+.codex-editor:focus { background: var(--bg3); }
+
+.codex-section-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 14px 16px;
+}
+.codex-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text3);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.codex-section-title .cs-count {
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 99px;
+}
+.codex-task-item {
+  display: flex;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  align-items: flex-start;
+}
+.codex-task-item:last-child { border-bottom: none; }
+.codex-task-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text3);
+  flex-shrink: 0;
+  margin-top: 2px;
+  width: 20px;
+}
+.codex-task-text { color: var(--text2); flex: 1; line-height: 1.5; }
+.codex-task-pill {
+  flex-shrink: 0;
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 99px;
+  text-transform: uppercase;
+}
+.codex-task-pill.high { background: var(--red-dim); color: var(--red); }
+.codex-task-pill.medium { background: var(--yellow-dim); color: var(--yellow); }
+.codex-task-pill.low { background: var(--blue-dim); color: var(--blue); }
+
+.copy-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--green);
+  color: #0d0f12;
+  padding: 10px 18px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all 0.2s;
+  pointer-events: none;
+  z-index: 9999;
+}
+.copy-toast.show { opacity: 1; transform: translateY(0); }
+
+/* ─── DELEGATE TO AI ─── */
+.delegate-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 16px; flex-wrap: wrap;
+}
+.delegate-summary-strip {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;
+}
+.del-stat {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 10px 16px;
+  display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 120px;
+}
+.del-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); }
+.del-stat-val { font-size: 20px; font-weight: 700; }
+.del-stat-val.green { color: var(--green); }
+.del-stat-val.yellow { color: var(--yellow); }
+.del-stat-val.blue { color: var(--blue); }
+
+.delegate-grid { display: flex; flex-direction: column; gap: 16px; }
+.delegate-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r2); overflow: hidden;
+}
+.delegate-card-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border-bottom: 1px solid var(--border);
+  cursor: pointer; user-select: none;
+  transition: background 0.15s;
+}
+.delegate-card-header:hover { background: var(--bg3); }
+.delegate-card-icon {
+  width: 34px; height: 34px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.del-icon-blue { background: var(--blue-dim); }
+.del-icon-green { background: var(--green-dim); }
+.del-icon-yellow { background: var(--yellow-dim); }
+.del-icon-purple { background: rgba(167,139,250,0.12); }
+.del-icon-red { background: var(--red-dim); }
+.del-icon-accent { background: var(--accent-dim); }
+.delegate-card-title { flex: 1; min-width: 0; }
+.del-title { font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 2px; }
+.del-subtitle { font-size: 11.5px; color: var(--text3); }
+.del-badges { display: flex; gap: 6px; flex-shrink: 0; align-items: center; }
+.del-badge {
+  font-size: 10px; font-weight: 600; padding: 2px 8px;
+  border-radius: 99px; text-transform: uppercase;
+}
+.del-badge.effort-low { background: var(--green-dim); color: var(--green); }
+.del-badge.effort-med { background: var(--yellow-dim); color: var(--yellow); }
+.del-badge.effort-high { background: var(--red-dim); color: var(--red); }
+.del-badge.ai { background: var(--blue-dim); color: var(--blue); }
+.del-badge.safe { background: var(--green-dim); color: var(--green); }
+.del-badge.risky { background: var(--red-dim); color: var(--red); }
+.del-expand { font-size: 12px; color: var(--text3); flex-shrink: 0; transition: transform 0.2s; }
+.del-expand.open { transform: rotate(180deg); }
+
+.delegate-card-body { display: none; padding: 16px; }
+.delegate-card-body.open { display: block; }
+.del-why { font-size: 12.5px; color: var(--text2); line-height: 1.6; margin-bottom: 14px; }
+.del-prompt-label {
+  font-size: 10px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.07em; color: var(--text3); margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.del-prompt-label a {
+  font-size: 11px; color: var(--accent); font-weight: 400;
+  cursor: pointer; text-transform: none; letter-spacing: 0;
+}
+.del-prompt-label a:hover { text-decoration: underline; }
+.del-prompt-box {
+  background: var(--bg); border: 1px solid var(--border2);
+  border-radius: var(--r); padding: 14px 16px;
+  font-family: var(--mono); font-size: 11.5px;
+  color: var(--text2); line-height: 1.7;
+  white-space: pre-wrap; word-break: break-word;
+  max-height: 280px; overflow-y: auto;
+  margin-bottom: 12px;
+}
+.del-prompt-box::-webkit-scrollbar { width: 4px; }
+.del-prompt-box::-webkit-scrollbar-thumb { background: var(--border2); }
+.del-caveats { font-size: 11.5px; color: var(--text3); line-height: 1.6; }
+.del-caveats strong { color: var(--yellow); }
+
+/* ─── MASTER PLAN ─── */
+.mp-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+
+.verdict-banner {
+  border-radius: var(--r2); padding: 20px 24px;
+  display: flex; gap: 20px; align-items: flex-start;
+  border: 1px solid;
+}
+.verdict-banner.good { background: rgba(62,207,106,0.07); border-color: rgba(62,207,106,0.25); }
+.verdict-banner.warn { background: rgba(240,180,41,0.07); border-color: rgba(240,180,41,0.25); }
+.verdict-banner.bad  { background: rgba(239,68,68,0.07);  border-color: rgba(239,68,68,0.25);  }
+.verdict-icon { font-size: 32px; flex-shrink: 0; line-height: 1; margin-top: 2px; }
+.verdict-body { flex: 1; min-width: 0; }
+.verdict-title { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+.verdict-banner.good .verdict-title { color: var(--green); }
+.verdict-banner.warn .verdict-title { color: var(--yellow); }
+.verdict-banner.bad  .verdict-title { color: var(--red); }
+.verdict-text { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 12px; }
+.verdict-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+.verdict-pill {
+  font-size: 11px; padding: 3px 10px; border-radius: 99px;
+  border: 1px solid var(--border2); color: var(--text2);
+}
+.verdict-pill.good { border-color: rgba(62,207,106,0.3); color: var(--green); }
+.verdict-pill.warn { border-color: rgba(240,180,41,0.3); color: var(--yellow); }
+.verdict-pill.bad  { border-color: rgba(239,68,68,0.3);  color: var(--red); }
+
+.mp-phases { display: flex; flex-direction: column; gap: 12px; }
+.phase-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 16px 18px;
+  display: flex; gap: 16px; align-items: flex-start;
+}
+.phase-num-col { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 0; }
+.phase-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--accent-dim); color: var(--accent);
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.phase-line { width: 2px; background: var(--border); flex: 1; min-height: 20px; margin: 4px 0; }
+.phase-body { flex: 1; min-width: 0; }
+.phase-title { font-weight: 600; font-size: 13.5px; color: var(--text); margin-bottom: 4px; }
+.phase-duration { font-size: 11px; color: var(--accent); font-family: var(--mono); margin-bottom: 8px; }
+.phase-desc { font-size: 12.5px; color: var(--text2); line-height: 1.6; margin-bottom: 10px; }
+.phase-tasks { display: flex; flex-direction: column; gap: 4px; }
+.phase-task {
+  display: flex; gap: 8px; align-items: flex-start;
+  font-size: 12px; color: var(--text2);
+}
+.phase-task-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); flex-shrink: 0; margin-top: 5px; }
+.phase-status {
+  flex-shrink: 0; font-size: 10px; font-weight: 600; padding: 2px 7px;
+  border-radius: 99px; text-transform: uppercase; align-self: flex-start;
+}
+.phase-status.critical { background: var(--red-dim); color: var(--red); }
+.phase-status.high { background: var(--yellow-dim); color: var(--yellow); }
+.phase-status.medium { background: var(--blue-dim); color: var(--blue); }
+.phase-status.done { background: var(--green-dim); color: var(--green); }
+
+.mp-assumptions { display: flex; flex-direction: column; gap: 8px; }
+.mp-assumption {
+  display: flex; gap: 10px; padding: 10px 12px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--r); align-items: flex-start;
+  font-size: 12px;
+}
+.mp-assumption-icon { flex-shrink: 0; font-size: 13px; margin-top: 1px; }
+.mp-assumption-text { color: var(--text2); line-height: 1.5; flex: 1; }
+.mp-assumption-text strong { color: var(--text); }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ─── SIDEBAR ─── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-row">
+        <div class="logo-icon">🛡</div>
+        <div>
+          <div class="logo-name">Vibe Auditor</div>
+          <div class="logo-sub">Survivability Intelligence</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-nav="overview">
+        <span class="nav-icon">◈</span> Overview
+      </div>
+      <div class="nav-item" data-nav="risks">
+        <span class="nav-icon">⚠</span> Risks
+        <span class="nav-badge" id="risks-badge">—</span>
+      </div>
+      <div class="nav-item" data-nav="missing">
+        <span class="nav-icon">△</span> Missing Items
+        <span class="nav-badge warn" id="missing-badge">—</span>
+      </div>
+      <div class="nav-item" data-nav="architecture">
+        <span class="nav-icon">⬡</span> Architecture
+      </div>
+      <div class="nav-item" data-nav="economics">
+        <span class="nav-icon">◎</span> Economics
+      </div>
+      <div class="nav-item" data-nav="ask">
+        <span class="nav-icon">✦</span> Ask Auditor
+      </div>
+      <div class="nav-item" data-nav="codex">
+        <span class="nav-icon">⌘</span> Codex Instructions
+      </div>
+      <div class="nav-item" data-nav="delegate">
+        <span class="nav-icon">◫</span> Delegate to AI
+      </div>
+      <div class="nav-item" data-nav="masterplan">
+        <span class="nav-icon">◉</span> Master Plan
+      </div>
+    </nav>
+
+    <div class="sidebar-project" id="sidebar-project" style="display:none">
+      <div class="proj-title">Project Summary</div>
+      <div class="proj-stat"><span>Total Files</span><span class="proj-stat-val" id="sp-files">—</span></div>
+      <div class="proj-stat"><span>Source Files</span><span class="proj-stat-val" id="sp-src">—</span></div>
+      <div class="proj-stat"><span>Doc Files</span><span class="proj-stat-val" id="sp-docs">—</span></div>
+      <div class="proj-stat"><span>Language</span><span class="proj-stat-val" id="sp-lang">—</span></div>
+      <div class="proj-stat"><span>Framework</span><span class="proj-stat-val" id="sp-fw">—</span></div>
+    </div>
+
+    <div class="upload-btn" id="sidebar-upload-btn">
+      <input type="file" id="sidebar-file" accept=".zip">
+      ↑ Upload Project ZIP
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─── -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-project">
+        <span class="topbar-name" id="tb-name">No project loaded</span>
+        <span class="status-badge waiting" id="tb-status">Awaiting Upload</span>
+        <span class="topbar-meta" id="tb-meta"></span>
+      </div>
+      <div class="score-cluster">
+        <div class="score-group">
+          <div class="score-label">Survivability</div>
+          <div class="score-val yellow" id="tb-score">— <span class="score-max">/100</span></div>
+        </div>
+        <div class="score-group">
+          <div class="score-label">Build Phase</div>
+          <div class="build-phase-val" id="tb-phase">—</div>
+        </div>
+        <div class="score-group">
+          <div class="score-label">Audit Level</div>
+          <div class="audit-level-val" id="tb-level">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs" id="tab-bar" style="display:none">
+      <div class="tab active" data-tab="overview">OVERVIEW</div>
+      <div class="tab" data-tab="risks">RISKS</div>
+      <div class="tab" data-tab="missing">MISSING</div>
+      <div class="tab" data-tab="architecture">ARCHITECTURE</div>
+      <div class="tab" data-tab="economics">ECONOMICS</div>
+      <div class="tab" data-tab="ask">ASK CLAUDE</div>
+      <div class="tab" data-tab="codex">CODEX INSTRUCTIONS</div>
+      <div class="tab" data-tab="delegate">DELEGATE TO AI</div>
+      <div class="tab" data-tab="masterplan">MASTER PLAN</div>
+    </div>
+
+    <!-- LANDING -->
+    <div class="landing" id="landing">
+      <div class="landing-icon">🛡</div>
+      <div class="landing-title">Vibe Code Auditor</div>
+      <div class="landing-sub">Drop a ZIP of your project for a local survivability audit — risks, missing systems, architecture analysis, economics, and implementation guidance. Your files are analyzed in this browser and are not uploaded by this MVP.</div>
+      <div class="landing-drop" id="landing-drop">
+        <input type="file" id="landing-file" accept=".zip">
+        <div class="landing-drop-icon">📦</div>
+        <div class="landing-drop-text">Drop your project ZIP here</div>
+        <div class="landing-drop-sub">or click to browse · .zip files only</div>
+      </div>
+    </div>
+
+    <!-- ANALYZING OVERLAY -->
+    <div class="analyzing-overlay" id="analyzing-overlay">
+      <div class="analyzing-spinner"></div>
+      <div class="analyzing-title">Auditing project…</div>
+      <div class="analyzing-sub">Running local survivability analysis</div>
+      <div class="analyzing-log" id="analyze-log"></div>
+    </div>
+
+    <!-- CONTENT PANELS -->
+
+    <!-- OVERVIEW -->
+    <div class="content" id="content-overview">
+      <div class="overview-top">
+
+        <!-- Executive Summary -->
+        <div class="card overview-summary">
+          <div class="card-title">Executive Summary</div>
+          <div class="summary-body" id="exec-summary">—</div>
+          <div id="exec-tags" class="tag-row"></div>
+        </div>
+
+        <!-- 4 stat cards -->
+        <div class="overview-meta-grid">
+          <div class="stat-card">
+            <div class="stat-card-label">Readiness Score</div>
+            <div class="stat-card-val green" id="ov-readiness">—</div>
+            <div class="stat-card-sub" id="ov-readiness-sub"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Risk Exposure</div>
+            <div class="stat-card-val red" id="ov-risk">—</div>
+            <div class="stat-card-sub" id="ov-risk-sub"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Completion</div>
+            <div class="stat-card-val yellow" id="ov-completion">—%</div>
+            <div class="stat-card-sub" id="ov-completion-sub"></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Maintenance Index</div>
+            <div class="stat-card-val blue" id="ov-maint">—</div>
+            <div class="stat-card-sub" id="ov-maint-sub"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-bottom">
+        <!-- Top Risks preview -->
+        <div class="card">
+          <div class="card-title">Top Risks <a onclick="switchTab('risks')">View all →</a></div>
+          <div class="risk-list" id="ov-risks-list"><div class="placeholder-text">—</div></div>
+        </div>
+        <!-- Key Metrics -->
+        <div class="card">
+          <div class="card-title">Key Metrics</div>
+          <div id="ov-metrics"></div>
+        </div>
+        <!-- Top Missing -->
+        <div class="card">
+          <div class="card-title">Top Missing Items <a onclick="switchTab('missing')">View all →</a></div>
+          <div class="missing-list" id="ov-missing-list"><div class="placeholder-text">—</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RISKS -->
+    <div class="content" id="content-risks">
+      <div class="section-title" id="risks-title">Risks</div>
+      <div class="section-sub" id="risks-sub"></div>
+      <div class="risk-list" id="risks-full-list"><div class="placeholder-text">No audit data yet.</div></div>
+    </div>
+
+    <!-- MISSING -->
+    <div class="content" id="content-missing">
+      <div class="section-title">Missing Items</div>
+      <div class="section-sub" id="missing-sub"></div>
+      <div class="missing-list" id="missing-full-list"><div class="placeholder-text">No audit data yet.</div></div>
+    </div>
+
+    <!-- ARCHITECTURE -->
+    <div class="content" id="content-architecture">
+      <div class="section-title">Architecture</div>
+      <div class="grid-2" id="arch-grid"><div class="placeholder-text">No audit data yet.</div></div>
+    </div>
+
+    <!-- ECONOMICS -->
+    <div class="content" id="content-economics">
+      <div class="section-title">Economics</div>
+      <div class="section-sub" id="econ-sub"></div>
+      <div id="econ-content"><div class="placeholder-text">No audit data yet.</div></div>
+    </div>
+
+    <!-- ASK CLAUDE -->
+    <div class="content" id="content-ask">
+      <div class="ask-panel">
+        <div class="ask-messages" id="ask-messages">
+          <div class="msg-empty" id="ask-empty">
+            <div class="msg-empty-icon">✦</div>
+            <div class="msg-empty-text">Ask anything about this project</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:4px">Questions are answered in context of the full audit</div>
+            <div class="quick-prompts" id="quick-prompts">
+              <button class="quick-btn" onclick="quickAsk('What breaks first at scale?')">What breaks first at scale?</button>
+              <button class="quick-btn" onclick="quickAsk('How do I improve security?')">How do I improve security?</button>
+              <button class="quick-btn" onclick="quickAsk('What is the biggest technical debt?')">Biggest technical debt?</button>
+              <button class="quick-btn" onclick="quickAsk('Is this architecture scalable?')">Is this scalable?</button>
+              <button class="quick-btn" onclick="quickAsk('What should I fix first?')">What to fix first?</button>
+              <button class="quick-btn" onclick="quickAsk('Estimate cost to reach production-readiness')">Cost to production-ready?</button>
+            </div>
+          </div>
+        </div>
+        <div class="ask-input-row">
+          <textarea class="ask-input" id="ask-input" rows="1" placeholder="Ask Auditor about this project…"></textarea>
+          <button class="ask-send" id="ask-send" onclick="sendAsk()">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CODEX INSTRUCTIONS -->
+    <div class="content" id="content-codex">
+      <div class="codex-header">
+        <div>
+          <div class="section-title" style="margin-bottom:4px">Codex Instructions</div>
+          <div style="font-size:12.5px;color:var(--text3);margin-bottom:20px">A ready-to-paste instruction set for OpenAI Codex, Claude Code, or any AI coding agent — generated from your audit findings.</div>
+        </div>
+        <div class="codex-actions" id="codex-actions" style="display:none">
+          <button class="codex-action-btn" onclick="copyCodex()">⎘ Copy All</button>
+          <button class="codex-action-btn primary" onclick="downloadCodex()">↓ Download .md</button>
+          <button class="codex-action-btn accent" onclick="regenerateCodex()">↻ Regenerate</button>
+        </div>
+      </div>
+
+      <div id="codex-placeholder" style="display:none">
+        <div class="placeholder-text" style="padding:60px 0">No audit data yet — upload a project ZIP to generate Codex instructions.</div>
+      </div>
+
+      <div id="codex-generating" style="display:none;text-align:center;padding:60px 0">
+        <div class="analyzing-spinner" style="margin:0 auto 16px"></div>
+        <div style="color:var(--text2);font-size:14px;font-weight:500">Generating Codex instructions…</div>
+        <div style="color:var(--text3);font-size:12px;margin-top:6px">Building prioritized task list from audit findings</div>
+      </div>
+
+      <!-- INSTRUCTION BLOCKS -->
+      <div id="codex-content" style="display:none">
+
+        <!-- Selector bar -->
+        <div class="codex-selector" id="codex-selector">
+          <div class="codex-sel-label">Format:</div>
+          <button class="codex-sel-btn active" data-fmt="full" onclick="setCodexFmt(this,'full')">Full Brief</button>
+          <button class="codex-sel-btn" data-fmt="tasks" onclick="setCodexFmt(this,'tasks')">Tasks Only</button>
+          <button class="codex-sel-btn" data-fmt="context" onclick="setCodexFmt(this,'context')">Context Only</button>
+          <button class="codex-sel-btn" data-fmt="security" onclick="setCodexFmt(this,'security')">Security Focus</button>
+          <div style="margin-left:auto;font-size:11px;color:var(--text3)" id="codex-wordcount"></div>
+        </div>
+
+        <!-- editable textarea -->
+        <div class="codex-editor-wrap">
+          <textarea class="codex-editor" id="codex-editor" spellcheck="false"></textarea>
+        </div>
+
+        <!-- Section previews -->
+        <div class="grid-2" id="codex-sections" style="margin-top:16px"></div>
+      </div>
+    </div>
+
+    <!-- DELEGATE TO AI -->
+    <div class="content" id="content-delegate">
+      <div class="delegate-header">
+        <div>
+          <div class="section-title" style="margin-bottom:4px">Delegate to AI</div>
+          <div style="font-size:12.5px;color:var(--text3);margin-bottom:20px">Parts of this project that can be handed off to an AI agent — with specific, copy-ready prompts for each.</div>
+        </div>
+        <div id="delegate-actions" style="display:none;gap:8px;flex-wrap:wrap">
+          <button class="codex-action-btn" onclick="copyAllDelegations()">⎘ Copy All Prompts</button>
+          <button class="codex-action-btn primary" onclick="downloadDelegations()">↓ Download .md</button>
+          <button class="codex-action-btn accent" onclick="regenerateDelegate()">↻ Regenerate</button>
+        </div>
+      </div>
+      <div id="delegate-placeholder">
+        <div class="placeholder-text" style="padding:60px 0">No audit data yet — upload a project ZIP first.</div>
+      </div>
+      <div id="delegate-generating" style="display:none;text-align:center;padding:60px 0">
+        <div class="analyzing-spinner" style="margin:0 auto 16px"></div>
+        <div style="color:var(--text2);font-size:14px;font-weight:500">Analyzing delegation opportunities…</div>
+        <div style="color:var(--text3);font-size:12px;margin-top:6px">Identifying what to sub out and writing targeted prompts</div>
+      </div>
+      <div id="delegate-content" style="display:none">
+        <!-- summary strip -->
+        <div id="delegate-summary-strip" style="margin-bottom:20px"></div>
+        <!-- card grid -->
+        <div id="delegate-grid"></div>
+      </div>
+    </div>
+
+    <!-- MASTER PLAN -->
+    <div class="content" id="content-masterplan">
+      <div class="mp-header">
+        <div>
+          <div class="section-title" style="margin-bottom:4px">Master Plan</div>
+          <div style="font-size:12.5px;color:var(--text3);margin-bottom:20px">Full build roadmap derived from your audit — with a verdict on whether the plan is sound.</div>
+        </div>
+        <div id="mp-actions" style="display:none;gap:8px;flex-wrap:wrap">
+          <button class="codex-action-btn" onclick="copyMasterPlan()">⎘ Copy Plan</button>
+          <button class="codex-action-btn primary" onclick="downloadMasterPlan()">↓ Download .md</button>
+          <button class="codex-action-btn accent" onclick="regenerateMasterPlan()">↻ Regenerate</button>
+        </div>
+      </div>
+      <div id="mp-placeholder">
+        <div class="placeholder-text" style="padding:60px 0">No audit data yet — upload a project ZIP first.</div>
+      </div>
+      <div id="mp-generating" style="display:none;text-align:center;padding:60px 0">
+        <div class="analyzing-spinner" style="margin:0 auto 16px"></div>
+        <div style="color:var(--text2);font-size:14px;font-weight:500">Building master plan…</div>
+        <div style="color:var(--text3);font-size:12px;margin-top:6px">Synthesizing audit into a phased roadmap with verdict</div>
+      </div>
+      <div id="mp-content" style="display:none">
+        <!-- VERDICT BANNER -->
+        <div id="mp-verdict-banner" style="margin-bottom:20px"></div>
+        <!-- PHASE TIMELINE -->
+        <div id="mp-phases" style="margin-bottom:20px"></div>
+        <!-- ASSUMPTIONS + RISKS grid -->
+        <div class="grid-2" id="mp-bottom" style="margin-bottom:20px"></div>
+        <!-- RAW PLAN (collapsible) -->
+        <div class="card">
+          <div class="card-title" style="cursor:pointer" onclick="toggleMpRaw()">
+            Full Plan Document <span id="mp-raw-toggle" style="margin-left:auto;font-size:11px;color:var(--accent)">▼ expand</span>
+          </div>
+          <div id="mp-raw-wrap" style="display:none;margin-top:8px">
+            <textarea class="codex-editor" id="mp-raw-editor" spellcheck="false" style="min-height:360px"></textarea>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="codex-action-btn" onclick="copyMasterPlan()">⎘ Copy</button>
+            <button class="codex-action-btn primary" onclick="downloadMasterPlan()">↓ Download</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+<script>
+// ─── STATE ───
+let projectData = null;  // raw zip contents summary
+let auditResult = null;  // local audit JSON
+let chatHistory = [];    // for Ask Auditor multi-turn
+
+// ─── NAV / TABS ───
+function switchNav(nav) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.nav === nav));
+  document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === nav));
+  document.querySelectorAll('.content').forEach(el => el.classList.toggle('active', el.id === 'content-' + nav));
+  // codex tab hook
+  if (nav === 'codex') {
+    if (!auditResult) {
+      document.getElementById('codex-placeholder').style.display = 'block';
+      document.getElementById('codex-generating').style.display = 'none';
+      document.getElementById('codex-content').style.display = 'none';
+    } else if (!codexFull) {
+      renderLocalCodexInstructions();
+    }
+  }
+}
+function switchTab(tab) { switchNav(tab); }
+
+document.querySelectorAll('.nav-item').forEach(el => el.addEventListener('click', () => switchNav(el.dataset.nav)));
+document.querySelectorAll('.tab').forEach(el => el.addEventListener('click', () => switchNav(el.dataset.tab)));
+
+// ─── FILE HANDLING ───
+['landing-file', 'sidebar-file'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', e => e.target.files[0] && handleFile(e.target.files[0]));
+});
+
+const landingDrop = document.getElementById('landing-drop');
+landingDrop.addEventListener('dragover', e => { e.preventDefault(); landingDrop.classList.add('over'); });
+landingDrop.addEventListener('dragleave', () => landingDrop.classList.remove('over'));
+landingDrop.addEventListener('drop', e => {
+  e.preventDefault(); landingDrop.classList.remove('over');
+  const f = e.dataTransfer.files[0];
+  if (f) handleFile(f);
+});
+
+async function handleFile(file) {
+  if (!file.name.endsWith('.zip')) { alert('Please upload a .zip file'); return; }
+  
+  // show analyzing state
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('analyzing-overlay').classList.add('active');
+  
+  const log = document.getElementById('analyze-log');
+  function addLog(msg, cls='info') {
+    const d = document.createElement('div');
+    d.className = 'log-line ' + cls;
+    d.textContent = msg;
+    log.appendChild(d);
+    log.scrollTop = log.scrollHeight;
+  }
+
+  addLog('📦 Reading ZIP archive…');
+
+  try {
+    const zip = await JSZip.loadAsync(file);
+    const entries = [];
+    zip.forEach((path, entry) => { if (!entry.dir) entries.push({ path, size: entry._data?.uncompressedSize || 0 }); });
+    
+    addLog(`✓ Found ${entries.length} files`, 'ok');
+
+    // categorize
+    const srcExts = ['.js','.ts','.tsx','.jsx','.py','.go','.rs','.java','.cs','.rb','.php','.swift','.kt','.vue','.svelte'];
+    const docExts = ['.md','.txt','.rst','.adoc'];
+    const srcFiles = entries.filter(e => srcExts.some(x => e.path.endsWith(x)));
+    const docFiles = entries.filter(e => docExts.some(x => e.path.endsWith(x)));
+    
+    // detect language/framework
+    const hasTs = entries.some(e => e.path.endsWith('.ts') || e.path.endsWith('.tsx'));
+    const hasNext = entries.some(e => e.path.includes('next.config'));
+    const hasVite = entries.some(e => e.path.includes('vite.config'));
+    const hasPackageJson = entries.some(e => e.path.endsWith('package.json'));
+    const hasPyProject = entries.some(e => e.path.endsWith('pyproject.toml') || e.path.endsWith('requirements.txt'));
+    const hasGoMod = entries.some(e => e.path.endsWith('go.mod'));
+    const hasDockerfile = entries.some(e => e.path.toLowerCase().includes('dockerfile'));
+    const hasCicd = entries.some(e => e.path.includes('.github/workflows') || e.path.includes('.gitlab-ci'));
+    const hasTests = entries.some(e => e.path.includes('__tests__') || e.path.includes('.test.') || e.path.includes('.spec.') || e.path.includes('/tests/'));
+    
+    let lang = hasTs ? 'TypeScript' : hasPackageJson ? 'JavaScript' : hasPyProject ? 'Python' : hasGoMod ? 'Go' : 'Unknown';
+    let fw = hasNext ? 'Next.js' : hasVite ? 'Vite' : hasPackageJson ? 'Node.js' : hasPyProject ? 'Python' : 'Unknown';
+
+    addLog(`✓ Language: ${lang}, Framework: ${fw}`, 'ok');
+
+    // read key files for context
+    addLog('📄 Reading key files for analysis…');
+    let fileContext = '';
+    const keyPaths = ['package.json','README.md','ARCHITECTURE.md','.env.example','docker-compose.yml','Dockerfile'];
+    for (const kp of keyPaths) {
+      const match = entries.find(e => e.path.endsWith(kp) || e.path === kp);
+      if (match) {
+        try {
+          const content = await zip.file(match.path).async('string');
+          fileContext += `\n\n--- ${match.path} ---\n${content.slice(0, 1500)}`;
+          addLog(`  ↳ ${match.path}`, 'info');
+        } catch {}
+      }
+    }
+
+    // sample some source files
+    const sample = srcFiles.slice(0, 12);
+    for (const sf of sample) {
+      try {
+        const content = await zip.file(sf.path).async('string');
+        fileContext += `\n\n--- ${sf.path} ---\n${content.slice(0, 800)}`;
+      } catch {}
+    }
+
+    addLog('🧠 Running local survivability audit…', 'warn');
+
+    projectData = {
+      name: file.name,
+      totalFiles: entries.length,
+      srcFiles: srcFiles.length,
+      docFiles: docFiles.length,
+      lang, fw,
+      hasTests, hasDockerfile, hasCicd,
+      fileContext,
+      entries: entries.slice(0, 200).map(e => e.path)
+    };
+
+    // update sidebar stats
+    document.getElementById('sp-files').textContent = entries.length;
+    document.getElementById('sp-src').textContent = srcFiles.length;
+    document.getElementById('sp-docs').textContent = docFiles.length;
+    document.getElementById('sp-lang').textContent = lang;
+    document.getElementById('sp-fw').textContent = fw;
+    document.getElementById('sidebar-project').style.display = 'block';
+
+    // run audit
+    await runAudit(addLog);
+
+  } catch(err) {
+    addLog('✗ Error: ' + err.message, 'warn');
+    console.error(err);
+    setTimeout(() => {
+      document.getElementById('analyzing-overlay').classList.remove('active');
+      document.getElementById('landing').classList.remove('hidden');
+    }, 2000);
+  }
+}
+
+// ─── AUDIT ───
+async function runAudit(addLog) {
+  const pd = projectData;
+
+  addLog('✓ Building local audit result…', 'ok');
+
+  const paths = pd.entries.map(p => p.toLowerCase());
+  const hasAuth = paths.some(p => p.includes('auth') || p.includes('login') || p.includes('session'));
+  const hasEnvExample = paths.some(p => p.endsWith('.env.example') || p.includes('env.example'));
+  const hasReadme = paths.some(p => p.endsWith('readme.md'));
+  const hasApi = paths.some(p => p.includes('/api/') || p.includes('server.') || p.includes('routes/'));
+  const hasDb = paths.some(p => p.includes('schema') || p.includes('prisma') || p.includes('supabase') || p.includes('firebase') || p.includes('sqlite') || p.includes('postgres'));
+  const hasPublicAssets = paths.some(p => p.includes('public/') || p.includes('assets/'));
+  const hasLockfile = paths.some(p => p.endsWith('package-lock.json') || p.endsWith('pnpm-lock.yaml') || p.endsWith('yarn.lock') || p.endsWith('bun.lockb'));
+
+  const risks = [];
+  const missingItems = [];
+
+  function addRisk(title, description, severity = 'medium') {
+    risks.push({ title, description, severity });
+  }
+
+  function addMissing(title, description, severity = 'medium', effort = '1-2 days') {
+    missingItems.push({ title, description, severity, effort });
+  }
+
+  if (!pd.hasTests) {
+    addRisk('No automated tests detected', 'The project has no obvious test files, so regressions may ship unnoticed.', 'high');
+    addMissing('Add smoke and regression tests', 'Create tests for critical routes, upload flows, and core business logic.', 'high', '1-3 days');
+  }
+
+  if (!pd.hasCicd) {
+    addRisk('No CI/CD workflow detected', 'The project can be changed without an automated verification gate.', 'medium');
+    addMissing('Add CI verification workflow', 'Run install, build, and smoke checks on every push.', 'medium', '1 day');
+  }
+
+  if (!pd.hasDockerfile) {
+    addMissing('Add deployment/runtime documentation', 'No Dockerfile was detected; document the deploy target and required runtime assumptions.', 'medium', '1 day');
+  }
+
+  if (!hasEnvExample) {
+    addRisk('Environment contract is unclear', 'No .env.example was detected, which makes secrets and required variables easy to miss.', 'medium');
+    addMissing('Add .env.example', 'List required variables with safe placeholder values and comments.', 'medium', '30-60 min');
+  }
+
+  if (!hasReadme) {
+    addMissing('Add or improve README', 'The project needs setup, dev, build, and deployment instructions.', 'medium', '1-2 hours');
+  }
+
+  if (!hasLockfile && pd.fw !== 'Unknown') {
+    addRisk('Dependency versions may drift', 'No package lockfile was detected, which can cause inconsistent installs.', 'medium');
+  }
+
+  if (!hasAuth) {
+    addRisk('No obvious auth/session layer', 'If this app handles user-specific data, access control may not be implemented yet.', 'high');
+    addMissing('Define auth and access-control model', 'Document what is public, private, admin-only, and user-owned.', 'high', '1-2 days');
+  }
+
+  if (!hasApi) {
+    addMissing('Define backend/API boundaries', 'No obvious API boundary was detected; document what runs client-side versus server-side.', 'low', '2-4 hours');
+  }
+
+  if (!hasDb) {
+    addMissing('Define persistence model', 'No obvious database/schema layer was detected; clarify whether state is static, local, or persistent.', 'medium', '2-4 hours');
+  }
+
+  if (pd.totalFiles > 300 && pd.srcFiles > 100 && !pd.hasTests) {
+    addRisk('Large codebase without tests', 'The project has enough source files that manual QA alone is likely fragile.', 'high');
+  }
+
+  if (risks.length === 0) {
+    addRisk('Limited static analysis only', 'This MVP can inspect structure but cannot prove runtime behavior without executing the app test suite.', 'low');
+  }
+
+  const testScore = pd.hasTests ? 80 : 25;
+  const ciScore = pd.hasCicd ? 80 : 35;
+  const docsScore = hasReadme ? Math.min(85, 45 + pd.docFiles * 5) : 30;
+  const securityScore = hasAuth && hasEnvExample ? 75 : hasAuth || hasEnvExample ? 55 : 35;
+  const maintainabilityScore = Math.max(30, Math.min(85, 80 - Math.floor(pd.srcFiles / 25) + (pd.hasTests ? 10 : 0)));
+  const deploymentScore = pd.hasDockerfile && pd.hasCicd ? 80 : pd.hasDockerfile || pd.hasCicd ? 60 : 40;
+
+  const survivabilityScore = Math.round(
+    testScore * 0.22 +
+    ciScore * 0.16 +
+    docsScore * 0.14 +
+    securityScore * 0.18 +
+    maintainabilityScore * 0.18 +
+    deploymentScore * 0.12
+  );
+
+  const highRisks = risks.filter(r => r.severity === 'high').length;
+  const riskExposure = highRisks >= 3 ? 'Critical' : highRisks >= 1 ? 'High' : risks.length >= 3 ? 'Medium' : 'Low';
+  const buildPhase = survivabilityScore >= 80 ? 'Production Candidate' : survivabilityScore >= 60 ? 'Pre-Launch' : survivabilityScore >= 40 ? 'MVP Alpha' : 'Prototype';
+  const auditLevel = pd.totalFiles > 250 ? 'Level 3 Deep' : pd.totalFiles > 60 ? 'Level 2 Standard' : 'Level 1 Quick';
+
+  auditResult = {
+    survivabilityScore,
+    buildPhase,
+    auditLevel,
+    executiveSummary: `${pd.name} appears to be a ${pd.fw} / ${pd.lang} project with ${pd.totalFiles} files and ${pd.srcFiles} source files. The main survivability concerns are ${risks.slice(0, 3).map(r => r.title.toLowerCase()).join(', ') || 'limited evidence from static inspection'}. This local MVP does not upload code or call external AI services.`,
+    strengths: [
+      pd.fw !== 'Unknown' ? `${pd.fw} detected` : 'Project structure detected',
+      hasPublicAssets ? 'Public/assets folder present' : 'File inventory available',
+      pd.docFiles > 0 ? 'Documentation files present' : 'Static analysis completed'
+    ],
+    concerns: risks.slice(0, 4).map(r => r.title),
+    readinessScore: survivabilityScore,
+    readinessSub: `${highRisks} high-risk finding${highRisks === 1 ? '' : 's'} detected locally`,
+    riskExposure,
+    riskSub: `${risks.length} total risks, ${highRisks} high severity`,
+    completionPct: Math.max(20, Math.min(95, survivabilityScore)),
+    completionSub: `${missingItems.length} missing infrastructure item${missingItems.length === 1 ? '' : 's'}`,
+    maintenanceIndex: maintainabilityScore >= 70 ? 'High' : maintainabilityScore >= 50 ? 'Medium' : 'Low',
+    maintenanceSub: `${pd.srcFiles} source files, ${pd.docFiles} docs, tests ${pd.hasTests ? 'detected' : 'not detected'}`,
+    metrics: [
+      { label: 'Code Quality', score: maintainabilityScore, color: maintainabilityScore >= 70 ? 'green' : maintainabilityScore >= 50 ? 'yellow' : 'red' },
+      { label: 'Test Coverage', score: testScore, color: testScore >= 70 ? 'green' : 'red' },
+      { label: 'Security Score', score: securityScore, color: securityScore >= 70 ? 'green' : securityScore >= 50 ? 'yellow' : 'red' },
+      { label: 'Deployment Readiness', score: deploymentScore, color: deploymentScore >= 70 ? 'green' : deploymentScore >= 50 ? 'yellow' : 'red' },
+      { label: 'Maintainability', score: maintainabilityScore, color: maintainabilityScore >= 70 ? 'green' : maintainabilityScore >= 50 ? 'yellow' : 'red' },
+      { label: 'Documentation', score: docsScore, color: docsScore >= 70 ? 'green' : docsScore >= 50 ? 'yellow' : 'red' }
+    ],
+    risks,
+    missingItems,
+    architecture: {
+      serviceType: hasApi ? 'Static app with server/API surface' : 'Static/client-heavy app',
+      framework: pd.fw,
+      database: hasDb ? 'Detected by file signals' : 'None detected',
+      deployment: pd.hasDockerfile ? 'Container-capable' : 'Unknown',
+      hasAuth,
+      hasTests: pd.hasTests,
+      hasCICD: pd.hasCicd,
+      dependencies: [pd.lang, pd.fw].filter(Boolean),
+      architectureSummary: `Detected ${pd.fw} with ${pd.srcFiles} source files. Static inspection found ${hasApi ? 'some backend/API signals' : 'no strong backend/API boundary'} and ${hasDb ? 'database/schema signals' : 'no obvious database layer'}.`
+    },
+    economics: {
+      summary: 'Economic survivability depends on deployment clarity, maintenance cost, and regression prevention. Missing tests or CI increase support cost as the app grows.',
+      costItems: [
+        { item: 'Hosting', current: 'Unknown', at10x: 'Medium', at100x: 'High if architecture is unverified', risk: pd.hasCicd ? 'medium' : 'high' },
+        { item: 'Maintenance', current: pd.hasTests ? 'Controlled' : 'Manual QA heavy', at10x: 'Higher support burden', at100x: 'Likely bottleneck without tests', risk: pd.hasTests ? 'medium' : 'high' },
+        { item: 'Security review', current: hasAuth ? 'Needed' : 'Auth not detected', at10x: 'Important', at100x: 'Critical', risk: 'high' }
+      ],
+      economicRisks: [
+        'Regression cost rises without automated tests',
+        'Deployment uncertainty slows iteration',
+        'Unclear auth/data model can create expensive rework'
+      ]
+    }
+  };
+
+  addLog('✓ Local audit complete', 'ok');
+  addLog('✓ Rendering dashboard…', 'ok');
+
+  setTimeout(() => {
+    renderDashboard();
+  }, 600);
+}
+
+// ─── RENDER ───
+function renderDashboard() {
+  const r = auditResult;
+  const pd = projectData;
+
+  // hide overlays, show tabs
+  document.getElementById('analyzing-overlay').classList.remove('active');
+  document.getElementById('landing').classList.add('hidden');
+  document.getElementById('tab-bar').style.display = 'flex';
+  switchNav('overview');
+
+  // TOPBAR
+  document.getElementById('tb-name').textContent = pd.name;
+  document.getElementById('tb-status').textContent = 'Analysis Complete';
+  document.getElementById('tb-status').className = 'status-badge complete';
+  document.getElementById('tb-meta').textContent = `${pd.totalFiles} files`;
+  const scoreEl = document.getElementById('tb-score');
+  scoreEl.innerHTML = `${r.survivabilityScore} <span class="score-max">/100</span>`;
+  scoreEl.className = 'score-val ' + scoreColor(r.survivabilityScore);
+  document.getElementById('tb-phase').textContent = r.buildPhase || '—';
+  document.getElementById('tb-level').textContent = r.auditLevel || '—';
+
+  // SIDEBAR BADGES
+  document.getElementById('risks-badge').textContent = (r.risks || []).filter(x => x.severity === 'high').length;
+  document.getElementById('missing-badge').textContent = (r.missingItems || []).length;
+
+  // ── OVERVIEW ──
+  document.getElementById('exec-summary').textContent = r.executiveSummary || '—';
+
+  // tags
+  const tagsEl = document.getElementById('exec-tags');
+  tagsEl.innerHTML = '';
+  (r.strengths || []).forEach(t => tagsEl.innerHTML += `<span class="tag green">${t}</span>`);
+  (r.concerns || []).forEach(t => tagsEl.innerHTML += `<span class="tag red">${t}</span>`);
+
+  // stat cards
+  document.getElementById('ov-readiness').textContent = r.readinessScore + '/100';
+  document.getElementById('ov-readiness').className = 'stat-card-val ' + scoreColor(r.readinessScore);
+  document.getElementById('ov-readiness-sub').textContent = r.readinessSub || '';
+
+  document.getElementById('ov-risk').textContent = r.riskExposure || '—';
+  document.getElementById('ov-risk').className = 'stat-card-val ' + riskColor(r.riskExposure);
+  document.getElementById('ov-risk-sub').textContent = r.riskSub || '';
+
+  document.getElementById('ov-completion').textContent = (r.completionPct || 0) + '%';
+  document.getElementById('ov-completion-sub').textContent = r.completionSub || '';
+
+  document.getElementById('ov-maint').textContent = r.maintenanceIndex || '—';
+  document.getElementById('ov-maint').className = 'stat-card-val ' + maintColor(r.maintenanceIndex);
+  document.getElementById('ov-maint-sub').textContent = r.maintenanceSub || '';
+
+  // overview risks (top 3)
+  const ovRisks = document.getElementById('ov-risks-list');
+  ovRisks.innerHTML = '';
+  (r.risks || []).slice(0, 3).forEach(risk => {
+    ovRisks.innerHTML += riskHTML(risk);
+  });
+
+  // key metrics
+  const metricsEl = document.getElementById('ov-metrics');
+  metricsEl.innerHTML = '';
+  (r.metrics || []).forEach(m => {
+    metricsEl.innerHTML += `
+      <div class="metric-row">
+        <div class="metric-label">${m.label}</div>
+        <div class="metric-bar"><div class="metric-fill ${m.color || 'green'}" style="width:${m.score}%"></div></div>
+        <div class="metric-score" style="color:var(--${m.color || 'green'})">${m.score}</div>
+      </div>`;
+  });
+
+  // overview missing (top 3)
+  const ovMissing = document.getElementById('ov-missing-list');
+  ovMissing.innerHTML = '';
+  (r.missingItems || []).slice(0, 3).forEach((item, i) => {
+    ovMissing.innerHTML += missingHTML(item, i + 1);
+  });
+
+  // ── RISKS ──
+  document.getElementById('risks-title').textContent = `Risks (${(r.risks||[]).length})`;
+  document.getElementById('risks-sub').textContent = `${(r.risks||[]).filter(x=>x.severity==='high').length} high · ${(r.risks||[]).filter(x=>x.severity==='medium').length} medium · ${(r.risks||[]).filter(x=>x.severity==='low').length} low`;
+  const risksFull = document.getElementById('risks-full-list');
+  risksFull.innerHTML = '';
+  (r.risks || []).forEach(risk => { risksFull.innerHTML += riskHTML(risk); });
+
+  // ── MISSING ──
+  document.getElementById('missing-sub').textContent = `${(r.missingItems||[]).length} items identified · prioritized by impact`;
+  const missingFull = document.getElementById('missing-full-list');
+  missingFull.innerHTML = '';
+  (r.missingItems || []).forEach((item, i) => { missingFull.innerHTML += missingHTML(item, i + 1); });
+
+  // ── ARCHITECTURE ──
+  const archGrid = document.getElementById('arch-grid');
+  const arch = r.architecture || {};
+  archGrid.innerHTML = `
+    <div class="card">
+      <div class="card-title">Stack Details</div>
+      ${archItem('Service Type', arch.serviceType)}
+      ${archItem('Framework', arch.framework || pd.fw)}
+      ${archItem('Language', pd.lang)}
+      ${archItem('Database', arch.database)}
+      ${archItem('Deployment', arch.deployment)}
+      ${archItem('Has Auth', boolBadge(arch.hasAuth))}
+      ${archItem('Has Tests', boolBadge(arch.hasTests ?? pd.hasTests))}
+      ${archItem('Has CI/CD', boolBadge(arch.hasCICD ?? pd.hasCicd))}
+    </div>
+    <div class="card">
+      <div class="card-title">Architecture Analysis</div>
+      <div style="font-size:13px;line-height:1.7;color:var(--text2);margin-bottom:16px">${arch.architectureSummary || '—'}</div>
+      <div class="card-title" style="margin-top:8px">Key Dependencies</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
+        ${(arch.dependencies || []).map(d => `<span class="tag">${d}</span>`).join('')}
+      </div>
+    </div>`;
+
+  // ── ECONOMICS ──
+  const econ = r.economics || {};
+  document.getElementById('econ-sub').textContent = econ.summary || '';
+  const econContent = document.getElementById('econ-content');
+  let econHTML = `
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Cost Scaling Projections</div>
+      <table class="econ-table">
+        <thead><tr><th>Item</th><th>Current</th><th>At 10×</th><th>At 100×</th><th>Risk</th></tr></thead>
+        <tbody>
+          ${(econ.costItems || []).map(ci => `
+            <tr>
+              <td>${ci.item}</td>
+              <td>${ci.current}</td>
+              <td>${ci.at10x}</td>
+              <td>${ci.at100x}</td>
+              <td><span class="risk-badge ${ci.risk}">${ci.risk}</span></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">Economic Risks</div>
+      <div class="risk-list">
+        ${(econ.economicRisks || []).map(er => `
+          <div class="risk-item">
+            <div class="risk-dot medium"></div>
+            <div class="risk-body"><div class="risk-title">${er}</div></div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  econContent.innerHTML = econHTML;
+
+  // prep Ask Auditor context
+  chatHistory = [{
+    role: 'user',
+    content: `Here is the full survivability audit for the project "${pd.name}":
+
+${JSON.stringify(auditResult, null, 2)}
+
+Project stats: ${pd.totalFiles} files, ${pd.lang}/${pd.fw}, tests: ${pd.hasTests}, CI/CD: ${pd.hasCicd}
+
+Answer questions as the Vibe Code Auditor. Be direct, specific, and honest. Think like a reliability engineer.`
+  }, {
+    role: 'assistant',
+    content: `Audit loaded. I have full context on ${pd.name} — survivability score ${r.survivabilityScore}/100, ${(r.risks||[]).length} risks identified, ${(r.missingItems||[]).length} missing items. Ask me anything about this project.`
+  }];
+}
+
+// ─── HELPERS ───
+function scoreColor(s) { return s >= 75 ? 'green' : s >= 50 ? 'yellow' : 'red'; }
+function riskColor(r) { return r === 'Low' ? 'green' : r === 'Medium' ? 'yellow' : 'red'; }
+function maintColor(m) { return m === 'Low' ? 'green' : m === 'Medium' ? 'yellow' : 'red'; }
+
+function boolBadge(v) {
+  if (v === true) return '<span style="color:var(--green)">✓ Yes</span>';
+  if (v === false) return '<span style="color:var(--red)">✗ No</span>';
+  return '—';
+}
+
+function archItem(key, val) {
+  return `<div class="arch-item"><span class="arch-item-key">${key}</span><span class="arch-item-val">${val || '—'}</span></div>`;
+}
+
+function riskHTML(risk) {
+  return `<div class="risk-item">
+    <div class="risk-dot ${risk.severity}"></div>
+    <div class="risk-body">
+      <div class="risk-title">${risk.title}</div>
+      <div class="risk-desc">${risk.description}</div>
+    </div>
+    <span class="risk-badge ${risk.severity}">${risk.severity}</span>
+  </div>`;
+}
+
+function missingHTML(item, num) {
+  return `<div class="missing-item">
+    <div class="missing-num">${num}</div>
+    <div class="missing-body">
+      <div class="missing-title">${item.title} <span class="risk-badge ${item.severity}" style="font-size:9px;margin-left:4px">${item.severity}</span></div>
+      <div class="missing-desc">${item.description}</div>
+    </div>
+    ${item.effort ? `<div class="missing-effort">${item.effort}</div>` : ''}
+  </div>`;
+}
+
+// ─── ASK CLAUDE ───
+async function sendAsk() {
+  const input = document.getElementById('ask-input');
+  const q = input.value.trim();
+  if (!q) return;
+  if (!auditResult) { alert('Please upload and audit a project first.'); return; }
+
+  input.value = '';
+  document.getElementById('ask-send').disabled = true;
+  document.getElementById('ask-empty').style.display = 'none';
+
+  const msgsEl = document.getElementById('ask-messages');
+  
+  // add user msg
+  const userDiv = document.createElement('div');
+  userDiv.className = 'msg user';
+  userDiv.textContent = q;
+  msgsEl.appendChild(userDiv);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+
+  // add thinking msg
+  const aiDiv = document.createElement('div');
+  aiDiv.className = 'msg ai';
+  aiDiv.textContent = '…';
+  msgsEl.appendChild(aiDiv);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+
+  chatHistory.push({ role: 'user', content: q });
+
+  try {
+    throw new Error('External AI calls are disabled in the local-only MVP.');
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: `You are the Vibe Code Auditor — a survivability intelligence system. You have completed a full audit of this project. Answer questions directly and honestly, like a reliability engineer doing technical due diligence. Be specific, cite actual findings from the audit when relevant. Keep answers concise (3-6 sentences) unless a longer answer is clearly needed.`,
+        messages: chatHistory
+      })
+    });
+
+    const data = await resp.json();
+    const text = data.content.map(c => c.text || '').join('');
+    aiDiv.textContent = text;
+    chatHistory.push({ role: 'assistant', content: text });
+
+  } catch(err) {
+    aiDiv.textContent = 'Error: ' + err.message;
+  }
+
+  document.getElementById('ask-send').disabled = false;
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function quickAsk(q) {
+  document.getElementById('ask-input').value = q;
+  sendAsk();
+}
+
+document.getElementById('ask-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAsk(); }
+});
+
+// ─── CODEX INSTRUCTIONS ───
+let codexFull = '';      // full generated markdown
+let codexVariants = {};  // keyed by format
+
+function setCodexFmt(btn, fmt) {
+  document.querySelectorAll('.codex-sel-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const content = codexVariants[fmt] || codexFull;
+  document.getElementById('codex-editor').value = content;
+  updateWordCount(content);
+}
+
+function updateWordCount(text) {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  const lines = text.split('\n').length;
+  document.getElementById('codex-wordcount').textContent = `${lines} lines · ~${words} words`;
+}
+
+
+function renderLocalCodexInstructions() {
+  if (!auditResult || !projectData) return;
+
+  const r = auditResult;
+  const pd = projectData;
+
+  codexFull = [
+    `# ${pd.name} Local Fix Plan`,
+    ``,
+    `## Context`,
+    `Project type: ${pd.fw} / ${pd.lang}`,
+    `Files: ${pd.totalFiles}`,
+    `Source files: ${pd.srcFiles}`,
+    `Docs: ${pd.docFiles}`,
+    ``,
+    `## Top Risks`,
+    ...(r.risks || []).slice(0, 6).map((risk, index) => `${index + 1}. [${risk.severity}] ${risk.title}: ${risk.description}`),
+    ``,
+    `## Missing Infrastructure`,
+    ...(r.missingItems || []).slice(0, 8).map((item, index) => `${index + 1}. [${item.severity}] ${item.title}: ${item.description} Estimated effort: ${item.effort}.`),
+    ``,
+    `## Safe Implementation Rules`,
+    `- Do not rewrite the whole app.`,
+    `- Preserve current routes and homepage behavior.`,
+    `- Add tests before risky refactors.`,
+    `- Keep secrets out of source control.`,
+    `- Run the existing build/verification command after every change.`,
+    `- Make small commits that can be rolled back.`,
+    ``,
+    `## First 5 Tasks`,
+    `1. Add or update README setup/build/deploy instructions.`,
+    `2. Add .env.example with safe placeholder values.`,
+    `3. Add smoke tests for homepage and critical user flows.`,
+    `4. Add CI to run install/build/verification.`,
+    `5. Document auth, data, and deployment assumptions.`
+  ].join('\n');
+
+  const placeholder = document.getElementById('codex-placeholder');
+  const generating = document.getElementById('codex-generating');
+  const content = document.getElementById('codex-content');
+
+  if (placeholder) placeholder.style.display = 'none';
+  if (generating) generating.style.display = 'none';
+  if (content) {
+    content.style.display = 'block';
+    content.textContent = codexFull;
+  }
+}
+
+
+async function generateCodexInstructions() {
+  throw new Error('generateCodexInstructions is disabled in the local-only MVP.');
+  if (!auditResult) return;
+
+  document.getElementById('codex-placeholder').style.display = 'none';
+  document.getElementById('codex-content').style.display = 'none';
+  document.getElementById('codex-generating').style.display = 'block';
+  document.getElementById('codex-actions').style.display = 'none';
+
+  const r = auditResult;
+  const pd = projectData;
+
+  const prompt = `You are generating a Codex instruction brief — a structured, ready-to-paste instruction set for an AI coding agent (OpenAI Codex, Claude Code, GitHub Copilot Workspace, etc.).
+
+Based on this survivability audit, generate FOUR distinct instruction formats, each clearly separated by a marker.
+
+PROJECT AUDIT DATA:
+- Project: ${pd.name}
+- Language: ${pd.lang} / Framework: ${pd.fw}
+- Survivability Score: ${r.survivabilityScore}/100
+- Build Phase: ${r.buildPhase}
+- Summary: ${r.executiveSummary}
+- Risks: ${JSON.stringify((r.risks||[]).map(x=>({title:x.title,severity:x.severity})))}
+- Missing: ${JSON.stringify((r.missingItems||[]).map(x=>({title:x.title,severity:x.severity,effort:x.effort})))}
+- Architecture: ${JSON.stringify(r.architecture||{})}
+- Metrics: ${JSON.stringify(r.metrics||[])}
+
+Generate exactly these four sections, each starting with the marker on its own line:
+
+===FULL===
+A complete Codex briefing document in Markdown. Include:
+1. # Project Context — brief description of what this codebase is, stack, current state
+2. # Constraints & Rules — things Codex must NOT do (e.g. don't change DB schema without migration, don't add new deps without approval, preserve existing auth flow)
+3. # Priority Task List — numbered list of ALL tasks ranked by impact, each with estimated effort and severity badge [HIGH]/[MEDIUM]/[LOW]
+4. # Acceptance Criteria — what "done" looks like for each major category (tests, security, deployment, docs)
+5. # Key Files & Paths — important files Codex should know about based on the architecture
+6. # Known Fragility Points — specific areas to be careful in
+
+===TASKS===
+Just the numbered task list in a clean format Codex can execute against. One task per line, formatted as:
+[ ] PRIORITY: Task description (effort: X)
+Group by: CRITICAL, HIGH, MEDIUM, LOW
+
+===CONTEXT===
+A concise project context block — just the "who, what, stack, constraints" section. Good for pasting at the top of a Codex session as a system-level briefing. 200-300 words max.
+
+===SECURITY===
+A focused security-only instruction set. List only security tasks, constraints, and patterns Codex should follow. Include: auth patterns to preserve, secrets handling rules, input validation requirements, specific vulnerabilities to fix.
+
+Be specific and technical. Reference actual file types, frameworks, and patterns from the audit. Do not be generic.`;
+
+  try {
+    throw new Error('External AI calls are disabled in the local-only MVP.');
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+    const raw = data.content.map(c => c.text || '').join('');
+
+    // parse the four sections
+    const extract = (marker) => {
+      const re = new RegExp(`===${marker}===\\n([\\s\\S]*?)(?=====[A-Z]+=====|$)`);
+      const m = raw.match(re);
+      return m ? m[1].trim() : '';
+    };
+
+    codexVariants = {
+      full: extract('FULL'),
+      tasks: extract('TASKS'),
+      context: extract('CONTEXT'),
+      security: extract('SECURITY')
+    };
+    codexFull = codexVariants.full || raw;
+
+    // render editor
+    document.getElementById('codex-editor').value = codexFull;
+    updateWordCount(codexFull);
+
+    // render section previews
+    renderCodexSections(r);
+
+    document.getElementById('codex-generating').style.display = 'none';
+    document.getElementById('codex-content').style.display = 'block';
+    document.getElementById('codex-actions').style.display = 'flex';
+
+  } catch(err) {
+    document.getElementById('codex-generating').style.display = 'none';
+    document.getElementById('codex-placeholder').style.display = 'block';
+    document.getElementById('codex-placeholder').querySelector('.placeholder-text').textContent = 'Error generating instructions: ' + err.message;
+  }
+}
+
+function renderCodexSections(r) {
+  const el = document.getElementById('codex-sections');
+
+  // high priority tasks card
+  const highTasks = (r.missingItems || []).filter(x => x.severity === 'high');
+  const medTasks = (r.missingItems || []).filter(x => x.severity === 'medium');
+  const allTasks = [...highTasks, ...medTasks, ...(r.missingItems||[]).filter(x=>x.severity==='low')];
+
+  // top risks card
+  const highRisks = (r.risks || []).filter(x => x.severity === 'high');
+
+  el.innerHTML = `
+    <div class="codex-section-card">
+      <div class="codex-section-title">
+        Prioritized Tasks
+        <span class="cs-count">${allTasks.length}</span>
+      </div>
+      ${allTasks.map((t, i) => `
+        <div class="codex-task-item">
+          <div class="codex-task-num">${String(i+1).padStart(2,'0')}</div>
+          <div class="codex-task-text">${t.title}${t.effort ? ` <span style="color:var(--text3);font-size:11px">(${t.effort})</span>` : ''}</div>
+          <span class="codex-task-pill ${t.severity}">${t.severity}</span>
+        </div>`).join('')}
+    </div>
+    <div class="codex-section-card">
+      <div class="codex-section-title">
+        Risks to Address
+        <span class="cs-count">${(r.risks||[]).length}</span>
+      </div>
+      ${(r.risks||[]).map((rk, i) => `
+        <div class="codex-task-item">
+          <div class="codex-task-num">${String(i+1).padStart(2,'0')}</div>
+          <div class="codex-task-text">${rk.title} <span style="color:var(--text3);font-size:11px;display:block;line-height:1.4">${rk.description}</span></div>
+          <span class="codex-task-pill ${rk.severity}">${rk.severity}</span>
+        </div>`).join('')}
+    </div>`;
+}
+
+function copyCodex() {
+  const text = document.getElementById('codex-editor').value;
+  navigator.clipboard.writeText(text).then(() => showToast('Copied to clipboard'));
+}
+
+function downloadCodex() {
+  const text = document.getElementById('codex-editor').value;
+  const name = (projectData?.name || 'project').replace('.zip','');
+  const blob = new Blob([text], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `codex-instructions-${name}.md`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('Downloaded codex-instructions.md');
+}
+
+function regenerateCodex() {
+  codexFull = '';
+  generateCodexInstructions();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('copy-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// listen for editor changes to update word count
+document.addEventListener('DOMContentLoaded', () => {
+  const ed = document.getElementById('codex-editor');
+  if (ed) ed.addEventListener('input', () => updateWordCount(ed.value));
+});
+
+// ══════════════════════════════════════════════════════════
+// ─── DELEGATE TO AI ───
+// ══════════════════════════════════════════════════════════
+let delegateData = null;  // local audit JSON
+
+async function generateDelegateInstructions() {
+  throw new Error('generateDelegateInstructions is disabled in the local-only MVP.');
+  if (!auditResult) return;
+
+  document.getElementById('delegate-placeholder').style.display = 'none';
+  document.getElementById('delegate-content').style.display = 'none';
+  document.getElementById('delegate-generating').style.display = 'block';
+  document.getElementById('delegate-actions').style.display = 'none';
+
+  const r = auditResult;
+  const pd = projectData;
+
+  const prompt = `You are a senior engineering manager breaking a codebase into AI-delegatable work packages.
+
+Given this audit, identify which parts of the project can be safely handed off to an AI coding agent (like Codex, Claude Code, Cursor, etc.) and write a specific, complete prompt for each one.
+
+AUDIT DATA:
+- Project: ${pd.name} (${pd.lang}/${pd.fw})
+- Survivability: ${r.survivabilityScore}/100
+- Summary: ${r.executiveSummary}
+- Risks: ${JSON.stringify((r.risks||[]).slice(0,8))}
+- Missing items: ${JSON.stringify((r.missingItems||[]).slice(0,10))}
+- Architecture: ${JSON.stringify(r.architecture||{})}
+- Metrics: ${JSON.stringify(r.metrics||[])}
+
+Rules for delegation suitability:
+- GOOD to delegate: well-scoped tasks, additive features, tests, docs, refactors with clear interfaces, boilerplate, CRUD endpoints, UI components
+- RISKY to delegate: auth flows, payment logic, DB migrations, security-critical paths, anything touching core state
+- DO NOT suggest delegating: architecture decisions, business logic, anything requiring deep context of the whole system
+
+Respond ONLY with valid JSON. No markdown, no backticks.
+
+{
+  "summary": {
+    "totalTasks": <int>,
+    "safeToDelegate": <int>,
+    "riskyToDelegate": <int>,
+    "notRecommended": <int>,
+    "estimatedHoursSaved": "<e.g. 40-60 hours>"
+  },
+  "tasks": [
+    {
+      "id": <int>,
+      "title": "<short name>",
+      "category": "<Tests|UI Components|API Endpoints|Documentation|Refactor|Security|DevOps|Database|Feature>",
+      "icon": "<single emoji>",
+      "iconColor": "<blue|green|yellow|purple|red|accent>",
+      "delegationSafety": "<safe|risky|not-recommended>",
+      "effort": "<low|medium|high>",
+      "why": "<1-2 sentences explaining why this is good/risky to delegate and what the AI can accomplish>",
+      "prompt": "<The FULL, copy-paste ready prompt to give the AI agent. Be specific: reference actual file types, framework, patterns from this project. Include: what to build, constraints to follow, what NOT to change, expected output format, acceptance criteria. 150-300 words.>",
+      "caveats": "<Any specific warnings, things to review after the AI is done, or gotchas. 1-2 sentences.>"
+    }
+  ]
+}
+
+Generate 6-10 tasks covering the most valuable delegation opportunities. Prioritize high-impact, low-risk tasks first. For risky tasks, include them but clearly label them and add strong caveats.`;
+
+  try {
+    throw new Error('External AI calls are disabled in the local-only MVP.');
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+    const raw = data.content.map(c => c.text || '').join('');
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const match = clean.match(/\{[\s\S]+\}/);
+    delegateData = JSON.parse(match ? match[0] : clean);
+
+    renderDelegatePanel(delegateData);
+    document.getElementById('delegate-generating').style.display = 'none';
+    document.getElementById('delegate-content').style.display = 'block';
+    document.getElementById('delegate-actions').style.display = 'flex';
+
+  } catch(err) {
+    document.getElementById('delegate-generating').style.display = 'none';
+    document.getElementById('delegate-placeholder').style.display = 'block';
+    document.getElementById('delegate-placeholder').querySelector('.placeholder-text').textContent = 'Error: ' + err.message;
+  }
+}
+
+function renderDelegatePanel(d) {
+  const s = d.summary || {};
+
+  // summary strip
+  document.getElementById('delegate-summary-strip').innerHTML = `
+    <div class="delegate-summary-strip">
+      <div class="del-stat"><div class="del-stat-label">Total Tasks</div><div class="del-stat-val blue">${s.totalTasks || d.tasks.length}</div></div>
+      <div class="del-stat"><div class="del-stat-label">Safe to Delegate</div><div class="del-stat-val green">${s.safeToDelegate || '—'}</div></div>
+      <div class="del-stat"><div class="del-stat-label">Needs Review</div><div class="del-stat-val yellow">${s.riskyToDelegate || '—'}</div></div>
+      <div class="del-stat"><div class="del-stat-label">Est. Hours Saved</div><div class="del-stat-val green">${s.estimatedHoursSaved || '—'}</div></div>
+    </div>`;
+
+  // task cards
+  const grid = document.getElementById('delegate-grid');
+  grid.innerHTML = '<div class="delegate-grid">' + (d.tasks || []).map(t => {
+    const safetyClass = t.delegationSafety === 'safe' ? 'safe' : t.delegationSafety === 'risky' ? 'risky' : 'risky';
+    const safetyLabel = t.delegationSafety === 'safe' ? '✓ Safe to delegate' : t.delegationSafety === 'risky' ? '⚠ Review after' : '✗ Not recommended';
+    const effortClass = t.effort === 'low' ? 'effort-low' : t.effort === 'medium' ? 'effort-med' : 'effort-high';
+    return `
+      <div class="delegate-card" id="delcard-${t.id}">
+        <div class="delegate-card-header" onclick="toggleDelCard(${t.id})">
+          <div class="delegate-card-icon del-icon-${t.iconColor}">${t.icon}</div>
+          <div class="delegate-card-title">
+            <div class="del-title">${t.title}</div>
+            <div class="del-subtitle">${t.category}</div>
+          </div>
+          <div class="del-badges">
+            <span class="del-badge ${effortClass}">${t.effort} effort</span>
+            <span class="del-badge ${safetyClass}">${safetyLabel}</span>
+          </div>
+          <span class="del-expand" id="delexp-${t.id}">▼</span>
+        </div>
+        <div class="delegate-card-body" id="delbody-${t.id}">
+          <div class="del-why">${t.why}</div>
+          <div class="del-prompt-label">
+            Prompt for AI agent
+            <a onclick="copyDelPrompt(${t.id})">⎘ Copy prompt</a>
+          </div>
+          <div class="del-prompt-box" id="delprompt-${t.id}">${escHtml(t.prompt)}</div>
+          <div class="del-caveats"><strong>⚠ After the AI is done:</strong> ${t.caveats}</div>
+        </div>
+      </div>`;
+  }).join('') + '</div>';
+}
+
+function toggleDelCard(id) {
+  const body = document.getElementById('delbody-' + id);
+  const exp = document.getElementById('delexp-' + id);
+  const open = body.classList.toggle('open');
+  exp.classList.toggle('open', open);
+}
+
+function copyDelPrompt(id) {
+  const box = document.getElementById('delprompt-' + id);
+  navigator.clipboard.writeText(box.textContent).then(() => showToast('Prompt copied!'));
+}
+
+function copyAllDelegations() {
+  if (!delegateData) return;
+  const md = delegateData.tasks.map(t =>
+    `## ${t.title}\n**Category:** ${t.category} | **Safety:** ${t.delegationSafety} | **Effort:** ${t.effort}\n\n${t.why}\n\n### Prompt\n${t.prompt}\n\n### Caveats\n${t.caveats}`
+  ).join('\n\n---\n\n');
+  navigator.clipboard.writeText(md).then(() => showToast('All prompts copied!'));
+}
+
+function downloadDelegations() {
+  if (!delegateData) return;
+  const name = (projectData?.name || 'project').replace('.zip','');
+  const md = `# AI Delegation Plan — ${name}\n\n` + delegateData.tasks.map(t =>
+    `## ${t.id}. ${t.title}\n**Category:** ${t.category}  \n**Safety:** ${t.delegationSafety}  \n**Effort:** ${t.effort}\n\n${t.why}\n\n### Prompt to give AI\n\`\`\`\n${t.prompt}\n\`\`\`\n\n### Review after AI completes\n${t.caveats}`
+  ).join('\n\n---\n\n');
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `ai-delegation-${name}.md`;
+  a.click();
+  showToast('Downloaded delegation plan');
+}
+
+function regenerateDelegate() {
+  delegateData = null;
+  generateDelegateInstructions();
+}
+
+function escHtml(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ══════════════════════════════════════════════════════════
+// ─── MASTER PLAN ───
+// ══════════════════════════════════════════════════════════
+let masterPlanData = null;
+let masterPlanRaw = '';
+
+async function generateMasterPlan() {
+  throw new Error('generateMasterPlan is disabled in the local-only MVP.');
+  if (!auditResult) return;
+
+  document.getElementById('mp-placeholder').style.display = 'none';
+  document.getElementById('mp-content').style.display = 'none';
+  document.getElementById('mp-generating').style.display = 'block';
+  document.getElementById('mp-actions').style.display = 'none';
+
+  const r = auditResult;
+  const pd = projectData;
+
+  const prompt = `You are a principal engineer and technical strategist evaluating a full project build plan.
+
+Given this audit, generate:
+1. A VERDICT on whether the overall build plan / project direction is sound
+2. A phased master roadmap
+3. Key assumptions that must hold for the plan to succeed
+4. A full markdown plan document
+
+AUDIT DATA:
+- Project: ${pd.name} (${pd.lang}/${pd.fw})
+- Survivability Score: ${r.survivabilityScore}/100
+- Build Phase: ${r.buildPhase}
+- Summary: ${r.executiveSummary}
+- Strengths: ${JSON.stringify(r.strengths||[])}
+- Concerns: ${JSON.stringify(r.concerns||[])}
+- Risks: ${JSON.stringify(r.risks||[])}
+- Missing: ${JSON.stringify(r.missingItems||[])}
+- Architecture: ${JSON.stringify(r.architecture||{})}
+- Metrics: ${JSON.stringify(r.metrics||[])}
+- Economics: ${JSON.stringify(r.economics||{})}
+
+Respond ONLY with valid JSON. No markdown, no backticks.
+
+{
+  "verdict": {
+    "rating": "<good|warn|bad>",
+    "headline": "<8-12 word punchy verdict statement>",
+    "summary": "<3-4 sentences: is the plan sound? what's the core issue? what has to change? be direct and honest, not diplomatic>",
+    "strengths": ["<strength 1>", ...],
+    "blockers": ["<critical blocker 1>", ...],
+    "confidence": "<Low|Medium|High — how confident are you this will survive to production>"
+  },
+  "phases": [
+    {
+      "number": 1,
+      "title": "<phase name>",
+      "duration": "<e.g. Week 1-2>",
+      "priority": "<critical|high|medium|done>",
+      "description": "<1-2 sentences on what this phase achieves>",
+      "tasks": ["<task 1>", "<task 2>", ...]
+    }
+  ],
+  "assumptions": [
+    {
+      "type": "<must-hold|risk|unknown>",
+      "text": "<assumption that must be true for the plan to work>"
+    }
+  ],
+  "planMarkdown": "<Full markdown master plan document — 400-600 words. Include: project vision, current state assessment, phased roadmap with tasks, success criteria, critical path, and honest recommendations. Use ## headers and bullet points.>"
+}
+
+Generate 4-6 phases covering the full path from current state to production-ready. Be specific and honest — if the plan has serious flaws, say so clearly in the verdict.`;
+
+  try {
+    throw new Error('External AI calls are disabled in the local-only MVP.');
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+    const raw = data.content.map(c => c.text || '').join('');
+    const clean = raw.replace(/```json|```/g, '').trim();
+    const match = clean.match(/\{[\s\S]+\}/);
+    masterPlanData = JSON.parse(match ? match[0] : clean);
+    masterPlanRaw = masterPlanData.planMarkdown || '';
+
+    renderMasterPlan(masterPlanData);
+    document.getElementById('mp-generating').style.display = 'none';
+    document.getElementById('mp-content').style.display = 'block';
+    document.getElementById('mp-actions').style.display = 'flex';
+
+  } catch(err) {
+    document.getElementById('mp-generating').style.display = 'none';
+    document.getElementById('mp-placeholder').style.display = 'block';
+    document.getElementById('mp-placeholder').querySelector('.placeholder-text').textContent = 'Error: ' + err.message;
+  }
+}
+
+function renderMasterPlan(d) {
+  const v = d.verdict || {};
+
+  // VERDICT BANNER
+  const verdictIcons = { good: '✅', warn: '⚠️', bad: '🚨' };
+  document.getElementById('mp-verdict-banner').innerHTML = `
+    <div class="verdict-banner ${v.rating}">
+      <div class="verdict-icon">${verdictIcons[v.rating] || '⚠️'}</div>
+      <div class="verdict-body">
+        <div class="verdict-title">${v.headline || 'Verdict'}</div>
+        <div class="verdict-text">${v.summary || ''}</div>
+        <div class="verdict-meta">
+          <span class="verdict-pill ${v.rating === 'good' ? 'good' : v.rating === 'bad' ? 'bad' : 'warn'}">Confidence: ${v.confidence || '—'}</span>
+          ${(v.strengths||[]).map(s => `<span class="verdict-pill good">✓ ${s}</span>`).join('')}
+          ${(v.blockers||[]).map(b => `<span class="verdict-pill bad">✗ ${b}</span>`).join('')}
+        </div>
+      </div>
+    </div>`;
+
+  // PHASES
+  const phasesEl = document.getElementById('mp-phases');
+  phasesEl.innerHTML = `<div class="card" style="margin-bottom:0"><div class="card-title">Build Roadmap</div><div class="mp-phases">` +
+    (d.phases || []).map((ph, i, arr) => `
+      <div class="phase-card">
+        <div class="phase-num-col">
+          <div class="phase-num">${ph.number}</div>
+          ${i < arr.length - 1 ? '<div class="phase-line"></div>' : ''}
+        </div>
+        <div class="phase-body">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+            <div class="phase-title">${ph.title}</div>
+            <span class="phase-status ${ph.priority}">${ph.priority}</span>
+          </div>
+          <div class="phase-duration">⏱ ${ph.duration}</div>
+          <div class="phase-desc">${ph.description}</div>
+          <div class="phase-tasks">
+            ${(ph.tasks||[]).map(t => `<div class="phase-task"><div class="phase-task-dot"></div><div>${t}</div></div>`).join('')}
+          </div>
+        </div>
+      </div>`).join('') +
+  `</div></div>`;
+
+  // BOTTOM GRID — Assumptions + a "what could go wrong" card
+  const assumptions = d.assumptions || [];
+  const mustHold = assumptions.filter(a => a.type === 'must-hold');
+  const risks = assumptions.filter(a => a.type === 'risk');
+  const unknowns = assumptions.filter(a => a.type === 'unknown');
+
+  document.getElementById('mp-bottom').innerHTML = `
+    <div class="card">
+      <div class="card-title">Assumptions That Must Hold</div>
+      <div class="mp-assumptions">
+        ${mustHold.map(a => `<div class="mp-assumption"><div class="mp-assumption-icon">📌</div><div class="mp-assumption-text">${a.text}</div></div>`).join('')}
+        ${risks.map(a => `<div class="mp-assumption"><div class="mp-assumption-icon">⚠️</div><div class="mp-assumption-text">${a.text}</div></div>`).join('')}
+        ${unknowns.map(a => `<div class="mp-assumption"><div class="mp-assumption-icon">❓</div><div class="mp-assumption-text">${a.text}</div></div>`).join('')}
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Critical Path Summary</div>
+      <div style="font-size:12.5px;color:var(--text2);line-height:1.7">
+        ${(d.phases||[]).filter(p => p.priority === 'critical' || p.priority === 'high').map(p =>
+          `<div style="margin-bottom:10px">
+            <div style="font-weight:600;color:var(--text);margin-bottom:3px">${p.title} <span style="font-size:11px;color:var(--text3)">${p.duration}</span></div>
+            <div>${p.description}</div>
+          </div>`
+        ).join('')}
+      </div>
+    </div>`;
+
+  // RAW PLAN EDITOR
+  document.getElementById('mp-raw-editor').value = masterPlanRaw;
+}
+
+function toggleMpRaw() {
+  const wrap = document.getElementById('mp-raw-wrap');
+  const toggle = document.getElementById('mp-raw-toggle');
+  const open = wrap.style.display === 'none';
+  wrap.style.display = open ? 'block' : 'none';
+  toggle.textContent = open ? '▲ collapse' : '▼ expand';
+}
+
+function copyMasterPlan() {
+  navigator.clipboard.writeText(masterPlanRaw).then(() => showToast('Master plan copied!'));
+}
+
+function downloadMasterPlan() {
+  const name = (projectData?.name || 'project').replace('.zip','');
+  const blob = new Blob([masterPlanRaw], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `master-plan-${name}.md`;
+  a.click();
+  showToast('Downloaded master-plan.md');
+}
+
+function regenerateMasterPlan() {
+  masterPlanData = null;
+  masterPlanRaw = '';
+  generateMasterPlan();
+}
+</script>
+<div class="copy-toast" id="copy-toast"></div>
+</body>
+</html>

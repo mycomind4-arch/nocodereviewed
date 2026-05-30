@@ -7307,18 +7307,10 @@ function render() {
           <p class="eyebrow">Vibe code authority</p>
           <h1>Evidence-first reviews for the AI app-builder era.</h1>
           <p>Autonomous, evidence-backed reviews and benchmarks for Lovable, Bolt, Replit, v0, Cursor, Base44, Windsurf, and the full AI app-builder category. No recycled listicles. Every verdict must come from build tests, pricing checks, and production-readiness gates.</p>
-          <div class="hero-actions"><button data-tab="best">Best tools by use case</button><a class="button secondary" href="#microsites">All Microsites</a><a class="button secondary" href="#cluster/ai-app-builders">AI App Builder Cluster</a><button class="secondary" data-tab="readiness">View evidence gates</button></div>
+          <div class="hero-actions"><a class="button" href="/tools/vibe-auditor.html">Audit My App</a><button data-tab="best">Best tools by use case</button><a class="button secondary" href="#microsites">All Microsites</a><a class="button secondary" href="#cluster/ai-app-builders">AI App Builder Cluster</a><button class="secondary" data-tab="readiness">View evidence gates</button></div>
         </div>
-        <div class="authority-visual" aria-label="VibeCode Authority benchmark console">
-          <div class="vca-mark">VCA</div>
-          <div class="signal-grid">
-            <span></span><span></span><span></span><span></span><span></span><span></span>
-          </div>
-          <div class="console-readout">
-            <div><span>Tracked builders</span><strong>28</strong></div>
-            <div><span>Evidence mode</span><strong>Gated</strong></div>
-            <div><span>Current focus</span><strong>Vibe coding</strong></div>
-          </div>
+        <div class="hero-image-card" aria-label="NoCodeReviewed evidence dashboard preview">
+          <img src="/images/homepage/homepage-hero-dashboard.png" alt="NoCodeReviewed evidence dashboard preview with AI builder comparison cards, scoring panels, and review workflow graphics">
         </div>
       </section>
       <section class="evidence-strip" aria-label="Evidence system">
@@ -7327,6 +7319,27 @@ function render() {
         <div><span>03</span><strong>Production-readiness gates</strong><p>Auth, data, secrets, deploys, and handoff determine credibility.</p></div>
         <div><span>04</span><strong>QA before publishing</strong><p>Autonomous content cannot ship until evidence and editorial checks pass.</p></div>
       </section>
+      <section class="homepage-proof-band" aria-label="NoCodeReviewed evidence promise">
+        <div>
+          <p class="eyebrow">Evidence-first review system</p>
+          <h2>Built for serious builders, not recycled AI tool listicles.</h2>
+        </div>
+        <div class="homepage-proof-cards">
+          <article>
+            <strong>Hands-on tests</strong>
+            <span>Benchmark prompts, real builds, deployment checks, and recorded failures.</span>
+          </article>
+          <article>
+            <strong>Production gates</strong>
+            <span>Security, autonomy, pricing, export paths, and handoff quality affect every verdict.</span>
+          </article>
+          <article>
+            <strong>Fresh evidence</strong>
+            <span>Scores expire when pricing, features, limits, or product behavior changes.</span>
+          </article>
+        </div>
+      </section>
+
       <section class="workspace" id="reviews">
         <div class="tabs">
           ${[
