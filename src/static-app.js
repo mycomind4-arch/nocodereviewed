@@ -6908,7 +6908,114 @@ function genericToolMicrositePanel(toolSlug, pageSlug = "overview") {
   `;
 }
 
+
+function micrositesDirectoryPanel() {
+  const customMicrosites = new Set(["lovable", "bolt-new", "replit-agent", "v0"]);
+  const groupedTools = tools.reduce((groups, tool) => {
+    const category = tool.category || "Uncategorized";
+    if (!groups[category]) groups[category] = [];
+    groups[category].push(tool);
+    return groups;
+  }, {});
+
+  const totalCustom = tools.filter((tool) => customMicrosites.has(tool.slug)).length;
+  const totalGeneric = tools.length - totalCustom;
+
+  return `
+    <section class="lovable-microsite">
+      <div class="lovable-hero">
+        <div>
+          <p class="eyebrow">Microsite control center</p>
+          <h1>All Tool Microsites</h1>
+          <p class="lede">This directory shows every NoCodeReviewed tool microsite in one place. Custom flagship microsites get deeper hand-built pages. Generic microsites use the automated evidence-first engine so every tool has a review hub, pricing page, security page, autonomy page, test lab, prompt page, template page, alternatives page, and pending verdict.</p>
+          <div class="status-row">
+            <span class="status-pill">${tools.length} total tools</span>
+            <span class="status-pill">${totalCustom} custom flagship microsites</span>
+            <span class="status-pill">${totalGeneric} automated microsites</span>
+          </div>
+        </div>
+        <div class="lovable-score-card">
+          <strong>System status</strong>
+          <p>The microsite engine is now the scalable layer. You can publish broad coverage first, then upgrade the highest-value tools into custom authority pages.</p>
+          <a href="#cluster/ai-app-builders">Open AI App Builder Cluster →</a>
+        </div>
+      </div>
+
+      <div class="cluster-table-card">
+        <h2>Microsite route pattern</h2>
+        <table class="cluster-table">
+          <thead>
+            <tr>
+              <th>Page type</th>
+              <th>Route pattern</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Hub</td><td><code>#tool/tool-slug</code></td><td>Main evidence hub for the tool.</td></tr>
+            <tr><td>Review</td><td><code>#tool/tool-slug/review</code></td><td>Structured review draft before final scoring.</td></tr>
+            <tr><td>Pricing</td><td><code>#tool/tool-slug/pricing</code></td><td>Pricing verification checklist and publishing guardrails.</td></tr>
+            <tr><td>Security</td><td><code>#tool/tool-slug/security</code></td><td>Security and production-readiness questions.</td></tr>
+            <tr><td>Autonomy</td><td><code>#tool/tool-slug/autonomy</code></td><td>Prompt-to-output and error-recovery evaluation.</td></tr>
+            <tr><td>Test Lab</td><td><code>#tool/tool-slug/test-lab</code></td><td>Repeatable build-test plan.</td></tr>
+            <tr><td>Prompts</td><td><code>#tool/tool-slug/prompts</code></td><td>Controlled testing prompts.</td></tr>
+            <tr><td>Templates</td><td><code>#tool/tool-slug/templates</code></td><td>Reusable template and output-pattern notes.</td></tr>
+            <tr><td>Alternatives</td><td><code>#tool/tool-slug/alternatives</code></td><td>Neutral comparison map.</td></tr>
+            <tr><td>Final Verdict</td><td><code>#tool/tool-slug/final-verdict</code></td><td>Verdict gate before final publication.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      ${Object.entries(groupedTools).map(([category, categoryTools]) => `
+        <div class="cluster-table-card">
+          <h2>${category}</h2>
+          <table class="cluster-table">
+            <thead>
+              <tr>
+                <th>Tool</th>
+                <th>Microsite type</th>
+                <th>Hub</th>
+                <th>Test Lab</th>
+                <th>Security</th>
+                <th>Pricing</th>
+                <th>Verdict</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${categoryTools.map((tool) => {
+                const type = customMicrosites.has(tool.slug) ? "Custom flagship" : "Automated generic";
+                return `
+                  <tr>
+                    <td><strong>${tool.name}</strong><br><span>${tool.bestFor || ""}</span></td>
+                    <td>${type}</td>
+                    <td><a href="#tool/${tool.slug}">Hub</a></td>
+                    <td><a href="#tool/${tool.slug}/test-lab">Test Lab</a></td>
+                    <td><a href="#tool/${tool.slug}/security">Security</a></td>
+                    <td><a href="#tool/${tool.slug}/pricing">Pricing</a></td>
+                    <td><a href="#tool/${tool.slug}/final-verdict">Verdict</a></td>
+                  </tr>
+                `;
+              }).join("")}
+            </tbody>
+          </table>
+        </div>
+      `).join("")}
+
+      <div class="lovable-footer-cta">
+        <h2>Next authority move</h2>
+        <p>Use this directory as the control center. The next upgrade should be adding evidence status fields, last-checked dates, and test-completion states per tool so the directory becomes a live editorial dashboard.</p>
+        <div class="status-row">
+          <a class="button" href="#cluster/ai-app-builders">Open authority cluster</a>
+          <a class="button secondary" href="#reviews">Back to reviews</a>
+        </div>
+      </div>
+    </section>
+  `;
+}
+
 function renderPanel() {
+  if (window.location.hash === "#microsites") return micrositesDirectoryPanel();
+
   const clusterRoute = window.location.hash.match(/^#cluster\/([^/?#]+)$/);
   if (clusterRoute) {
     if (clusterRoute[1] === "ai-app-builders") return aiAppBuildersClusterPanel();
@@ -7019,7 +7126,7 @@ function render() {
     <main>
       <header class="topbar">
         <a class="brand" href="#top"><span></span>VibeCode Authority</a>
-        <nav><a href="#reviews">Reviews</a><a href="#cluster/ai-app-builders">AI App Builder Cluster</a><a href="#compare">Compare</a><a href="#methodology" data-tab="methodology">Methodology</a><a href="#admin" data-tab="admin">Admin</a></nav>
+        <nav><a href="#reviews">Reviews</a><a href="#microsites">Microsites</a><a href="#cluster/ai-app-builders">AI App Builder Cluster</a><a href="#compare">Compare</a><a href="#methodology" data-tab="methodology">Methodology</a><a href="#admin" data-tab="admin">Admin</a></nav>
         <button class="submit-button" data-tab="intake">Submit a Tool</button>
       </header>
       <section class="hero" id="top">
@@ -7027,7 +7134,7 @@ function render() {
           <p class="eyebrow">Vibe code authority</p>
           <h1>Evidence-first reviews for the AI app-builder era.</h1>
           <p>Autonomous, evidence-backed reviews and benchmarks for Lovable, Bolt, Replit, v0, Cursor, Base44, Windsurf, and the full AI app-builder category. No recycled listicles. Every verdict must come from build tests, pricing checks, and production-readiness gates.</p>
-          <div class="hero-actions"><button data-tab="best">Best tools by use case</button><a class="button secondary" href="#cluster/ai-app-builders">AI App Builder Cluster</a><button class="secondary" data-tab="readiness">View evidence gates</button></div>
+          <div class="hero-actions"><button data-tab="best">Best tools by use case</button><a class="button secondary" href="#microsites">All Microsites</a><a class="button secondary" href="#cluster/ai-app-builders">AI App Builder Cluster</a><button class="secondary" data-tab="readiness">View evidence gates</button></div>
         </div>
         <div class="authority-visual" aria-label="VibeCode Authority benchmark console">
           <div class="vca-mark">VCA</div>
