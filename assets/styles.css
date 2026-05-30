@@ -19,3 +19,106 @@
   line-height: 1;
   white-space: nowrap;
 }
+
+.microsite-category-section {
+  margin-top: 28px;
+}
+
+.microsite-category-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+.microsite-category-header h2 {
+  margin: 4px 0 0;
+}
+
+.microsite-category-header > span {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.74);
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.microsite-directory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.microsite-directory-card {
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  background: rgba(255, 255, 255, 0.82);
+  border-radius: 22px;
+  padding: 18px;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.08);
+}
+
+.microsite-card-topline {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(15, 23, 42, 0.58);
+}
+
+.microsite-card-topline strong {
+  background: #111;
+  color: #fff;
+  border-radius: 10px;
+  padding: 6px 8px;
+  font-size: 0.82rem;
+}
+
+.microsite-directory-card h3 {
+  margin: 0 0 8px;
+  font-size: 1.16rem;
+}
+
+.microsite-directory-card p {
+  margin: 0;
+  color: rgba(15, 23, 42, 0.72);
+  line-height: 1.5;
+}
+
+.microsite-card-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.microsite-card-links a {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 999px;
+  padding: 7px 9px;
+  background: rgba(255, 255, 255, 0.76);
+  color: #111;
+  text-decoration: none;
+  font-size: 0.82rem;
+}
+
+.microsite-card-links a:hover {
+  border-color: rgba(249, 80, 18, 0.45);
+  color: #f95012;
+}
+
+@media (max-width: 720px) {
+  .microsite-category-header {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .microsite-directory-grid {
+    grid-template-columns: 1fr;
+  }
+}

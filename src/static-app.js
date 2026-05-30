@@ -6967,51 +6967,53 @@ function micrositesDirectoryPanel() {
       </div>
 
       ${Object.entries(groupedTools).map(([category, categoryTools]) => `
-        <div class="cluster-table-card">
-          <h2>${category}</h2>
-          <table class="cluster-table">
-            <thead>
-              <tr>
-                <th>Tool</th>
-                <th>Microsite type</th>
-                <th>Hub</th>
-                <th>Test Lab</th>
-                <th>Security</th>
-                <th>Pricing</th>
-                <th>Verdict</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${categoryTools.map((tool) => {
-                const isCustom = customMicrosites.has(tool.slug);
-                const type = isCustom ? "Custom flagship" : "Automated generic";
-                const statusBadges = [
-                  isCustom ? "Custom flagship" : "Automated generic",
-                  "Needs pricing check",
-                  "Needs test lab",
-                  "Needs security review",
-                  "Verdict pending"
-                ];
-                return `
-                  <tr>
-                    <td>
-                      <strong>${tool.name}</strong><br>
-                      <span>${tool.bestFor || ""}</span>
-                      <div class="directory-badges">
-                        ${statusBadges.map((badge) => `<span class="directory-badge">${badge}</span>`).join("")}
-                      </div>
-                    </td>
-                    <td>${type}</td>
-                    <td><a href="#tool/${tool.slug}">Hub</a></td>
-                    <td><a href="#tool/${tool.slug}/test-lab">Test Lab</a></td>
-                    <td><a href="#tool/${tool.slug}/security">Security</a></td>
-                    <td><a href="#tool/${tool.slug}/pricing">Pricing</a></td>
-                    <td><a href="#tool/${tool.slug}/final-verdict">Verdict</a></td>
-                  </tr>
-                `;
-              }).join("")}
-            </tbody>
-          </table>
+        <div class="microsite-category-section">
+          <div class="microsite-category-header">
+            <div>
+              <p class="eyebrow">Tool category</p>
+              <h2>${category}</h2>
+            </div>
+            <span>${categoryTools.length} tools</span>
+          </div>
+
+          <div class="microsite-directory-grid">
+            ${categoryTools.map((tool) => {
+              const isCustom = customMicrosites.has(tool.slug);
+              const type = isCustom ? "Custom flagship" : "Automated generic";
+              const statusBadges = [
+                type,
+                "Needs pricing check",
+                "Needs test lab",
+                "Needs security review",
+                "Verdict pending"
+              ];
+
+              return `
+                <article class="microsite-directory-card">
+                  <div class="microsite-card-topline">
+                    <span>${type}</span>
+                    <strong>${tool.score || "Pending"}</strong>
+                  </div>
+
+                  <h3>${tool.name}</h3>
+                  <p>${tool.bestFor || "Evidence-first review hub pending hands-on testing."}</p>
+
+                  <div class="directory-badges">
+                    ${statusBadges.map((badge) => `<span class="directory-badge">${badge}</span>`).join("")}
+                  </div>
+
+                  <div class="microsite-card-links">
+                    <a href="#tool/${tool.slug}">Hub</a>
+                    <a href="#tool/${tool.slug}/test-lab">Test Lab</a>
+                    <a href="#tool/${tool.slug}/security">Security</a>
+                    <a href="#tool/${tool.slug}/pricing">Pricing</a>
+                    <a href="#tool/${tool.slug}/final-verdict">Verdict</a>
+                    <a href="#review/${tool.slug}">Review</a>
+                  </div>
+                </article>
+              `;
+            }).join("")}
+          </div>
         </div>
       `).join("")}
 
