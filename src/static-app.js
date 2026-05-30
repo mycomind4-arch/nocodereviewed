@@ -6941,6 +6941,14 @@ const micrositeStatusBySlug = {
   }
 };
 
+
+function micrositeStatusClass(value) {
+  return String(value || "pending")
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+}
+
 function micrositeCompletionForTool(tool, isCustom) {
   const savedStatus = micrositeStatusBySlug[tool.slug];
 
@@ -7064,10 +7072,10 @@ function micrositesDirectoryPanel() {
                   </div>
 
                   <div class="microsite-checklist">
-                    <span>Pricing: ${completion.pricing}</span>
-                    <span>Test lab: ${completion.testLab}</span>
-                    <span>Security: ${completion.security}</span>
-                    <span>Verdict: ${completion.verdict}</span>
+                    <span class="status-${micrositeStatusClass(completion.pricing)}">Pricing: ${completion.pricing}</span>
+                    <span class="status-${micrositeStatusClass(completion.testLab)}">Test lab: ${completion.testLab}</span>
+                    <span class="status-${micrositeStatusClass(completion.security)}">Security: ${completion.security}</span>
+                    <span class="status-${micrositeStatusClass(completion.verdict)}">Verdict: ${completion.verdict}</span>
                   </div>
 
                   <div class="directory-badges">

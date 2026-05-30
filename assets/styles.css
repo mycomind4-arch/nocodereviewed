@@ -175,3 +175,33 @@
     grid-template-columns: 1fr;
   }
 }
+
+.microsite-checklist .status-pending {
+  border-color: rgba(100, 116, 139, 0.22);
+  background: rgba(248, 250, 252, 0.82);
+  color: #475569;
+}
+
+.microsite-checklist .status-planned {
+  border-color: rgba(59, 130, 246, 0.24);
+  background: rgba(239, 246, 255, 0.88);
+  color: #1d4ed8;
+}
+
+.microsite-checklist .status-in-progress {
+  border-color: rgba(249, 115, 22, 0.28);
+  background: rgba(255, 247, 237, 0.9);
+  color: #c2410c;
+}
+
+.microsite-checklist .status-checked {
+  border-color: rgba(34, 197, 94, 0.26);
+  background: rgba(240, 253, 244, 0.9);
+  color: #15803d;
+}
+
+.microsite-checklist .status-blocked {
+  border-color: rgba(127, 29, 29, 0.22);
+  background: rgba(254, 242, 242, 0.92);
+  color: #991b1b;
+}
