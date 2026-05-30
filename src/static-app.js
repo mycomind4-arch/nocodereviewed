@@ -6973,7 +6973,24 @@ function micrositeCompletionForTool(tool, isCustom) {
 
 function micrositesDirectoryPanel() {
   const customMicrosites = new Set(["lovable", "bolt-new", "replit-agent", "v0"]);
-  const groupedTools = tools.reduce((groups, tool) => {
+  const activeFilter = new URLSearchParams(window.location.hash.split("?")[1] || "").get("filter") || "all";
+
+  function toolMatchesMicrositeFilter(tool) {
+    const isCustom = customMicrosites.has(tool.slug);
+    const status = micrositeCompletionForTool(tool, isCustom);
+
+    if (activeFilter === "custom") return isCustom;
+    if (activeFilter === "generic") return !isCustom;
+    if (activeFilter === "pricing") return status.pricing !== "checked";
+    if (activeFilter === "test-lab") return status.testLab !== "checked";
+    if (activeFilter === "security") return status.security !== "checked";
+    if (activeFilter === "blocked") return status.verdict === "blocked";
+    return true;
+  }
+
+  const visibleTools = tools.filter(toolMatchesMicrositeFilter);
+
+  const groupedTools = visibleTools.reduce((groups, tool) => {
     const category = tool.category || "Uncategorized";
     if (!groups[category]) groups[category] = [];
     groups[category].push(tool);
@@ -6982,6 +6999,16 @@ function micrositesDirectoryPanel() {
 
   const totalCustom = tools.filter((tool) => customMicrosites.has(tool.slug)).length;
   const totalGeneric = tools.length - totalCustom;
+
+  const micrositeFilters = [
+    ["all", "All", tools.length],
+    ["custom", "Custom flagship", totalCustom],
+    ["generic", "Automated generic", totalGeneric],
+    ["pricing", "Needs pricing check", tools.filter((tool) => micrositeCompletionForTool(tool, customMicrosites.has(tool.slug)).pricing !== "checked").length],
+    ["test-lab", "Needs test lab", tools.filter((tool) => micrositeCompletionForTool(tool, customMicrosites.has(tool.slug)).testLab !== "checked").length],
+    ["security", "Needs security review", tools.filter((tool) => micrositeCompletionForTool(tool, customMicrosites.has(tool.slug)).security !== "checked").length],
+    ["blocked", "Verdict blocked", tools.filter((tool) => micrositeCompletionForTool(tool, customMicrosites.has(tool.slug)).verdict === "blocked").length]
+  ];
 
   return `
     <section class="lovable-microsite">
@@ -7001,6 +7028,19 @@ function micrositesDirectoryPanel() {
           <p>The microsite engine is now the scalable layer. You can publish broad coverage first, then upgrade the highest-value tools into custom authority pages.</p>
           <a href="#cluster/ai-app-builders">Open AI App Builder Cluster →</a>
         </div>
+      </div>
+
+      <div class="microsite-filter-bar" aria-label="Microsite filters">
+        ${micrositeFilters.map(([key, label, count]) => `
+          <a class="${activeFilter === key ? "active" : ""}" href="${key === "all" ? "#microsites" : `#microsites?filter=${key}`}">
+            <span>${label}</span>
+            <strong>${count}</strong>
+          </a>
+        `).join("")}
+      </div>
+
+      <div class="microsite-filter-summary">
+        Showing <strong>${visibleTools.length}</strong> of <strong>${tools.length}</strong> tool microsites.
       </div>
 
       <div class="cluster-table-card">

@@ -205,3 +205,49 @@
   background: rgba(254, 242, 242, 0.92);
   color: #991b1b;
 }
+
+.microsite-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 22px 0 12px;
+}
+
+.microsite-filter-bar a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.78);
+  color: #111;
+  border-radius: 999px;
+  padding: 9px 11px;
+  text-decoration: none;
+  font-size: 0.86rem;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+
+.microsite-filter-bar a strong {
+  min-width: 24px;
+  text-align: center;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  padding: 3px 7px;
+  font-size: 0.78rem;
+}
+
+.microsite-filter-bar a.active {
+  border-color: rgba(249, 80, 18, 0.46);
+  background: rgba(255, 247, 237, 0.94);
+  color: #c2410c;
+}
+
+.microsite-filter-bar a.active strong {
+  background: rgba(249, 80, 18, 0.14);
+}
+
+.microsite-filter-summary {
+  margin-bottom: 18px;
+  color: rgba(15, 23, 42, 0.68);
+  font-size: 0.92rem;
+}
