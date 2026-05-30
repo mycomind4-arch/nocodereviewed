@@ -251,3 +251,47 @@
   color: rgba(15, 23, 42, 0.68);
   font-size: 0.92rem;
 }
+
+.microsite-dashboard-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.microsite-dashboard-controls .microsite-filter-summary {
+  margin-bottom: 0;
+}
+
+.microsite-sort-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: rgba(15, 23, 42, 0.68);
+  font-size: 0.88rem;
+}
+
+.microsite-sort-control select {
+  border: 1px solid rgba(15, 23, 42, 0.14);
+  background: rgba(255, 255, 255, 0.86);
+  color: #111;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font: inherit;
+}
+
+@media (max-width: 720px) {
+  .microsite-dashboard-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .microsite-sort-control {
+    justify-content: space-between;
+  }
+
+  .microsite-sort-control select {
+    width: 100%;
+  }
+}

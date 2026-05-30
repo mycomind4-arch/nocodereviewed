@@ -6973,7 +6973,17 @@ function micrositeCompletionForTool(tool, isCustom) {
 
 function micrositesDirectoryPanel() {
   const customMicrosites = new Set(["lovable", "bolt-new", "replit-agent", "v0"]);
-  const activeFilter = new URLSearchParams(window.location.hash.split("?")[1] || "").get("filter") || "all";
+  const micrositeParams = new URLSearchParams(window.location.hash.split("?")[1] || "");
+  const activeFilter = micrositeParams.get("filter") || "all";
+  const activeSort = micrositeParams.get("sort") || "category";
+
+  function micrositeDirectoryHref(filter, sort = activeSort) {
+    const params = new URLSearchParams();
+    if (filter && filter !== "all") params.set("filter", filter);
+    if (sort && sort !== "category") params.set("sort", sort);
+    const query = params.toString();
+    return query ? `#microsites?${query}` : "#microsites";
+  }
 
   function toolMatchesMicrositeFilter(tool) {
     const isCustom = customMicrosites.has(tool.slug);
@@ -6988,7 +6998,20 @@ function micrositesDirectoryPanel() {
     return true;
   }
 
-  const visibleTools = tools.filter(toolMatchesMicrositeFilter);
+  const visibleTools = tools.filter(toolMatchesMicrositeFilter).sort((a, b) => {
+    const aCustom = customMicrosites.has(a.slug);
+    const bCustom = customMicrosites.has(b.slug);
+    const aStatus = micrositeCompletionForTool(a, aCustom);
+    const bStatus = micrositeCompletionForTool(b, bCustom);
+
+    if (activeSort === "lowest") return aStatus.completion - bStatus.completion;
+    if (activeSort === "highest") return bStatus.completion - aStatus.completion;
+    if (activeSort === "custom") return Number(bCustom) - Number(aCustom) || a.name.localeCompare(b.name);
+    if (activeSort === "generic") return Number(aCustom) - Number(bCustom) || a.name.localeCompare(b.name);
+    if (activeSort === "name") return a.name.localeCompare(b.name);
+
+    return (a.category || "").localeCompare(b.category || "") || a.name.localeCompare(b.name);
+  });
 
   const groupedTools = visibleTools.reduce((groups, tool) => {
     const category = tool.category || "Uncategorized";
@@ -7032,15 +7055,29 @@ function micrositesDirectoryPanel() {
 
       <div class="microsite-filter-bar" aria-label="Microsite filters">
         ${micrositeFilters.map(([key, label, count]) => `
-          <a class="${activeFilter === key ? "active" : ""}" href="${key === "all" ? "#microsites" : `#microsites?filter=${key}`}">
+          <a class="${activeFilter === key ? "active" : ""}" href="${micrositeDirectoryHref(key)}">
             <span>${label}</span>
             <strong>${count}</strong>
           </a>
         `).join("")}
       </div>
 
-      <div class="microsite-filter-summary">
-        Showing <strong>${visibleTools.length}</strong> of <strong>${tools.length}</strong> tool microsites.
+      <div class="microsite-dashboard-controls">
+        <div class="microsite-filter-summary">
+          Showing <strong>${visibleTools.length}</strong> of <strong>${tools.length}</strong> tool microsites.
+        </div>
+
+        <label class="microsite-sort-control">
+          <span>Sort by</span>
+          <select onchange="window.location.hash = micrositeDirectoryHref(activeFilter, this.value)">
+            <option value="category" ${activeSort === "category" ? "selected" : ""}>Category</option>
+            <option value="lowest" ${activeSort === "lowest" ? "selected" : ""}>Lowest completion first</option>
+            <option value="highest" ${activeSort === "highest" ? "selected" : ""}>Highest completion first</option>
+            <option value="custom" ${activeSort === "custom" ? "selected" : ""}>Custom first</option>
+            <option value="generic" ${activeSort === "generic" ? "selected" : ""}>Generic first</option>
+            <option value="name" ${activeSort === "name" ? "selected" : ""}>Name A-Z</option>
+          </select>
+        </label>
       </div>
 
       <div class="cluster-table-card">
