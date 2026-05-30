@@ -6983,10 +6983,24 @@ function micrositesDirectoryPanel() {
             </thead>
             <tbody>
               ${categoryTools.map((tool) => {
-                const type = customMicrosites.has(tool.slug) ? "Custom flagship" : "Automated generic";
+                const isCustom = customMicrosites.has(tool.slug);
+                const type = isCustom ? "Custom flagship" : "Automated generic";
+                const statusBadges = [
+                  isCustom ? "Custom flagship" : "Automated generic",
+                  "Needs pricing check",
+                  "Needs test lab",
+                  "Needs security review",
+                  "Verdict pending"
+                ];
                 return `
                   <tr>
-                    <td><strong>${tool.name}</strong><br><span>${tool.bestFor || ""}</span></td>
+                    <td>
+                      <strong>${tool.name}</strong><br>
+                      <span>${tool.bestFor || ""}</span>
+                      <div class="directory-badges">
+                        ${statusBadges.map((badge) => `<span class="directory-badge">${badge}</span>`).join("")}
+                      </div>
+                    </td>
                     <td>${type}</td>
                     <td><a href="#tool/${tool.slug}">Hub</a></td>
                     <td><a href="#tool/${tool.slug}/test-lab">Test Lab</a></td>
