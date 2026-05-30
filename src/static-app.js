@@ -6909,6 +6909,21 @@ function genericToolMicrositePanel(toolSlug, pageSlug = "overview") {
 }
 
 
+
+function micrositeCompletionForTool(tool, isCustom) {
+  const base = isCustom ? 42 : 22;
+  const scoreBoost = Number.isFinite(Number(tool.score)) ? Math.min(12, Math.max(0, Math.round(Number(tool.score) / 10))) : 0;
+  const completion = Math.min(72, base + scoreBoost);
+
+  return {
+    completion,
+    pricing: "pending",
+    testLab: isCustom ? "in progress" : "pending",
+    security: "pending",
+    verdict: "blocked"
+  };
+}
+
 function micrositesDirectoryPanel() {
   const customMicrosites = new Set(["lovable", "bolt-new", "replit-agent", "v0"]);
   const groupedTools = tools.reduce((groups, tool) => {
@@ -6987,6 +7002,7 @@ function micrositesDirectoryPanel() {
                 "Needs security review",
                 "Verdict pending"
               ];
+              const completion = micrositeCompletionForTool(tool, isCustom);
 
               return `
                 <article class="microsite-directory-card">
@@ -6997,6 +7013,23 @@ function micrositesDirectoryPanel() {
 
                   <h3>${tool.name}</h3>
                   <p>${tool.bestFor || "Evidence-first review hub pending hands-on testing."}</p>
+
+                  <div class="microsite-progress">
+                    <div class="microsite-progress-header">
+                      <span>Completion</span>
+                      <strong>${completion.completion}%</strong>
+                    </div>
+                    <div class="microsite-progress-track">
+                      <span style="width: ${completion.completion}%"></span>
+                    </div>
+                  </div>
+
+                  <div class="microsite-checklist">
+                    <span>Pricing: ${completion.pricing}</span>
+                    <span>Test lab: ${completion.testLab}</span>
+                    <span>Security: ${completion.security}</span>
+                    <span>Verdict: ${completion.verdict}</span>
+                  </div>
 
                   <div class="directory-badges">
                     ${statusBadges.map((badge) => `<span class="directory-badge">${badge}</span>`).join("")}
