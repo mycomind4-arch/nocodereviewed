@@ -6910,13 +6910,52 @@ function genericToolMicrositePanel(toolSlug, pageSlug = "overview") {
 
 
 
+const micrositeStatusBySlug = {
+  "lovable": {
+    completion: 48,
+    pricing: "pending",
+    testLab: "in progress",
+    security: "pending",
+    verdict: "blocked"
+  },
+  "bolt-new": {
+    completion: 46,
+    pricing: "pending",
+    testLab: "in progress",
+    security: "pending",
+    verdict: "blocked"
+  },
+  "replit-agent": {
+    completion: 44,
+    pricing: "pending",
+    testLab: "in progress",
+    security: "pending",
+    verdict: "blocked"
+  },
+  "v0": {
+    completion: 42,
+    pricing: "pending",
+    testLab: "planned",
+    security: "pending",
+    verdict: "blocked"
+  }
+};
+
 function micrositeCompletionForTool(tool, isCustom) {
-  const base = isCustom ? 42 : 22;
-  const scoreBoost = Number.isFinite(Number(tool.score)) ? Math.min(12, Math.max(0, Math.round(Number(tool.score) / 10))) : 0;
-  const completion = Math.min(72, base + scoreBoost);
+  const savedStatus = micrositeStatusBySlug[tool.slug];
+
+  if (savedStatus) {
+    return {
+      completion: savedStatus.completion ?? 0,
+      pricing: savedStatus.pricing || "pending",
+      testLab: savedStatus.testLab || "pending",
+      security: savedStatus.security || "pending",
+      verdict: savedStatus.verdict || "blocked"
+    };
+  }
 
   return {
-    completion,
+    completion: isCustom ? 42 : 22,
     pricing: "pending",
     testLab: isCustom ? "in progress" : "pending",
     security: "pending",
