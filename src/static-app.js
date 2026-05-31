@@ -1,3 +1,31 @@
+const evidenceFileIndex = [
+  { tool: "Replit", slug: "replit", file: "docs/evidence/01_replit_complete_evidence_file.md", status: "Complete" },
+  { tool: "Base44", slug: "base44", file: "docs/evidence/02_base_44_complete_evidence_file.md", status: "Complete" },
+  { tool: "Bolt.new", slug: "bolt-new", file: "docs/evidence/03_bolt_new_complete_evidence_file.md", status: "Complete" },
+  { tool: "Lovable", slug: "lovable", file: "docs/evidence/04_lovable_complete_evidence_file.md", status: "Complete" },
+  { tool: "Cursor", slug: "cursor", file: "docs/evidence/05_cursor_complete_evidence_file.md", status: "Complete" },
+  { tool: "Windsurf", slug: "windsurf", file: "docs/evidence/06_windsurf_complete_evidence_file.md", status: "Complete" },
+  { tool: "Claude Code", slug: "claude-code", file: "docs/evidence/07_claude_code_complete_evidence_file.md", status: "Complete" },
+  { tool: "OpenAI Codex", slug: "openai-codex", file: "docs/evidence/08_openai_codex_complete_evidence_file.md", status: "Complete" },
+  { tool: "v0", slug: "v0", file: "docs/evidence/09_v_0_complete_evidence_file.md", status: "Complete" },
+  { tool: "Lovable", slug: "lovable", file: "docs/evidence/12_lovable_evidence_file.md", status: "Supplemental" },
+  { tool: "Claude Code", slug: "claude-code", file: "docs/evidence/13_claude_code_evidence_file.md", status: "Supplemental" },
+  { tool: "OpenAI Codex", slug: "openai-codex", file: "docs/evidence/14_openai_codex_evidence_file.md", status: "Supplemental" },
+  { tool: "Supabase AI Assistant", slug: "supabase-ai-assistant", file: "docs/evidence/15_supabase_ai_assistant_evidence_file.md", status: "Supplemental" },
+  { tool: "Bubble AI", slug: "bubble-ai", file: "docs/evidence/16_bubble_ai_evidence_file.md", status: "Supplemental" },
+  { tool: "FlutterFlow AI", slug: "flutterflow-ai", file: "docs/evidence/17_flutterflow_ai_evidence_file.md", status: "Supplemental" },
+  { tool: "Webflow AI", slug: "webflow-ai", file: "docs/evidence/18_webflow_ai_evidence_file.md", status: "Supplemental" },
+  { tool: "Framer AI", slug: "framer-ai", file: "docs/evidence/19_framer_ai_evidence_file.md", status: "Supplemental" },
+  { tool: "Glide AI", slug: "glide-ai", file: "docs/evidence/20_glide_ai_evidence_file.md", status: "Supplemental" },
+  { tool: "Softr AI", slug: "softr-ai", file: "docs/evidence/21_softr_ai_evidence_file.md", status: "Supplemental" },
+  { tool: "Adalo", slug: "adalo", file: "docs/evidence/22_adalo_evidence_file.md", status: "Supplemental" },
+  { tool: "Retool AI", slug: "retool-ai", file: "docs/evidence/23_retool_ai_evidence_file.md", status: "Supplemental" },
+  { tool: "Thunkable", slug: "thunkable", file: "docs/evidence/24_thunkable_evidence_file.md", status: "Supplemental" },
+  { tool: "Appsmith", slug: "appsmith", file: "docs/evidence/25_appsmith_evidence_file.md", status: "Supplemental" },
+  { tool: "WeWeb", slug: "weweb", file: "docs/evidence/26_weweb_evidence_file.md", status: "Supplemental" },
+  { tool: "Builder.io Fusion", slug: "builder-io-fusion", file: "docs/evidence/27_builder_io_fusion_evidence_file.md", status: "Supplemental" },
+];
+
 const tools = [
   { name: "Lovable", slug: "lovable", category: "Prompt-to-app", price: "Free + paid", score: 94, evidence: 0, bestFor: "Founders turning product ideas into full-stack web apps", verdict: "The benchmark for fast prompt-to-product iteration, but production readiness still needs testing.", affiliateStatus: "Researching", updated: "Needs first test" },
   { name: "Bolt.new", slug: "bolt-new", category: "Prompt-to-app", price: "Free + paid", score: 93, evidence: 0, bestFor: "Browser-based app builds with code visibility and fast iteration", verdict: "One of the strongest app-generation sandboxes for builders who want speed plus editable code.", affiliateStatus: "Researching", updated: "Needs first test" },
@@ -18,11 +46,11 @@ const tools = [
   { name: "Galileo AI", slug: "galileo-ai", category: "UI generation", price: "Paid plans", score: 80, evidence: 0, bestFor: "Generating polished UI concepts from prompts", verdict: "Useful for visual exploration before production implementation.", affiliateStatus: "Researching", updated: "Needs first test" },
   { name: "Relume", slug: "relume", category: "Site generation", price: "Free + paid", score: 79, evidence: 0, bestFor: "Sitemaps, wireframes, and Webflow-oriented site planning", verdict: "Strong for web planning, less relevant for app logic.", affiliateStatus: "Researching", updated: "Needs first test" },
   { name: "Framer AI", slug: "framer-ai", category: "Site generation", price: "Free + paid", score: 79, evidence: 0, bestFor: "Landing pages and marketing sites generated quickly", verdict: "A fast site builder, not a full vibe-app environment.", affiliateStatus: "Researching", updated: "Needs first test" },
-  { name: "Webflow AI", slug: "webflow-ai", category: "Site generation", price: "Paid plans", score: 78, evidence: 0, bestFor: "AI-assisted site design inside a mature website builder", verdict: "Relevant as the established no-code incumbent responding to vibe coding.", affiliateStatus: "Researching", updated: "Needs first test" },
+  { name: "Webflow AI", slug: "webflow-ai", category: "Site generation", price: "Paid plans", score: 78, evidence: 0, bestFor: "AI-assisted site design inside a mature website builder", verdict: "Relevant as the established no-code incumbent responding to AI app building.", affiliateStatus: "Researching", updated: "Needs first test" },
   { name: "Bubble AI", slug: "bubble-ai", category: "No-code app + AI", price: "Paid plans", score: 78, evidence: 0, bestFor: "Traditional no-code apps with AI assistance", verdict: "Important incumbent comparison: more control, slower vibe loop.", affiliateStatus: "Researching", updated: "Needs first test" },
-  { name: "FlutterFlow AI", slug: "flutterflow-ai", category: "Mobile app + AI", price: "Free + paid", score: 77, evidence: 0, bestFor: "Mobile app builders who want AI help but real app structure", verdict: "More structured than vibe coding, useful for mobile-specific tests.", affiliateStatus: "Researching", updated: "Needs first test" },
-  { name: "Softr AI", slug: "softr-ai", category: "Internal tools", price: "Free + paid", score: 76, evidence: 0, bestFor: "Portals and business apps powered by existing data", verdict: "Not pure vibe coding, but good for business users who need less engineering risk.", affiliateStatus: "Researching", updated: "Needs first test" },
-  { name: "Retool AI", slug: "retool-ai", category: "Internal tools", price: "Paid plans", score: 76, evidence: 0, bestFor: "Internal apps with AI-assisted development", verdict: "Enterprise-grade contrast to founder-focused vibe coding tools.", affiliateStatus: "Researching", updated: "Needs first test" },
+  { name: "FlutterFlow AI", slug: "flutterflow-ai", category: "Mobile app + AI", price: "Free + paid", score: 77, evidence: 0, bestFor: "Mobile app builders who want AI help but real app structure", verdict: "More structured than AI app building, useful for mobile-specific tests.", affiliateStatus: "Researching", updated: "Needs first test" },
+  { name: "Softr AI", slug: "softr-ai", category: "Internal tools", price: "Free + paid", score: 76, evidence: 0, bestFor: "Portals and business apps powered by existing data", verdict: "Not pure AI app building, but good for business users who need less engineering risk.", affiliateStatus: "Researching", updated: "Needs first test" },
+  { name: "Retool AI", slug: "retool-ai", category: "Internal tools", price: "Paid plans", score: 76, evidence: 0, bestFor: "Internal apps with AI-assisted development", verdict: "Enterprise-grade contrast to founder-focused AI app builder tools.", affiliateStatus: "Researching", updated: "Needs first test" },
   { name: "Appsmith AI", slug: "appsmith-ai", category: "Internal tools", price: "Free + paid", score: 75, evidence: 0, bestFor: "Open-source internal tools with AI assistance", verdict: "Useful for technical teams comparing open internal-tool builders.", affiliateStatus: "Researching", updated: "Needs first test" },
   { name: "CodeDesign.ai", slug: "codedesign-ai", category: "Site generation", price: "Free + paid", score: 74, evidence: 0, bestFor: "AI-generated marketing sites and simple pages", verdict: "Cover as a site-generation comparison, not as a full app builder.", affiliateStatus: "Researching", updated: "Needs first test" },
   { name: "Durable", slug: "durable", category: "Site generation", price: "Paid plans", score: 73, evidence: 0, bestFor: "Small business sites generated quickly", verdict: "Useful for local-business site tests, outside the core app-builder lane.", affiliateStatus: "Researching", updated: "Needs first test" },
@@ -303,7 +331,7 @@ const monetizationChannels = [
     channel: "Affiliate links",
     status: "Researching",
     placement: "Review sidebar, comparison tables, and best-of pages only after disclosure is present.",
-    rule: "Affiliate status cannot affect authority score, ranking, verdict, or evidence requirements.",
+    rule: "Affiliate status cannot affect review score, ranking, verdict, or evidence requirements.",
   },
   {
     channel: "Benchmark reports",
@@ -1504,7 +1532,7 @@ const trustPrinciples = [
   {
     principle: "Commercial separation",
     readerPromise: "Affiliate and sponsor relationships do not control rankings, scores, verdicts, or criticism.",
-    operatingRule: "Partner status is tracked separately from authority score and must be disclosed before monetized links.",
+    operatingRule: "Partner status is tracked separately from review score and must be disclosed before monetized links.",
   },
   {
     principle: "Visible revision history",
@@ -1567,7 +1595,7 @@ const complianceReviewTriggers = [
 const policyDisclaimers = [
   {
     surface: "Reviews",
-    text: "VibeCode Authority publishes evidence-based editorial analysis, not legal, financial, or security advice.",
+    text: "NoCodeReviewed publishes evidence-based editorial analysis, not legal, financial, or security advice.",
   },
   {
     surface: "Production readiness",
@@ -2303,7 +2331,7 @@ const authorityReports = [
     title: "Vibe Coding Platform Index",
     cadence: "Monthly",
     audience: "Founders, operators, and technical buyers tracking the AI app-builder category.",
-    thesis: "Ranks the full platform set by evidence-backed authority score, publish readiness, and benchmark coverage.",
+    thesis: "Ranks the full platform set by evidence-backed review score, publish readiness, and benchmark coverage.",
     requiredEvidence: ["All 28 platform review records", "Fresh pricing/source snapshots", "At least one benchmark run for every core platform", "Final QA pass for every ranked claim"],
     visual: "Dark institutional cover with VCA mark, ranked platform grid, evidence timestamp, and benchmark network map.",
   },
@@ -2340,7 +2368,7 @@ const bestOfGuides = [
   {
     slug: "founders",
     title: "Best Vibe Coding Tools for Founders",
-    keyword: "best vibe coding tools for founders",
+    keyword: "best AI app builder tools for founders",
     intent: "Nontechnical and technical founders choosing where to build an MVP first.",
     preferred: ["Lovable", "Bolt.new", "Replit Agent", "Base44", "Create"],
   },
@@ -2397,7 +2425,7 @@ const categoryPlaybooks = {
     avoid: "Avoid if you need a purely visual builder and do not want to inspect code.",
   },
   "AI IDE": {
-    summary: "Best for code-native vibe coding, refactors, production hardening, and handoff work.",
+    summary: "Best for code-native AI app building, refactors, production hardening, and handoff work.",
     strengths: ["High control over implementation", "Strong fit for existing codebases", "Better for testing, refactoring, and production fixes"],
     risks: ["Not a complete no-code product builder", "Requires technical judgment", "Can produce broad edits without tight prompts"],
     benchmark: "AI Wrapper",
@@ -2434,7 +2462,7 @@ const categoryPlaybooks = {
   "No-code app + AI": {
     summary: "Best for traditional no-code app building with AI assistance layered into a mature builder.",
     strengths: ["More structured app model", "Established plugin and workflow ecosystems", "Better for complex business logic than pure prompt builders"],
-    risks: ["Slower than vibe coding", "Can create platform lock-in", "AI features may not remove builder complexity"],
+    risks: ["Slower than AI app building", "Can create platform lock-in", "AI features may not remove builder complexity"],
     benchmark: "Directory App",
     avoid: "Avoid if speed and prompt-first iteration matter more than structured control.",
   },
@@ -2462,7 +2490,7 @@ const categoryPlaybooks = {
 };
 
 const defaultPlaybook = {
-  summary: "Relevant to the vibe coding ecosystem and worth benchmarking against the core app-builder set.",
+  summary: "Relevant to the AI app builder ecosystem and worth benchmarking against the core app-builder set.",
   strengths: ["Useful in a defined part of the app-building workflow", "Worth tracking as the category matures", "Can complement prompt-to-app builders"],
   risks: ["Needs direct evidence before recommendation", "Marketing claims should not be used as proof", "Production readiness must be tested"],
   benchmark: "SaaS MVP Dashboard",
@@ -2516,12 +2544,17 @@ function toolCard(tool) {
       </div>
       <div class="review-priority">${profile.verdictLabel}</div>
       <p class="verdict">${profile.verdict}</p>
+      <div class="tool-fit-line">
+        <span>Best fit: ${tool.bestFor}</span>
+      </div>
       <dl class="facts">
-        <div><dt>Best for</dt><dd>${tool.bestFor}</dd></div>
         <div><dt>Pricing</dt><dd>${tool.price}</dd></div>
-        <div><dt>Evidence</dt><dd>${count ? `${count} run${count === 1 ? "" : "s"}` : "Test pending"}; ${snapshotCountFor(tool.name)} source snapshots; ${artifactCountFor(tool.name)} artifacts</dd></div>
-        <div><dt>Affiliate</dt><dd>${tool.affiliateStatus}</dd></div>
+        <div><dt>Evidence</dt><dd>${count ? `${count} run${count === 1 ? "" : "s"}` : "Test pending"}; ${evidenceFileCountFor(tool.name)} evidence file${evidenceFileCountFor(tool.name) === 1 ? "" : "s"}; ${snapshotCountFor(tool.name)} source snapshots</dd></div>
+        <div><dt>Commercial status</dt><dd>${tool.affiliateStatus}</dd></div>
       </dl>
+      <div class="evidence-file-links">
+        ${evidenceFilesFor(tool.name).map((file) => `<a href="/${file.file}" target="_blank" rel="noopener">${file.status} evidence</a>`).join("") || `<span>Evidence file pending</span>`}
+      </div>
       <div class="gate-strip ${gates.ready ? "ready" : ""}">
         <span>${gates.hasRecord ? "Review" : "Review missing"}</span>
         <span>${gates.hasBenchmark ? "Benchmark" : "Benchmark missing"}</span>
@@ -2535,6 +2568,17 @@ function toolCard(tool) {
       </div>
     </article>
   `;
+}
+
+
+function evidenceFilesFor(toolName) {
+  const tool = tools.find((item) => item.name === toolName);
+  const names = new Set([toolName, tool?.slug].filter(Boolean).map((item) => String(item).toLowerCase()));
+  return evidenceFileIndex.filter((item) => names.has(item.tool.toLowerCase()) || names.has(item.slug.toLowerCase()));
+}
+
+function evidenceFileCountFor(toolName) {
+  return evidenceFilesFor(toolName).length;
 }
 
 function evidenceCountFor(toolName) {
@@ -3095,8 +3139,8 @@ function reviewDetailPanel(tool) {
           <h2>${tool.name} Review</h2>
           <p>${profile.summary}</p>
           <div class="review-actions">
-            <button data-tab="admin">Capture evidence</button>
-            <a href="#compare">Compare platforms</a>
+            <a class="button" href="#compare">Compare tools</a>
+            <a href="#methodology">How this review works</a>
             ${tool.slug === "lovable" ? `<a class="button" href="#tool/lovable">Open Lovable Ultimate Microsite →</a>` : ""}
             ${tool.slug === "bolt-new" ? `<a class="button" href="#tool/bolt-new">Open Bolt.new Ultimate Microsite →</a>` : ""}
             ${tool.slug === "replit-agent" ? `<a class="button" href="#tool/replit-agent">Open Replit Agent Ultimate Microsite →</a>` : ""}            ${tool.slug === "v0" ? `<a class="button" href="#tool/v0">Open v0 Ultimate Microsite →</a>` : ""}
@@ -3104,7 +3148,7 @@ function reviewDetailPanel(tool) {
           </div>
         </div>
         <div class="review-scorecard">
-          <span>Authority score</span>
+          <span>Review score</span>
           <strong>${profile.score}</strong>
           <p>${profile.evidenceStatus}</p>
         </div>
@@ -3161,7 +3205,7 @@ function reviewDetailPanel(tool) {
               <div><dt>Category</dt><dd>${tool.category}</dd></div>
               <div><dt>Pricing</dt><dd>${tool.price}</dd></div>
               <div><dt>Status</dt><dd>${profile.verdictLabel}</dd></div>
-              <div><dt>Affiliate</dt><dd>${tool.affiliateStatus}</dd></div>
+              <div><dt>Commercial status</dt><dd>${tool.affiliateStatus}</dd></div>
               <div><dt>Freshness</dt><dd>${tool.updated}</dd></div>
             </dl>
           </div>
@@ -3185,13 +3229,13 @@ function reviewsPanel() {
   return `
     <section class="panel">
       <div class="panel-heading">
-        <div><p class="eyebrow">28-tool coverage map</p><h2>Vibe coding reviews, benchmarks, and build evidence</h2></div>
+        <div><p class="eyebrow">Tool directory</p><h2>Browse no-code and AI builder reviews</h2></div>
         <label class="searchbox">${icon("search")}<input id="tool-search" value="${query}" placeholder="Search Lovable, Bolt, Replit, v0, Cursor..."></label>
       </div>
       <div class="category-filter">
         ${categories().map((category) => `<button data-category="${category}" class="${activeCategory === category ? "active" : ""}">${category}</button>`).join("")}
       </div>
-      <div class="review-count">${filtered.length} platform${filtered.length === 1 ? "" : "s"} shown. Every card opens to a structured review page.</div>
+      <div class="review-count">${filtered.length} tool${filtered.length === 1 ? "" : "s"} shown. Every card opens to a structured review with fit, risk, pricing, and evidence status.</div>
       <div class="tool-grid">${filtered.map(toolCard).join("")}</div>
     </section>
   `;
@@ -3199,14 +3243,14 @@ function reviewsPanel() {
 
 function comparePanel() {
   const rows = ["category", "price", "bestFor", "score", "evidence", "benchmark", "affiliateStatus"];
-  const labels = { category: "Category", price: "Pricing", bestFor: "Best for", score: "Authority score", evidence: "Evidence", benchmark: "Primary benchmark", affiliateStatus: "Affiliate" };
+  const labels = { category: "Category", price: "Pricing", bestFor: "Best for", score: "Score", evidence: "Evidence status", benchmark: "Best test fit", affiliateStatus: "Commercial status" };
   return `
     <section class="panel">
-      <div class="panel-heading"><div><p class="eyebrow">Buyer-intent surface</p><h2>Top vibe coding platforms side by side</h2></div></div>
+      <div class="panel-heading"><div><p class="eyebrow">Comparison table</p><h2>Compare top no-code and AI app builders side by side</h2><p class="section-lede">Use this table to shortlist tools by fit, price, evidence status, and review readiness before opening a full review.</p></div></div>
       <div class="compare-builder">
         <label>Platform A<select id="compare-a">${tools.map((tool) => `<option value="${tool.slug}" ${tool.slug === compareA ? "selected" : ""}>${tool.name}</option>`).join("")}</select></label>
         <label>Platform B<select id="compare-b">${tools.map((tool) => `<option value="${tool.slug}" ${tool.slug === compareB ? "selected" : ""}>${tool.name}</option>`).join("")}</select></label>
-        <a class="compare-open" href="${compareUrl()}">Open focused comparison</a>
+        <a class="compare-open" href="${compareUrl()}">Compare selected tools</a>
       </div>
       <div class="comparison-wrap">
         <table class="comparison-table">
@@ -3254,7 +3298,10 @@ function compareDetailPanel(toolA, toolB) {
               <div><p class="eyebrow">${tool.category}</p><h3>${tool.name}</h3></div>
               <div class="score">${profile.score}</div>
               <p>${profile.verdict}</p>
-              <div class="gate-strip ${gates.ready ? "ready" : ""}">
+              <div class="evidence-file-links">
+        ${evidenceFilesFor(tool.name).map((file) => `<a href="/${file.file}" target="_blank" rel="noopener">${file.status} evidence</a>`).join("") || `<span>Evidence file pending</span>`}
+      </div>
+      <div class="gate-strip ${gates.ready ? "ready" : ""}">
                 <span>${gates.hasRecord ? "Review" : "No review"}</span>
                 <span>${gates.hasBenchmark ? "Benchmark" : "No benchmark"}</span>
                 <span>${gates.hasFreshSnapshot ? "Fresh source" : gates.hasSnapshot ? "Stale source" : "No source"}</span>
@@ -3284,7 +3331,7 @@ function bestOfPanel() {
   return `
     <section class="panel">
       <div class="panel-heading">
-        <div><p class="eyebrow">Buyer-intent guides</p><h2>Best vibe coding tools by use case</h2></div>
+        <div><p class="eyebrow">Best tools by use case</p><h2>Start with the job you need the tool to do</h2></div>
       </div>
       <div class="bestof-grid">
         ${bestOfGuides.map((guide) => `
@@ -3292,7 +3339,7 @@ function bestOfPanel() {
             <p class="eyebrow">${guide.keyword}</p>
             <h3>${guide.title}</h3>
             <p>${guide.intent}</p>
-            <span>${guide.preferred.length} ranked platforms</span>
+            <span>${guide.preferred.length} recommended tools</span>
           </a>
         `).join("")}
       </div>
@@ -3306,11 +3353,11 @@ function bestOfDetailPanel(guide) {
     <section class="panel bestof-detail">
       <a class="back-link" href="#best">Back to best-of guides</a>
       <div class="panel-heading">
-        <div><p class="eyebrow">${guide.keyword}</p><h2>${guide.title}</h2></div>
+        <div><p class="eyebrow">${guide.keyword}</p><h2>${guide.title}</h2><p class="section-lede">Each ranking explains who the tool is best for, where the evidence is strong, and what still needs verification.</p></div>
       </div>
       <div class="comparison-callout">
         <strong>Selection rule</strong>
-        <p>${guide.intent} Rankings use current authority score plus publish-readiness gates. Scores remain provisional until evidence gates are complete.</p>
+        <p>${guide.intent} Rankings use current score, best-fit alignment, pricing clarity, and publish-readiness gates. Scores remain provisional until evidence gates are complete.</p>
       </div>
       <div class="bestof-rankings">
         ${ranked.map((tool, index) => {
@@ -3323,7 +3370,10 @@ function bestOfDetailPanel(guide) {
                 <p class="eyebrow">${tool.category}</p>
                 <h3>${tool.name}</h3>
                 <p>${profile.verdict}</p>
-                <div class="gate-strip ${gates.ready ? "ready" : ""}">
+                <div class="evidence-file-links">
+        ${evidenceFilesFor(tool.name).map((file) => `<a href="/${file.file}" target="_blank" rel="noopener">${file.status} evidence</a>`).join("") || `<span>Evidence file pending</span>`}
+      </div>
+      <div class="gate-strip ${gates.ready ? "ready" : ""}">
                   <span>${gates.hasBenchmark ? "Benchmark" : "No benchmark"}</span>
                   <span>${gates.hasFreshSnapshot ? "Fresh source" : gates.hasSnapshot ? "Stale source" : "No source"}</span>
                   <span>${gates.hasArtifact ? "Artifact" : "No artifact"}</span>
@@ -3344,12 +3394,17 @@ function methodologyPanel() {
   return `
     <section class="panel methodology-panel">
       <div class="panel-heading">
-        <div><p class="eyebrow">Scoring methodology</p><h2>Rankings are earned by benchmark evidence, not product positioning.</h2></div>
+        <div><p class="eyebrow">Review methodology</p><h2>How NoCodeReviewed scores tools.</h2><p class="section-lede">Every review separates product fit, evidence strength, pricing freshness, and commercial status so rankings are useful instead of just promotional.</p></div>
       </div>
+      <div class="trust-note">
+        <strong>Editorial independence</strong>
+        <p>Scores are based on evidence records, benchmark checks, pricing freshness, production-readiness gates, and QA status. Affiliate or sponsor status does not improve rankings.</p>
+      </div>
+
       <div class="methodology-split">
         <div class="methodology-rulebook">
-          <h3>Authority score model</h3>
-          <p>Each review starts with the same benchmark prompt family, then gets scored across completion, correctness, production path, maintainability, speed, buyer fit, and evidence quality. A tool can rank highly only when the evidence record supports the claim.</p>
+          <h3>Score model</h3>
+          <p>Each review starts with comparable testing and source checks, then gets scored across completion, correctness, production path, maintainability, speed, buyer fit, and evidence quality. A tool can rank highly only when the evidence record supports the claim.</p>
           <div class="score-total"><span>Total weighting</span><strong>${total}%</strong></div>
         </div>
         <div class="rubric-list">
@@ -3570,13 +3625,13 @@ function intakePanel() {
   return `
     <section class="panel intake-panel">
       <div class="panel-heading">
-        <div><p class="eyebrow">Tool intake</p><h2>New platforms enter through evidence gates, not hype.</h2></div>
+        <div><p class="eyebrow">Submit a tool</p><h2>Suggest a no-code or AI builder for review.</h2><p class="section-lede">Tools are added to NoCodeReviewed when there is enough public information, source evidence, and use-case demand to evaluate them fairly.</p></div>
       </div>
       <div class="intake-stats">
-        <div><span>Intake stages</span><strong>${intakeStages.length}</strong></div>
-        <div><span>Coverage lanes</span><strong>${coverageLanes.length}</strong></div>
-        <div><span>Core cluster</span><strong>${coreLane.examples.length}</strong></div>
-        <div><span>Reject rules</span><strong>${intakeRejectionReasons.length}</strong></div>
+        <div><span>Review steps</span><strong>${intakeStages.length}</strong></div>
+        <div><span>Tool lanes</span><strong>${coverageLanes.length}</strong></div>
+        <div><span>Core builders</span><strong>${coreLane.examples.length}</strong></div>
+        <div><span>Quality rules</span><strong>${intakeRejectionReasons.length}</strong></div>
       </div>
       <div class="intake-stage-grid">
         ${intakeStages.map((item, index) => `
@@ -3606,13 +3661,13 @@ function intakePanel() {
       </div>
       <div class="intake-bottom-grid">
         <section>
-          <h3>Rejection and parking rules</h3>
+          <h3>Why a tool may wait</h3>
           <div class="checklist">
             ${intakeRejectionReasons.map((item) => `<div><span>!</span><p><strong>${item}</strong>Park until evidence improves.</p></div>`).join("")}
           </div>
         </section>
         <section>
-          <h3>First-test assignment</h3>
+          <h3>What happens after submission</h3>
           <div class="outline-list">
             ${["Assign segment", "Choose benchmark family", "Capture source snapshots", "Run first benchmark", "Decide lane"].map((item, index) => `
               <div><span>${index + 1}</span><p><strong>${item}</strong>${index < 2 ? "Use the competitive intelligence model." : "Do not publish a verdict before this is complete."}</p></div>
@@ -5822,7 +5877,7 @@ function adminPanel() {
 function roadmapPanel() {
   return `
     <section class="panel roadmap">
-      <div class="panel-heading"><div><p class="eyebrow">Network strategy</p><h2>Own vibe coding first, then expand outward</h2></div></div>
+      <div class="panel-heading"><div><p class="eyebrow">Network strategy</p><h2>Own AI app building first, then expand outward</h2></div></div>
       <div class="roadmap-grid">
         <div>
           <h3>Authority rollout</h3>
@@ -7298,16 +7353,29 @@ function render() {
   document.querySelector("#app").innerHTML = `
     <main>
       <header class="topbar">
-        <a class="brand" href="#top"><span></span>VibeCode Authority</a>
-        <nav><a href="#reviews">Reviews</a><a href="#microsites">Microsites</a><a href="#cluster/ai-app-builders">AI App Builder Cluster</a><a href="#compare">Compare</a><a href="#methodology" data-tab="methodology">Methodology</a><a href="#admin" data-tab="admin">Admin</a></nav>
+        <a class="brand" href="#top"><span></span>NoCodeReviewed</a>
+        <nav><a href="#reviews">Reviews</a><a href="#best">Best Tools</a><a href="#compare">Compare</a><a href="#methodology" data-tab="methodology">Methodology</a><a href="#microsites">Microsites</a></nav>
         <button class="submit-button" data-tab="intake">Submit a Tool</button>
       </header>
       <section class="hero" id="top">
         <div class="hero-copy">
-          <p class="eyebrow">Vibe code authority</p>
-          <h1>Evidence-first reviews for the AI app-builder era.</h1>
-          <p>Autonomous, evidence-backed reviews and benchmarks for Lovable, Bolt, Replit, v0, Cursor, Base44, Windsurf, and the full AI app-builder category. No recycled listicles. Every verdict must come from build tests, pricing checks, and production-readiness gates.</p>
-          <div class="hero-actions"><a class="button" href="/tools/vibe-auditor.html">Audit My App</a><button data-tab="best">Best tools by use case</button><a class="button secondary" href="#microsites">All Microsites</a><a class="button secondary" href="#cluster/ai-app-builders">AI App Builder Cluster</a><button class="secondary" data-tab="readiness">View evidence gates</button></div>
+          <p class="eyebrow">No-code tool reviews, tested</p>
+          <h1>Find the right no-code and AI app builder with evidence you can trust.</h1>
+          <p>NoCodeReviewed compares tools like Lovable, Bolt.new, Replit, v0, Cursor, Bubble, Webflow, and more using hands-on tests, pricing checks, production-readiness gates, and plain-English verdicts.</p>
+          <div class="hero-actions"><a class="button" href="/tools/vibe-auditor.html">Run the Vibe Code Audit</a><button data-tab="best">Browse best tools</button><button class="secondary" data-tab="compare">Compare tools</button></div>
+          <div class="homepage-trust-bar">
+            <span>Hands-on testing</span>
+            <span>Pricing checks</span>
+            <span>25 evidence files connected</span>
+            <span>Affiliate status disclosed</span>
+          </div>
+          <div class="audit-callout">
+            <div>
+              <strong>Built an AI app already?</strong>
+              <p>Run the free audit to find survivability gaps, launch risks, and paid repair options.</p>
+            </div>
+            <a href="/tools/vibe-auditor.html">Audit your app</a>
+          </div>
         </div>
         <div class="hero-image-card" aria-label="NoCodeReviewed evidence dashboard preview">
           <img src="/images/homepage/homepage-hero-dashboard.png" alt="NoCodeReviewed evidence dashboard preview with AI builder comparison cards, scoring panels, and review workflow graphics">
@@ -7345,52 +7413,11 @@ function render() {
           ${[
             ["reviews", "Reviews", "search"],
             ["compare", "Compare", "sliders"],
-            ["best", "Best", "gauge"],
-            ["methodology", "Method", "database"],
-            ["taxonomy", "Terms", "database"],
-            ["reports", "Reports", "dashboard"],
-            ["intelligence", "Intel", "search"],
-            ["intake", "Intake", "database"],
-            ["pipeline", "Pipeline", "database"],
-            ["calendar", "Calendar", "dashboard"],
-            ["monetization", "Revenue", "shield"],
-            ["cro", "CRO", "gauge"],
-            ["email", "Email", "database"],
-            ["partnerships", "Partners", "shield"],
-            ["audience", "Audience", "search"],
-            ["measurement", "Metrics", "dashboard"],
-            ["seo", "SEO", "database"],
-            ["architecture", "Sitemap", "database"],
-            ["watch", "Watch", "shield"],
-            ["corrections", "Corrections", "database"],
+            ["best", "Best Tools", "gauge"],
+            ["methodology", "Methodology", "database"],
             ["benchmarks", "Benchmarks", "gauge"],
-            ["generation", "Prompts", "database"],
-            ["models", "Models", "dashboard"],
-            ["quality", "Quality", "shield"],
-            ["data", "Data", "database"],
-            ["schema", "Schema", "database"],
-            ["api", "API", "database"],
-            ["auth", "Auth", "shield"],
-            ["cms", "CMS", "database"],
-            ["evidence", "Evidence", "database"],
-            ["trust", "Trust", "shield"],
-            ["compliance", "Policy", "shield"],
-            ["design", "Design", "dashboard"],
-            ["operations", "Ops", "dashboard"],
-            ["stack", "Stack", "database"],
-            ["release", "Release", "dashboard"],
-            ["recovery", "DR", "shield"],
-            ["automation", "Agents", "shield"],
-            ["launch", "Launch", "gauge"],
-            ["sprint", "Sprint", "dashboard"],
-            ["production", "Prod", "shield"],
-            ["distribution", "Media", "dashboard"],
-            ["wizard", "Matcher", "gauge"],
-            ["tools", "Assets", "dashboard"],
-            ["autonomy", "Autonomy", "shield"],
-            ["readiness", "Readiness", "gauge"],
-            ["admin", "Admin", "dashboard"],
-            ["roadmap", "Roadmap", "database"],
+            ["wizard", "Tool Matcher", "gauge"],
+            ["intake", "Submit Tool", "database"],
           ].map(([id, label, iconName]) => `<button data-tab="${id}" class="${activeTab === id ? "active" : ""}">${icon(iconName)}${label}</button>`).join("")}
         </div>
         <div id="panel">${renderPanel()}</div>
@@ -7404,6 +7431,19 @@ function render() {
           <div><strong>Autonomous refresh</strong><p>Old posts are re-scored when products ship, pricing changes, or evidence expires.</p></div>
         </div>
       </section>
+      <footer class="site-footer">
+        <div>
+          <strong>NoCodeReviewed</strong>
+          <p>Evidence-based no-code and AI app builder reviews for people choosing real tools.</p>
+        </div>
+        <nav aria-label="Footer navigation">
+          <a href="#reviews">Reviews</a>
+          <a href="#best">Best Tools</a>
+          <a href="#compare">Compare</a>
+          <a href="#methodology">Methodology</a>
+          <a href="/benchmarks/redwood-trellis-shop/">Benchmarks</a>
+        </nav>
+      </footer>
     </main>
   `;
   bind();
