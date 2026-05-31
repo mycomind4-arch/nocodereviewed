@@ -17,6 +17,8 @@ const types = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".svg": "image/svg+xml",
+  ".md": "text/markdown; charset=utf-8",
+  ".pdf": "application/pdf",
 };
 
 function resolvePath(url) {
@@ -25,6 +27,12 @@ function resolvePath(url) {
   const full = join(root, requested);
   if (!full.startsWith(root)) return join(root, "index.html");
   if (existsSync(full) && statSync(full).isFile()) return full;
+
+  const publicFull = join(root, "public", requested);
+  if (publicFull.startsWith(join(root, "public")) && existsSync(publicFull) && statSync(publicFull).isFile()) {
+    return publicFull;
+  }
+
   return join(root, "index.html");
 }
 
