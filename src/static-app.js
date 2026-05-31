@@ -3292,7 +3292,7 @@ function reviewsPanel() {
     return categoryMatch && searchMatch;
   });
   return `
-    <section class="panel">
+    <section class="panel review-detail-page review-detail-page--${tool.slug}">
       <div class="panel-heading">
         <div><p class="eyebrow">Tool directory</p><h2>Browse no-code and AI builder reviews</h2></div>
         <label class="searchbox">${icon("search")}<input id="tool-search" value="${query}" placeholder="Search Lovable, Bolt, Replit, v0, Cursor..."></label>
