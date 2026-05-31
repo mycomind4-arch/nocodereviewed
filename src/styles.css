@@ -8551,3 +8551,168 @@ body {
   }
 }
 
+/* === Premium review brand layer === */
+.review-hero--branded {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: clamp(360px, 42vw, 520px);
+  padding-top: clamp(118px, 12vw, 168px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(circle at 16% 18%, rgb(var(--review-brand-1, 255 179 107) / 0.34), transparent 34%),
+    radial-gradient(circle at 82% 10%, rgb(var(--review-brand-2, 232 84 26) / 0.26), transparent 30%),
+    linear-gradient(115deg, rgba(5, 6, 10, 0.96) 0%, rgba(7, 8, 13, 0.86) 48%, rgba(9, 8, 7, 0.68) 100%),
+    var(--review-brand-bg);
+  background-position: center;
+  background-size: cover;
+  box-shadow:
+    0 38px 110px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+}
+
+.review-hero--branded::before,
+.review-hero--branded::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.review-hero--branded::before {
+  z-index: -1;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 58px 58px;
+  mask-image: linear-gradient(115deg, rgba(0, 0, 0, 0.7), transparent 72%);
+}
+
+.review-hero--branded::after {
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.42), transparent 54%),
+    radial-gradient(circle at 50% 120%, rgb(var(--review-brand-1, 255 179 107) / 0.16), transparent 42%);
+}
+
+.review-hero--branded > * {
+  position: relative;
+  z-index: 1;
+}
+
+.review-brand-plate {
+  position: absolute;
+  top: clamp(22px, 3vw, 36px);
+  left: clamp(22px, 3vw, 38px);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  max-width: min(420px, calc(100% - 44px));
+  padding: 12px 16px 12px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.055)),
+    rgba(6, 7, 12, 0.62);
+  box-shadow:
+    0 24px 60px rgb(var(--review-brand-1, 255 179 107) / 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+}
+
+.review-brand-orb {
+  width: 68px;
+  height: 68px;
+  flex: 0 0 68px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 28% 20%, rgba(255, 255, 255, 0.32), transparent 26%),
+    linear-gradient(135deg, rgb(var(--review-brand-1, 255 179 107) / 0.92), rgb(var(--review-brand-2, 232 84 26) / 0.82));
+  box-shadow:
+    0 18px 42px rgb(var(--review-brand-1, 255 179 107) / 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+.review-brand-orb img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.28));
+}
+
+.review-brand-orb span {
+  display: none;
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 950;
+  letter-spacing: -0.04em;
+}
+
+.review-brand-plate.is-fallback .review-brand-orb span {
+  display: block;
+}
+
+.review-brand-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.review-brand-copy strong {
+  color: #fff;
+  font-size: clamp(1rem, 1.8vw, 1.28rem);
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.review-brand-copy small {
+  color: rgba(255, 255, 255, 0.66);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.review-hero--branded .review-scorecard {
+  border-color: rgb(var(--review-brand-1, 255 179 107) / 0.28);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.045)),
+    rgba(3, 4, 8, 0.62);
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(18px);
+}
+
+.review-hero--branded .review-actions a,
+.review-hero--branded .review-actions button {
+  box-shadow: 0 18px 38px rgb(var(--review-brand-1, 255 179 107) / 0.12);
+}
+
+@media (max-width: 760px) {
+  .review-hero--branded {
+    min-height: auto;
+    padding-top: 112px !important;
+  }
+
+  .review-brand-plate {
+    top: 18px;
+    left: 18px;
+    right: 18px;
+    max-width: none;
+  }
+
+  .review-brand-orb {
+    width: 56px;
+    height: 56px;
+    flex-basis: 56px;
+    border-radius: 17px;
+  }
+}
+

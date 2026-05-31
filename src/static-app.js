@@ -2571,6 +2571,59 @@ function toolCard(tool) {
 }
 
 
+
+const reviewBrandVisuals = {
+  "lovable": { domain: "lovable.dev", monogram: "L", rgb: "255 82 124", rgb2: "133 78 255" },
+  "bolt-new": { domain: "bolt.new", monogram: "B", rgb: "80 190 255", rgb2: "128 87 255" },
+  "replit-agent": { icon: "replit", domain: "replit.com", monogram: "R", rgb: "255 124 51", rgb2: "255 189 84" },
+  "base44": { domain: "base44.com", monogram: "B44", rgb: "75 126 255", rgb2: "123 92 255" },
+  "cursor": { domain: "cursor.com", monogram: "C", rgb: "255 255 255", rgb2: "125 125 255" },
+  "windsurf": { domain: "windsurf.com", monogram: "W", rgb: "58 229 177", rgb2: "57 147 255" },
+  "claude-code": { icon: "anthropic", domain: "anthropic.com", monogram: "C", rgb: "214 176 133", rgb2: "255 121 63" },
+  "openai-codex": { icon: "openai", domain: "openai.com", monogram: "AI", rgb: "16 185 129", rgb2: "255 255 255" },
+  "v0": { icon: "vercel", domain: "v0.dev", monogram: "v0", rgb: "255 255 255", rgb2: "128 128 255" },
+  "supabase-ai-assistant": { icon: "supabase", domain: "supabase.com", monogram: "S", rgb: "62 207 142", rgb2: "14 165 233" },
+  "bubble-ai": { domain: "bubble.io", monogram: "B", rgb: "42 85 255", rgb2: "255 255 255" },
+  "flutterflow-ai": { domain: "flutterflow.io", monogram: "FF", rgb: "73 139 255", rgb2: "124 77 255" },
+  "webflow-ai": { icon: "webflow", domain: "webflow.com", monogram: "W", rgb: "67 84 255", rgb2: "255 255 255" },
+  "framer-ai": { icon: "framer", domain: "framer.com", monogram: "F", rgb: "0 153 255", rgb2: "255 0 153" },
+  "glide-ai": { domain: "glideapps.com", monogram: "G", rgb: "24 119 242", rgb2: "131 95 255" },
+  "softr-ai": { domain: "softr.io", monogram: "S", rgb: "255 111 77", rgb2: "91 141 239" },
+  "adalo": { domain: "adalo.com", monogram: "A", rgb: "255 92 92", rgb2: "255 188 96" },
+  "retool-ai": { icon: "retool", domain: "retool.com", monogram: "R", rgb: "255 206 75", rgb2: "25 25 25" },
+  "thunkable": { domain: "thunkable.com", monogram: "T", rgb: "64 118 255", rgb2: "255 94 98" },
+  "appsmith": { icon: "appsmith", domain: "appsmith.com", monogram: "A", rgb: "255 106 26", rgb2: "255 206 128" },
+  "weweb": { domain: "weweb.io", monogram: "WW", rgb: "66 153 225", rgb2: "168 85 247" },
+  "builder-io": { icon: "builder.io", domain: "builder.io", monogram: "B", rgb: "26 26 26", rgb2: "255 255 255" },
+  "default": { domain: "nocodereviewed.com", monogram: "NCR", rgb: "255 179 107", rgb2: "232 84 26" }
+};
+
+function normalizeBrandSlug(value) {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/&/g, "and")
+    .replace(/\+/g, "plus")
+    .replace(/[.]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function brandVisualFor(tool) {
+  const slug = normalizeBrandSlug(tool?.slug || tool?.name);
+  const brand = reviewBrandVisuals[slug] || reviewBrandVisuals.default;
+  const logo = brand.logo || (brand.icon
+    ? `https://cdn.simpleicons.org/${brand.icon}/ffffff`
+    : `https://www.google.com/s2/favicons?domain=${brand.domain}&sz=128`);
+
+  return {
+    logo,
+    rgb: brand.rgb,
+    rgb2: brand.rgb2,
+    heroImage: brand.hero || "/images/no-code-empire-hero-bg.png",
+    monogram: brand.monogram || String(tool?.name || "N").replace(/[^A-Za-z0-9]/g, "").slice(0, 2).toUpperCase()
+  };
+}
+
 function evidenceFilesFor(toolName) {
   const tool = tools.find((item) => item.name === toolName);
   const names = new Set([toolName, tool?.slug].filter(Boolean).map((item) => String(item).toLowerCase()));
@@ -3129,11 +3182,23 @@ function reviewRecordSummary(tool) {
 
 function reviewDetailPanel(tool) {
   const profile = reviewProfile(tool);
+  const brand = brandVisualFor(tool);
+  const brandStyle = `--review-brand-bg: url('${brand.heroImage}'); --review-brand-1: ${brand.rgb}; --review-brand-2: ${brand.rgb2};`;
   const sameCategory = tools.filter((candidate) => candidate.category === tool.category && candidate.slug !== tool.slug).slice(0, 4);
   return `
     <section class="panel review-detail">
       <a class="back-link" href="#reviews">Back to all reviews</a>
-      <div class="review-hero">
+      <div class="review-hero review-hero--branded" style="${brandStyle}">
+        <div class="review-brand-plate" aria-label="${tool.name} brand">
+          <div class="review-brand-orb">
+            <img src="${brand.logo}" alt="${tool.name} logo" loading="lazy" decoding="async" onerror="this.closest('.review-brand-plate')?.classList.add('is-fallback'); this.remove();">
+            <span>${brand.monogram}</span>
+          </div>
+          <div class="review-brand-copy">
+            <strong>${tool.name}</strong>
+            <small>${tool.category}</small>
+          </div>
+        </div>
         <div>
           <p class="eyebrow">${tool.category} review</p>
           <h2>${tool.name} Review</h2>
