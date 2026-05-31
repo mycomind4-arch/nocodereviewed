@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vibe Auditor — Survivability Intelligence</title>
+<title>Vibe Code Audit Tool | NoCodeReviewed</title>
+<meta name="description" content="Run a free Vibe Code Audit to find AI app survivability gaps, launch risks, repair priorities, and paid repair options.">
+<meta property="og:title" content="Vibe Code Audit Tool | NoCodeReviewed">
+<meta property="og:description" content="Audit your AI-built app for survivability gaps, launch risks, revenue blockers, and repair priorities.">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -366,7 +369,7 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
 .econ-table tr:last-child td { border-bottom: none; }
 .econ-table tr:hover td { background: var(--bg3); }
 
-/* ─── ASK CLAUDE ─── */
+/* ─── ASK AUDITOR ─── */
 .ask-panel {
   display: flex;
   flex-direction: column;
@@ -803,7 +806,7 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
 .del-caveats { font-size: 11.5px; color: var(--text3); line-height: 1.6; }
 .del-caveats strong { color: var(--yellow); }
 
-/* ─── MASTER PLAN ─── */
+/* ─── FIX ROADMAP ─── */
 .mp-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
 .verdict-banner {
@@ -874,6 +877,477 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
 .mp-assumption-icon { flex-shrink: 0; font-size: 13px; margin-top: 1px; }
 .mp-assumption-text { color: var(--text2); line-height: 1.5; flex: 1; }
 .mp-assumption-text strong { color: var(--text); }
+
+/* === Premium Vibe Auditor hero layer === */
+:root {
+  --premium-gold: #ffb36b;
+  --premium-orange: #e8541a;
+  --premium-ink: #070604;
+  --premium-panel: rgba(14, 12, 10, 0.78);
+  --premium-line: rgba(255, 255, 255, 0.12);
+}
+
+html,
+body {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(232, 84, 26, 0.18), transparent 34%),
+    radial-gradient(circle at 82% 16%, rgba(255, 179, 107, 0.12), transparent 32%),
+    var(--premium-ink);
+}
+
+.shell {
+  background:
+    radial-gradient(circle at 26% 8%, rgba(232, 84, 26, 0.12), transparent 36%),
+    linear-gradient(135deg, #070604 0%, #0d0b09 52%, #050403 100%);
+}
+
+.sidebar {
+  border-right: 1px solid rgba(255, 255, 255, 0.09);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)),
+    rgba(7, 6, 4, 0.82);
+  box-shadow: 28px 0 80px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(22px);
+}
+
+.sidebar-logo {
+  position: relative;
+  padding-bottom: 20px;
+}
+
+.sidebar-logo::after {
+  content: "Local-first audit engine";
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 14px;
+  padding: 6px 9px;
+  border: 1px solid rgba(255, 179, 107, 0.2);
+  border-radius: 999px;
+  background: rgba(232, 84, 26, 0.08);
+  color: var(--premium-gold);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.logo-icon-img,
+.landing-icon-img {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: transparent;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.02)),
+    #130f0c;
+  box-shadow:
+    0 18px 42px rgba(232, 84, 26, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+
+.logo-icon-img img,
+.landing-icon-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.logo-icon-img {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+}
+
+.main {
+  background:
+    radial-gradient(circle at 36% -8%, rgba(232, 84, 26, 0.13), transparent 36%),
+    radial-gradient(circle at 92% 12%, rgba(255, 179, 107, 0.09), transparent 32%),
+    transparent;
+}
+
+.topbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(8, 7, 6, 0.72);
+  backdrop-filter: blur(20px);
+}
+
+.tabs {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+  background: rgba(8, 7, 6, 0.64);
+  backdrop-filter: blur(20px);
+}
+
+#landing.landing {
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100vh - 57px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
+  padding: clamp(44px, 6vw, 84px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 0;
+  background:
+    linear-gradient(90deg, rgba(5, 5, 4, 0.96) 0%, rgba(8, 7, 6, 0.86) 46%, rgba(8, 7, 6, 0.44) 100%),
+    radial-gradient(circle at 20% 24%, rgba(255, 122, 26, 0.24), transparent 34%),
+    radial-gradient(circle at 78% 22%, rgba(255, 210, 160, 0.17), transparent 30%),
+    url("/images/no-code-empire-hero-bg.png") center / cover no-repeat;
+  text-align: left;
+}
+
+#landing.landing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 86px 86px;
+  mask-image: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.72) 48%, transparent 90%);
+  opacity: 0.42;
+}
+
+#landing.landing::after {
+  content: "Survivability Intelligence";
+  position: absolute;
+  top: clamp(24px, 4vw, 48px);
+  right: clamp(24px, 4vw, 48px);
+  z-index: 1;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 179, 107, 0.22);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.075);
+  color: rgba(255, 250, 243, 0.78);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(16px);
+}
+
+.landing-icon-img {
+  width: 76px;
+  height: 76px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.17);
+  border-radius: 24px;
+}
+
+.landing-title {
+  max-width: 880px;
+  margin: 0;
+  color: #fffaf3;
+  font-size: clamp(48px, 7vw, 92px);
+  line-height: 0.9;
+  letter-spacing: -0.085em;
+  text-wrap: balance;
+  text-shadow: 0 22px 80px rgba(0, 0, 0, 0.48);
+}
+
+.landing-title::before {
+  content: "VIBE AUDITOR";
+  display: block;
+  width: fit-content;
+  margin-bottom: 15px;
+  padding: 8px 11px;
+  border: 1px solid rgba(255, 138, 42, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 138, 42, 0.1);
+  color: var(--premium-gold);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+}
+
+.landing-sub {
+  max-width: 760px;
+  margin-top: 22px;
+  color: rgba(255, 250, 243, 0.76);
+  font-size: clamp(15px, 1.35vw, 19px);
+  line-height: 1.68;
+}
+
+.landing-drop {
+  width: min(760px, 100%);
+  margin-top: 34px;
+  padding: clamp(22px, 3vw, 34px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 28px;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.035)),
+    rgba(10, 9, 8, 0.72);
+  box-shadow:
+    0 34px 90px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(24px);
+}
+
+.landing-drop:hover,
+.landing-drop.over {
+  border-color: rgba(255, 138, 42, 0.48);
+  background:
+    radial-gradient(circle at 16% 18%, rgba(232, 84, 26, 0.22), transparent 34%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.04)),
+    rgba(14, 11, 9, 0.82);
+  box-shadow:
+    0 38px 110px rgba(232, 84, 26, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  transform: translateY(-1px);
+}
+
+.landing-drop-icon {
+  filter: drop-shadow(0 18px 34px rgba(232, 84, 26, 0.26));
+}
+
+.landing-drop-text {
+  color: #fffaf3;
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.landing-drop-sub {
+  color: rgba(255, 250, 243, 0.58);
+}
+
+.nav-item {
+  border: 1px solid transparent;
+}
+
+.nav-item:hover,
+.nav-item.active {
+  border-color: rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(135deg, rgba(232, 84, 26, 0.15), rgba(255, 255, 255, 0.035));
+}
+
+@media (max-width: 820px) {
+  #landing.landing {
+    padding: 34px 22px;
+  }
+
+  #landing.landing::after {
+    display: none;
+  }
+
+  .landing-title {
+    font-size: clamp(42px, 14vw, 66px);
+  }
+
+  .landing-drop {
+    border-radius: 22px;
+  }
+}
+
+
+/* === Premium Vibe Auditor conversion strip === */
+#ncr-conversion-hero.ncr-conversion-hero {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: clamp(16px, 2.2vw, 28px);
+  align-items: stretch;
+  padding: clamp(18px, 2.6vw, 32px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  background:
+    linear-gradient(90deg, rgba(7, 6, 4, 0.96), rgba(11, 9, 7, 0.88)),
+    radial-gradient(circle at 16% 18%, rgba(232, 84, 26, 0.22), transparent 34%),
+    radial-gradient(circle at 84% 10%, rgba(255, 179, 107, 0.12), transparent 30%);
+  overflow: hidden;
+}
+
+#ncr-conversion-hero.ncr-conversion-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 74px 74px;
+  mask-image: linear-gradient(90deg, #000, rgba(0,0,0,0.7), transparent);
+  opacity: 0.34;
+}
+
+.ncr-conversion-copy {
+  max-width: 980px;
+}
+
+.ncr-kicker {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin-bottom: 14px;
+  padding: 7px 11px;
+  border: 1px solid rgba(255, 179, 107, 0.24);
+  border-radius: 999px;
+  background: rgba(232, 84, 26, 0.08);
+  color: #ffb36b;
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.ncr-conversion-copy h1 {
+  max-width: 980px;
+  margin: 0;
+  color: #fffaf3;
+  font-size: clamp(30px, 4.2vw, 58px);
+  line-height: 0.96;
+  letter-spacing: -0.065em;
+  text-wrap: balance;
+}
+
+.ncr-conversion-copy p {
+  max-width: 820px;
+  margin: 16px 0 0;
+  color: rgba(255, 250, 243, 0.68);
+  font-size: clamp(14px, 1.15vw, 17px);
+  line-height: 1.64;
+}
+
+.ncr-conversion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.ncr-btn {
+  appearance: none;
+  min-height: 42px;
+  padding: 11px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.065);
+  color: rgba(255, 250, 243, 0.88);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: -0.015em;
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.ncr-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 179, 107, 0.36);
+  background: rgba(255, 255, 255, 0.095);
+}
+
+.ncr-btn-primary {
+  border-color: rgba(255, 138, 42, 0.44);
+  background: linear-gradient(135deg, #ff8a2a 0%, #e8541a 54%, #8a340f 100%);
+  color: #fffaf3;
+  box-shadow: 0 16px 38px rgba(232, 84, 26, 0.25);
+}
+
+.ncr-btn-primary:hover {
+  box-shadow: 0 20px 48px rgba(232, 84, 26, 0.32);
+}
+
+.ncr-btn-ghost {
+  color: rgba(255, 250, 243, 0.66);
+}
+
+.ncr-deliverables {
+  align-self: stretch;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 24px;
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035)),
+    rgba(12, 10, 8, 0.72);
+  box-shadow:
+    0 22px 70px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(20px);
+}
+
+.ncr-panel-label {
+  color: rgba(255, 250, 243, 0.45);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ncr-deliverables-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.ncr-deliverables-grid span {
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.095);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.055);
+  color: rgba(255, 250, 243, 0.86);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ncr-deliverables p {
+  margin: 14px 0 0;
+  color: rgba(255, 250, 243, 0.58);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+@media (max-width: 980px) {
+  #ncr-conversion-hero.ncr-conversion-hero {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  #ncr-conversion-hero.ncr-conversion-hero {
+    padding: 20px;
+  }
+
+  .ncr-conversion-copy h1 {
+    font-size: clamp(30px, 11vw, 46px);
+  }
+
+  .ncr-deliverables-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* === Vibe scroll repair: disable injected conversion hero === */
+#ncr-conversion-hero {
+  display: none !important;
+}
+
+.shell {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+}
+
+.main {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.content {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+#landing.landing {
+  min-height: 100%;
+}
+
 </style>
 </head>
 <body>
@@ -884,7 +1358,7 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
   <aside class="sidebar">
     <div class="sidebar-logo">
       <div class="logo-row">
-        <div class="logo-icon">🛡</div>
+        <div class="logo-icon logo-icon-img"><img src="/images/nocodereviewed-logo.png" alt="NoCodeReviewed Vibe Auditor logo"></div>
         <div>
           <div class="logo-name">Vibe Auditor</div>
           <div class="logo-sub">Survivability Intelligence</div>
@@ -908,19 +1382,19 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
         <span class="nav-icon">⬡</span> Architecture
       </div>
       <div class="nav-item" data-nav="economics">
-        <span class="nav-icon">◎</span> Economics
+        <span class="nav-icon">◎</span> Revenue
       </div>
       <div class="nav-item" data-nav="ask">
         <span class="nav-icon">✦</span> Ask Auditor
       </div>
       <div class="nav-item" data-nav="codex">
-        <span class="nav-icon">⌘</span> Codex Instructions
+        <span class="nav-icon">⌘</span> Codex Repair Brief
       </div>
       <div class="nav-item" data-nav="delegate">
         <span class="nav-icon">◫</span> Delegate to AI
       </div>
       <div class="nav-item" data-nav="masterplan">
-        <span class="nav-icon">◉</span> Master Plan
+        <span class="nav-icon">◉</span> Fix Roadmap
       </div>
     </nav>
 
@@ -951,7 +1425,7 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
       </div>
       <div class="score-cluster">
         <div class="score-group">
-          <div class="score-label">Survivability</div>
+          <div class="score-label">Revenue</div>
           <div class="score-val yellow" id="tb-score">— <span class="score-max">/100</span></div>
         </div>
         <div class="score-group">
@@ -971,18 +1445,18 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
       <div class="tab" data-tab="risks">RISKS</div>
       <div class="tab" data-tab="missing">MISSING</div>
       <div class="tab" data-tab="architecture">ARCHITECTURE</div>
-      <div class="tab" data-tab="economics">ECONOMICS</div>
-      <div class="tab" data-tab="ask">ASK CLAUDE</div>
+      <div class="tab" data-tab="economics">REVENUE</div>
+      <div class="tab" data-tab="ask">ASK AUDITOR</div>
       <div class="tab" data-tab="codex">CODEX INSTRUCTIONS</div>
       <div class="tab" data-tab="delegate">DELEGATE TO AI</div>
-      <div class="tab" data-tab="masterplan">MASTER PLAN</div>
+      <div class="tab" data-tab="masterplan">FIX ROADMAP</div>
     </div>
 
     <!-- LANDING -->
     <div class="landing" id="landing">
-      <div class="landing-icon">🛡</div>
-      <div class="landing-title">Vibe Code Auditor</div>
-      <div class="landing-sub">Drop a ZIP of your project for a local survivability audit — risks, missing systems, architecture analysis, economics, and implementation guidance. Your files are analyzed in this browser and are not uploaded by this MVP.</div>
+      <div class="landing-icon landing-icon-img"><img src="/images/nocodereviewed-logo.png" alt="NoCodeReviewed Vibe Auditor logo"></div>
+      <div class="landing-title">Vibe Code Audit Tool</div>
+      <div class="landing-sub">Drop a ZIP of your project for a local revenue + launch audit — money leaks, conversion gaps, risks, missing systems, architecture analysis, and implementation guidance. Your files are analyzed in this browser and are not uploaded by this MVP.</div>
       <div class="landing-drop" id="landing-drop">
         <input type="file" id="landing-file" accept=".zip">
         <div class="landing-drop-icon">📦</div>
@@ -995,7 +1469,7 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
     <div class="analyzing-overlay" id="analyzing-overlay">
       <div class="analyzing-spinner"></div>
       <div class="analyzing-title">Auditing project…</div>
-      <div class="analyzing-sub">Running local survivability analysis</div>
+      <div class="analyzing-sub">Running local revenue + launch analysis</div>
       <div class="analyzing-log" id="analyze-log"></div>
     </div>
 
@@ -1078,12 +1552,12 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
 
     <!-- ECONOMICS -->
     <div class="content" id="content-economics">
-      <div class="section-title">Economics</div>
+      <div class="section-title">Revenue Readiness</div>
       <div class="section-sub" id="econ-sub"></div>
       <div id="econ-content"><div class="placeholder-text">No audit data yet.</div></div>
     </div>
 
-    <!-- ASK CLAUDE -->
+    <!-- ASK AUDITOR -->
     <div class="content" id="content-ask">
       <div class="ask-panel">
         <div class="ask-messages" id="ask-messages">
@@ -1097,7 +1571,8 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
               <button class="quick-btn" onclick="quickAsk('What is the biggest technical debt?')">Biggest technical debt?</button>
               <button class="quick-btn" onclick="quickAsk('Is this architecture scalable?')">Is this scalable?</button>
               <button class="quick-btn" onclick="quickAsk('What should I fix first?')">What to fix first?</button>
-              <button class="quick-btn" onclick="quickAsk('Estimate cost to reach production-readiness')">Cost to production-ready?</button>
+              <button class="quick-btn" onclick="quickAsk('How can this app make money?')">How can this make money?</button>
+              <button class="quick-btn" onclick="quickAsk('Why is this not making money?')">Money leaks?</button>
             </div>
           </div>
         </div>
@@ -1112,8 +1587,8 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
     <div class="content" id="content-codex">
       <div class="codex-header">
         <div>
-          <div class="section-title" style="margin-bottom:4px">Codex Instructions</div>
-          <div style="font-size:12.5px;color:var(--text3);margin-bottom:20px">A ready-to-paste instruction set for OpenAI Codex, Claude Code, or any AI coding agent — generated from your audit findings.</div>
+          <div class="section-title" style="margin-bottom:4px">Codex Repair Brief</div>
+          <div style="font-size:12.5px;color:var(--text3);margin-bottom:20px">A ready-to-paste instruction set for OpenAI Codex, AI coding agent, or any AI coding agent — generated from your audit findings.</div>
         </div>
         <div class="codex-actions" id="codex-actions" style="display:none">
           <button class="codex-action-btn" onclick="copyCodex()">⎘ Copy All</button>
@@ -1123,12 +1598,12 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
       </div>
 
       <div id="codex-placeholder" style="display:none">
-        <div class="placeholder-text" style="padding:60px 0">No audit data yet — upload a project ZIP to generate Codex instructions.</div>
+        <div class="placeholder-text" style="padding:60px 0">No audit data yet — upload a project ZIP to generate Codex repair brief.</div>
       </div>
 
       <div id="codex-generating" style="display:none;text-align:center;padding:60px 0">
         <div class="analyzing-spinner" style="margin:0 auto 16px"></div>
-        <div style="color:var(--text2);font-size:14px;font-weight:500">Generating Codex instructions…</div>
+        <div style="color:var(--text2);font-size:14px;font-weight:500">Generating Codex repair brief…</div>
         <div style="color:var(--text3);font-size:12px;margin-top:6px">Building prioritized task list from audit findings</div>
       </div>
 
@@ -1184,11 +1659,11 @@ html, body { height: 100%; font-family: var(--font); background: var(--bg); colo
       </div>
     </div>
 
-    <!-- MASTER PLAN -->
+    <!-- FIX ROADMAP -->
     <div class="content" id="content-masterplan">
       <div class="mp-header">
         <div>
-          <div class="section-title" style="margin-bottom:4px">Master Plan</div>
+          <div class="section-title" style="margin-bottom:4px">Fix Roadmap</div>
           <div style="font-size:12.5px;color:var(--text3);margin-bottom:20px">Full build roadmap derived from your audit — with a verdict on whether the plan is sound.</div>
         </div>
         <div id="mp-actions" style="display:none;gap:8px;flex-wrap:wrap">
@@ -1343,7 +1818,7 @@ async function handleFile(file) {
       } catch {}
     }
 
-    addLog('🧠 Running local survivability audit…', 'warn');
+    addLog('🧠 Running local launch and revenue readiness audit…', 'warn');
 
     projectData = {
       name: file.name,
@@ -1391,6 +1866,18 @@ async function runAudit(addLog) {
   const hasDb = paths.some(p => p.includes('schema') || p.includes('prisma') || p.includes('supabase') || p.includes('firebase') || p.includes('sqlite') || p.includes('postgres'));
   const hasPublicAssets = paths.some(p => p.includes('public/') || p.includes('assets/'));
   const hasLockfile = paths.some(p => p.endsWith('package-lock.json') || p.endsWith('pnpm-lock.yaml') || p.endsWith('yarn.lock') || p.endsWith('bun.lockb'));
+
+  const contextLower = String(pd.fileContext || '').toLowerCase();
+  const pathText = paths.join(' ');
+  const combinedSignals = `${pathText} ${contextLower}`;
+  const hasPricing = /pricing|price|plans|subscription|subscribe|billing|checkout|stripe|paypal|gumroad|paddle|lemonsqueezy|payment|invoice|pro plan|premium/.test(combinedSignals);
+  const hasPayment = /stripe|paypal|checkout|billing|payment|invoice|paddle|lemonsqueezy|gumroad/.test(combinedSignals);
+  const hasLeadCapture = /lead|waitlist|newsletter|contact|quote|book a call|consultation|email capture|signup|sign up|request demo|demo request/.test(combinedSignals);
+  const hasCTA = /get started|start now|buy now|upgrade|subscribe|download report|generate report|book|checkout|try free|free audit|audit now/.test(combinedSignals);
+  const hasTrust = /testimonial|case study|privacy|terms|refund|guarantee|security|badge|certified|disclosure|review|proof|evidence/.test(combinedSignals);
+  const hasAffiliate = /affiliate|referral|partner|commission|sponsored|disclosure|recommendation/.test(combinedSignals);
+  const hasAnalytics = /analytics|gtag|ga4|google analytics|plausible|posthog|mixpanel|amplitude|conversion|pixel/.test(combinedSignals);
+  const hasReportExport = /export|download|pdf|report|csv|print/.test(combinedSignals);
 
   const risks = [];
   const missingItems = [];
@@ -1447,6 +1934,28 @@ async function runAudit(addLog) {
     addRisk('Large codebase without tests', 'The project has enough source files that manual QA alone is likely fragile.', 'high');
   }
 
+  if (!hasPricing && !hasPayment && !hasLeadCapture && !hasAffiliate) {
+    addRisk('No obvious monetization path', 'The app does not expose a clear path to revenue: no pricing, checkout, lead capture, affiliate path, or service CTA was detected.', 'high');
+    addMissing('Add a visible money path', 'Add one primary monetization route: pricing/checkout, lead capture, affiliate recommendation, paid report, consultation CTA, or subscription upgrade.', 'high', '2-6 hours');
+  }
+
+  if (!hasCTA) {
+    addRisk('Weak conversion journey', 'The project does not appear to tell users what paid or business action to take next.', 'medium');
+    addMissing('Add primary conversion CTA', "Add a clear above-the-fold CTA and a post-result CTA tied to the app's strongest revenue action.", 'medium', '1-3 hours');
+  }
+
+  if (!hasTrust) {
+    addMissing('Add trust builders', 'Add proof elements such as screenshots, testimonials, comparison evidence, privacy/terms links, refund policy, disclosure, or security notes.', 'medium', '2-4 hours');
+  }
+
+  if (!hasAnalytics) {
+    addMissing('Add conversion analytics', 'Track upload started, audit completed, CTA clicked, report downloaded, lead submitted, and affiliate outbound clicks.', 'medium', '1-2 hours');
+  }
+
+  if (!hasReportExport) {
+    addMissing('Add report export or share action', 'Give users a reason to keep the audit: downloadable report, share link, repair checklist, or paid expanded report.', 'medium', '2-6 hours');
+  }
+
   if (risks.length === 0) {
     addRisk('Limited static analysis only', 'This MVP can inspect structure but cannot prove runtime behavior without executing the app test suite.', 'low');
   }
@@ -1457,7 +1966,9 @@ async function runAudit(addLog) {
   const securityScore = hasAuth && hasEnvExample ? 75 : hasAuth || hasEnvExample ? 55 : 35;
   const maintainabilityScore = Math.max(30, Math.min(85, 80 - Math.floor(pd.srcFiles / 25) + (pd.hasTests ? 10 : 0)));
   const deploymentScore = pd.hasDockerfile && pd.hasCicd ? 80 : pd.hasDockerfile || pd.hasCicd ? 60 : 40;
-
+  const moneyPathScore = hasPayment ? 90 : hasPricing ? 75 : hasLeadCapture || hasAffiliate ? 60 : 20;
+  const conversionScore = (hasCTA ? 30 : 0) + (hasLeadCapture ? 20 : 0) + (hasTrust ? 20 : 0) + (hasReportExport ? 15 : 0) + (hasAnalytics ? 15 : 0);
+  const revenueScore = Math.max(15, Math.min(95, Math.round(moneyPathScore * 0.55 + conversionScore * 0.45)));
   const survivabilityScore = Math.round(
     testScore * 0.22 +
     ciScore * 0.16 +
@@ -1467,6 +1978,29 @@ async function runAudit(addLog) {
     deploymentScore * 0.12
   );
 
+  const launchReadinessScore = Math.round(survivabilityScore * 0.65 + revenueScore * 0.35);
+
+  const moneyLeaks = [];
+  if (!hasPricing) moneyLeaks.push('No pricing or plan comparison detected');
+  if (!hasPayment) moneyLeaks.push('No checkout/payment/billing signal detected');
+  if (!hasLeadCapture) moneyLeaks.push('No lead capture, waitlist, quote, demo, or email follow-up path detected');
+  if (!hasCTA) moneyLeaks.push('No strong conversion CTA detected');
+  if (!hasTrust) moneyLeaks.push('Weak trust proof: testimonials, evidence, privacy/terms, guarantee, or disclosure not detected');
+  if (!hasAffiliate) moneyLeaks.push('No affiliate/referral/recommendation monetization signal detected');
+  if (!hasAnalytics) moneyLeaks.push('No conversion analytics signal detected');
+  if (!hasReportExport) moneyLeaks.push('No report export/share asset detected');
+  if (!moneyLeaks.length) moneyLeaks.push('Revenue basics detected; next step is offer testing and conversion optimization');
+
+  const fastestRevenueMoves = [
+    !hasCTA && 'Add one primary CTA above the fold and one CTA after audit results',
+    !hasLeadCapture && 'Add email/lead capture after the report with “send me the fix plan” positioning',
+    !hasPricing && 'Add a simple pricing/offer block: free audit, paid expanded report, done-for-you repair, or monthly pro plan',
+    !hasAffiliate && 'Add contextual tool recommendations with affiliate disclosure for hosting, builders, AI coding tools, analytics, and security tools',
+    !hasReportExport && 'Add downloadable repair checklist/report export as the first paid or lead-capture asset',
+    !hasTrust && 'Add trust proof: sample report, screenshots, methodology, privacy promise, and clear disclosure',
+    !hasAnalytics && 'Track every revenue action so you know which findings create clicks, leads, and sales'
+  ].filter(Boolean);
+
   const highRisks = risks.filter(r => r.severity === 'high').length;
   const riskExposure = highRisks >= 3 ? 'Critical' : highRisks >= 1 ? 'High' : risks.length >= 3 ? 'Medium' : 'Low';
   const buildPhase = survivabilityScore >= 80 ? 'Production Candidate' : survivabilityScore >= 60 ? 'Pre-Launch' : survivabilityScore >= 40 ? 'MVP Alpha' : 'Prototype';
@@ -1474,17 +2008,21 @@ async function runAudit(addLog) {
 
   auditResult = {
     survivabilityScore,
+    revenueScore,
+    launchReadinessScore,
     buildPhase,
     auditLevel,
-    executiveSummary: `${pd.name} appears to be a ${pd.fw} / ${pd.lang} project with ${pd.totalFiles} files and ${pd.srcFiles} source files. The main survivability concerns are ${risks.slice(0, 3).map(r => r.title.toLowerCase()).join(', ') || 'limited evidence from static inspection'}. This local MVP does not upload code or call external AI services.`,
+    executiveSummary: `${pd.name} appears to be a ${pd.fw} / ${pd.lang} project with ${pd.totalFiles} files and ${pd.srcFiles} source files. Revenue readiness is ${revenueScore}/100 and launch readiness is ${launchReadinessScore}/100. The biggest money leaks are ${moneyLeaks.slice(0, 3).map(x => x.toLowerCase()).join(', ') || 'not enough visible evidence from static inspection'}. This local MVP does not upload code or call external AI services.`,
     strengths: [
       pd.fw !== 'Unknown' ? `${pd.fw} detected` : 'Project structure detected',
       hasPublicAssets ? 'Public/assets folder present' : 'File inventory available',
       pd.docFiles > 0 ? 'Documentation files present' : 'Static analysis completed'
     ],
-    concerns: risks.slice(0, 4).map(r => r.title),
-    readinessScore: survivabilityScore,
-    readinessSub: `${highRisks} high-risk finding${highRisks === 1 ? '' : 's'} detected locally`,
+    concerns: ['Revenue readiness ' + revenueScore + '/100'].concat(risks.slice(0, 3).map(r => r.title)),
+    readinessScore: launchReadinessScore,
+    readinessSub: `Revenue ${revenueScore}/100 · ${highRisks} high-risk finding${highRisks === 1 ? '' : 's'}`,
+    moneyLeaks,
+    fastestRevenueMoves,
     riskExposure,
     riskSub: `${risks.length} total risks, ${highRisks} high severity`,
     completionPct: Math.max(20, Math.min(95, survivabilityScore)),
@@ -1492,6 +2030,7 @@ async function runAudit(addLog) {
     maintenanceIndex: maintainabilityScore >= 70 ? 'High' : maintainabilityScore >= 50 ? 'Medium' : 'Low',
     maintenanceSub: `${pd.srcFiles} source files, ${pd.docFiles} docs, tests ${pd.hasTests ? 'detected' : 'not detected'}`,
     metrics: [
+      { label: 'Revenue Readiness', score: revenueScore, color: revenueScore >= 70 ? 'green' : revenueScore >= 50 ? 'yellow' : 'red' },
       { label: 'Code Quality', score: maintainabilityScore, color: maintainabilityScore >= 70 ? 'green' : maintainabilityScore >= 50 ? 'yellow' : 'red' },
       { label: 'Test Coverage', score: testScore, color: testScore >= 70 ? 'green' : 'red' },
       { label: 'Security Score', score: securityScore, color: securityScore >= 70 ? 'green' : securityScore >= 50 ? 'yellow' : 'red' },
@@ -1513,19 +2052,35 @@ async function runAudit(addLog) {
       architectureSummary: `Detected ${pd.fw} with ${pd.srcFiles} source files. Static inspection found ${hasApi ? 'some backend/API signals' : 'no strong backend/API boundary'} and ${hasDb ? 'database/schema signals' : 'no obvious database layer'}.`
     },
     economics: {
-      summary: 'Economic survivability depends on deployment clarity, maintenance cost, and regression prevention. Missing tests or CI increase support cost as the app grows.',
+      summary: `Revenue readiness is ${revenueScore}/100. This section focuses on whether the app has a clear money path, conversion journey, trust proof, lead capture, affiliate/commercial routing, and measurable revenue actions.`,
+      revenueSignals: [
+        { label: 'Pricing / Plans', detected: hasPricing },
+        { label: 'Checkout / Payment', detected: hasPayment },
+        { label: 'Lead Capture', detected: hasLeadCapture },
+        { label: 'Primary CTA', detected: hasCTA },
+        { label: 'Trust Proof', detected: hasTrust },
+        { label: 'Affiliate Path', detected: hasAffiliate },
+        { label: 'Conversion Analytics', detected: hasAnalytics },
+        { label: 'Report Export / Share Asset', detected: hasReportExport }
+      ],
+      moneyLeaks,
+      fastestRevenueMoves,
       costItems: [
+        { item: 'Revenue path', current: hasPayment ? 'Payment path detected' : hasPricing ? 'Pricing detected, checkout unclear' : hasLeadCapture ? 'Lead capture detected' : 'No money path detected', at10x: hasAnalytics ? 'Measurable' : 'Hard to optimize without analytics', at100x: hasPayment ? 'Can scale if fulfillment works' : 'Revenue ceiling likely without checkout/offer', risk: revenueScore >= 70 ? 'medium' : 'high' },
         { item: 'Hosting', current: 'Unknown', at10x: 'Medium', at100x: 'High if architecture is unverified', risk: pd.hasCicd ? 'medium' : 'high' },
         { item: 'Maintenance', current: pd.hasTests ? 'Controlled' : 'Manual QA heavy', at10x: 'Higher support burden', at100x: 'Likely bottleneck without tests', risk: pd.hasTests ? 'medium' : 'high' },
         { item: 'Security review', current: hasAuth ? 'Needed' : 'Auth not detected', at10x: 'Important', at100x: 'Critical', risk: 'high' }
       ],
-      economicRisks: [
+      economicRisks: moneyLeaks.concat([
         'Regression cost rises without automated tests',
         'Deployment uncertainty slows iteration',
         'Unclear auth/data model can create expensive rework'
-      ]
+      ]).slice(0, 10)
     }
   };
+  window.ncrLastAudit = auditResult;
+  window.auditResult = auditResult;
+  window.currentResults = auditResult;
 
   addLog('✓ Local audit complete', 'ok');
   addLog('✓ Rendering dashboard…', 'ok');
@@ -1552,8 +2107,8 @@ function renderDashboard() {
   document.getElementById('tb-status').className = 'status-badge complete';
   document.getElementById('tb-meta').textContent = `${pd.totalFiles} files`;
   const scoreEl = document.getElementById('tb-score');
-  scoreEl.innerHTML = `${r.survivabilityScore} <span class="score-max">/100</span>`;
-  scoreEl.className = 'score-val ' + scoreColor(r.survivabilityScore);
+  scoreEl.innerHTML = `${r.revenueScore ?? r.survivabilityScore} <span class="score-max">/100</span>`;
+  scoreEl.className = 'score-val ' + scoreColor(r.revenueScore ?? r.survivabilityScore);
   document.getElementById('tb-phase').textContent = r.buildPhase || '—';
   document.getElementById('tb-level').textContent = r.auditLevel || '—';
 
@@ -1655,6 +2210,29 @@ function renderDashboard() {
   const econContent = document.getElementById('econ-content');
   let econHTML = `
     <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Revenue Readiness Score: ${econ.revenueScore || r.revenueScore || '—'}/100</div>
+      <div class="grid-2" style="margin-top:12px">
+        <div>
+          <div class="card-title">Money Leaks Found</div>
+          <div class="risk-list">
+            ${(econ.moneyLeaks || r.moneyLeaks || []).map(leak => `<div class="risk-item"><div class="risk-dot high"></div><div class="risk-body"><div class="risk-title">${leak}</div></div></div>`).join('')}
+          </div>
+        </div>
+        <div>
+          <div class="card-title">Fastest Revenue Moves</div>
+          <div class="missing-list">
+            ${(econ.fastestRevenueMoves || r.fastestRevenueMoves || []).map((move, i) => `<div class="missing-item"><div class="missing-num">${i+1}</div><div class="missing-body"><div class="missing-title">${move}</div></div></div>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
+      <div class="card-title">Revenue Signals</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${(econ.revenueSignals || []).map(sig => `<span class="tag ${sig.detected ? 'green' : 'red'}">${sig.detected ? '✓' : '✗'} ${sig.label}</span>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:16px">
       <div class="card-title">Cost Scaling Projections</div>
       <table class="econ-table">
         <thead><tr><th>Item</th><th>Current</th><th>At 10×</th><th>At 100×</th><th>Risk</th></tr></thead>
@@ -1735,7 +2313,7 @@ function missingHTML(item, num) {
   </div>`;
 }
 
-// ─── ASK CLAUDE ───
+// ─── ASK AUDITOR ───
 async function sendAsk() {
   const input = document.getElementById('ask-input');
   const q = input.value.trim();
@@ -1765,12 +2343,12 @@ async function sendAsk() {
   chatHistory.push({ role: 'user', content: q });
 
   try {
-    throw new Error('External AI calls are disabled in the local-only MVP.');
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    throw new Error('External AI calls are disabled. This local-first auditor uses browser-side analysis and local fallback generators.');
+    const resp = await fetch('data:application/json,{"content":[{"text":"Local-only mode active."}]}', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'local-only-model-disabled',
         max_tokens: 1000,
         system: `You are the Vibe Code Auditor — a survivability intelligence system. You have completed a full audit of this project. Answer questions directly and honestly, like a reliability engineer doing technical due diligence. Be specific, cite actual findings from the audit when relevant. Keep answers concise (3-6 sentences) unless a longer answer is clearly needed.`,
         messages: chatHistory
@@ -1880,7 +2458,7 @@ async function generateCodexInstructions() {
   const r = auditResult;
   const pd = projectData;
 
-  const prompt = `You are generating a Codex instruction brief — a structured, ready-to-paste instruction set for an AI coding agent (OpenAI Codex, Claude Code, GitHub Copilot Workspace, etc.).
+  const prompt = `You are generating a Codex instruction brief — a structured, ready-to-paste instruction set for an AI coding agent (OpenAI Codex, AI coding agent, GitHub Copilot Workspace, etc.).
 
 Based on this survivability audit, generate FOUR distinct instruction formats, each clearly separated by a marker.
 
@@ -1920,12 +2498,12 @@ A focused security-only instruction set. List only security tasks, constraints, 
 Be specific and technical. Reference actual file types, frameworks, and patterns from the audit. Do not be generic.`;
 
   try {
-    throw new Error('External AI calls are disabled in the local-only MVP.');
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    throw new Error('External AI calls are disabled. This local-first auditor uses browser-side analysis and local fallback generators.');
+    const resp = await fetch('data:application/json,{"content":[{"text":"Local-only mode active."}]}', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'local-only-model-disabled',
         max_tokens: 4000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -2060,7 +2638,7 @@ async function generateDelegateInstructions() {
 
   const prompt = `You are a senior engineering manager breaking a codebase into AI-delegatable work packages.
 
-Given this audit, identify which parts of the project can be safely handed off to an AI coding agent (like Codex, Claude Code, Cursor, etc.) and write a specific, complete prompt for each one.
+Given this audit, identify which parts of the project can be safely handed off to an AI coding agent (like Codex, AI coding agent, Cursor, etc.) and write a specific, complete prompt for each one.
 
 AUDIT DATA:
 - Project: ${pd.name} (${pd.lang}/${pd.fw})
@@ -2105,12 +2683,12 @@ Respond ONLY with valid JSON. No markdown, no backticks.
 Generate 6-10 tasks covering the most valuable delegation opportunities. Prioritize high-impact, low-risk tasks first. For risky tasks, include them but clearly label them and add strong caveats.`;
 
   try {
-    throw new Error('External AI calls are disabled in the local-only MVP.');
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    throw new Error('External AI calls are disabled. This local-first auditor uses browser-side analysis and local fallback generators.');
+    const resp = await fetch('data:application/json,{"content":[{"text":"Local-only mode active."}]}', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'local-only-model-disabled',
         max_tokens: 4000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -2224,7 +2802,7 @@ function escHtml(s) {
 }
 
 // ══════════════════════════════════════════════════════════
-// ─── MASTER PLAN ───
+// ─── FIX ROADMAP ───
 // ══════════════════════════════════════════════════════════
 let masterPlanData = null;
 let masterPlanRaw = '';
@@ -2260,7 +2838,7 @@ AUDIT DATA:
 - Missing: ${JSON.stringify(r.missingItems||[])}
 - Architecture: ${JSON.stringify(r.architecture||{})}
 - Metrics: ${JSON.stringify(r.metrics||[])}
-- Economics: ${JSON.stringify(r.economics||{})}
+- Revenue: ${JSON.stringify(r.economics||{})}
 
 Respond ONLY with valid JSON. No markdown, no backticks.
 
@@ -2295,12 +2873,12 @@ Respond ONLY with valid JSON. No markdown, no backticks.
 Generate 4-6 phases covering the full path from current state to production-ready. Be specific and honest — if the plan has serious flaws, say so clearly in the verdict.`;
 
   try {
-    throw new Error('External AI calls are disabled in the local-only MVP.');
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    throw new Error('External AI calls are disabled. This local-first auditor uses browser-side analysis and local fallback generators.');
+    const resp = await fetch('data:application/json,{"content":[{"text":"Local-only mode active."}]}', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'local-only-model-disabled',
         max_tokens: 4000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -2416,9 +2994,9 @@ function downloadMasterPlan() {
   const blob = new Blob([masterPlanRaw], { type: 'text/markdown' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `master-plan-${name}.md`;
+  a.download = `fix-roadmap-${name}.md`;
   a.click();
-  showToast('Downloaded master-plan.md');
+  showToast('Downloaded fix-roadmap.md');
 }
 
 function regenerateMasterPlan() {
@@ -2426,7 +3004,2036 @@ function regenerateMasterPlan() {
   masterPlanRaw = '';
   generateMasterPlan();
 }
+
+
+/* =========================================================
+   LOCAL-ONLY OVERRIDES — No External AI / no external AI calls
+   Added for NoCodeReviewed project integration.
+   ========================================================= */
+(function installLocalOnlyAuditorOverrides(){
+  function safeText(value, fallback='—') { return value === undefined || value === null || value === '' ? fallback : String(value); }
+  function severityRank(sev) { return ({critical:4, high:3, medium:2, low:1})[String(sev||'').toLowerCase()] || 0; }
+  function topFindings(limit=10) {
+    const risks = (auditResult?.risks || []).map(x => ({...x, kind:'Risk'}));
+    const missing = (auditResult?.missingItems || []).map(x => ({...x, kind:'Missing'}));
+    return [...risks, ...missing].sort((a,b)=>severityRank(b.severity)-severityRank(a.severity)).slice(0, limit);
+  }
+  function projectLabel() {
+    return `${safeText(projectData?.name, 'Project')} (${safeText(projectData?.fw, 'Unknown framework')} / ${safeText(projectData?.lang, 'Unknown language')})`;
+  }
+  function getBuildCommand() {
+    const fw = String(projectData?.fw || '').toLowerCase();
+    if (fw.includes('next')) return 'npm run build';
+    if (fw.includes('vite') || fw.includes('node')) return 'npm run build';
+    if (fw.includes('python')) return 'python -m pytest || python app.py';
+    return 'run the existing build/test command documented in the repo';
+  }
+  function buildTaskLines() {
+    const findings = topFindings(12);
+    const generated = findings.map((f, index) => `[ ] ${String(f.severity || 'medium').toUpperCase()}: ${f.kind}: ${f.title || 'Address finding'} — ${f.description || 'Fix and verify this item.'} (effort: ${f.effort || 'medium'})`);
+    const baseline = [
+      '[ ] HIGH: Add a clean README with install, local dev, build, deploy, and test instructions (effort: low)',
+      '[ ] HIGH: Add .env.example with placeholders only, no real secrets (effort: low)',
+      '[ ] HIGH: Add smoke tests for the homepage, auditor upload flow, and critical navigation (effort: medium)',
+      '[ ] HIGH: Add a revenue path: pricing, checkout, lead capture, paid report, affiliate offer, or consultation CTA (effort: low)',
+      '[ ] HIGH: Add post-audit conversion CTA: download report, email me fix plan, book repair sprint, or compare recommended tools (effort: low)',
+      '[ ] MEDIUM: Add conversion analytics for upload, audit complete, CTA click, lead submit, report export, and affiliate outbound events (effort: low)',
+      '[ ] MEDIUM: Add CI that runs install, lint, tests, and production build on every pull request (effort: medium)',
+      '[ ] MEDIUM: Document architecture boundaries, data flow, and deployment assumptions (effort: low)'
+    ];
+    return [...generated, ...baseline].filter(Boolean);
+  }
+  function renderLocalCodexInstructions() {
+    if (!auditResult || !projectData) return;
+    const r = auditResult, pd = projectData;
+    const tasks = buildTaskLines();
+    const context = [
+      `Project: ${projectLabel()}`,
+      `File count: ${safeText(pd.totalFiles)} total, ${safeText(pd.srcFiles)} source, ${safeText(pd.docFiles)} docs.`,
+      `Audit score: ${safeText(r.survivabilityScore)}/100. Revenue score: ${safeText(r.revenueScore, 'unknown')}/100. Launch readiness: ${safeText(r.launchReadinessScore, 'unknown')}/100. Build phase: ${safeText(r.buildPhase)}. Audit level: ${safeText(r.auditLevel)}.`,
+      `Executive summary: ${safeText(r.executiveSummary)}`,
+      `Primary constraint: improve revenue readiness and production readiness without rewriting the whole app or changing user-facing routes unless required by a specific task.`,
+      `Verification command: ${getBuildCommand()}.`
+    ].join('\n');
+    const security = [
+      `# Security-Focused Codex Repair Brief — ${pd.name}`,
+      '',
+      '## Rules',
+      '- Do not add real API keys, tokens, private URLs, or credentials to the repo.',
+      '- Use environment variables for all secrets and document them in .env.example using placeholders only.',
+      '- Validate file uploads by extension, size, and expected content shape before processing.',
+      '- Keep audit processing local unless the user explicitly enables a server-side backend later.',
+      '- Avoid adding new third-party scripts unless they are required and documented.',
+      '',
+      '## Security Tasks',
+      ...tasks.filter(t => /security|secret|auth|env|upload|validation|risk|ci/i.test(t))
+    ].join('\n');
+    codexVariants = {
+      full: [
+        `# Codex Implementation Brief — ${pd.name}`,
+        '',
+        '## Project Context',
+        context,
+        '',
+        '## Constraints & Rules',
+        '- Make small, reversible changes.',
+        '- Preserve the current UI structure unless the task explicitly requires layout work.',
+        '- Prefer deterministic local logic over paid external APIs for the auditor MVP.',
+        '- Add comments only where they explain non-obvious audit logic.',
+        '- After every change, run the build/test command and record the result.',
+        '',
+        '## Priority Task List',
+        ...(r.fastestRevenueMoves || []).map((m, i) => `[ ] HIGH: Revenue move ${i + 1}: ${m} (effort: low-medium)`),
+        ...tasks,
+        '',
+        '## Acceptance Criteria',
+        '- App opens directly from tools/vibe-auditor.html with no API key prompt.',
+        '- Uploading a ZIP completes a local audit and populates every tab.',
+        '- Ask Auditor, Codex Repair Brief, Delegate to AI, and Fix Roadmap all work offline.',
+        '- No calls are made to External AI or any other external model endpoint.',
+        '- Production build/test command passes or any failure is documented with exact output.',
+        '',
+        '## Known Fragility Points',
+        ...topFindings(8).map(f => `- [${String(f.severity || 'medium').toUpperCase()}] ${f.title || 'Finding'} — ${f.description || 'Needs verification.'}`)
+      ].join('\n'),
+      tasks: ['# Task List', '', ...tasks].join('\n'),
+      context: ['# Project Context', '', context].join('\n'),
+      security
+    };
+    codexFull = codexVariants.full;
+    const placeholder = document.getElementById('codex-placeholder');
+    const generating = document.getElementById('codex-generating');
+    const content = document.getElementById('codex-content');
+    const actions = document.getElementById('codex-actions');
+    if (placeholder) placeholder.style.display = 'none';
+    if (generating) generating.style.display = 'none';
+    if (content) content.style.display = 'block';
+    if (actions) actions.style.display = 'flex';
+    const editor = document.getElementById('codex-editor');
+    if (editor) editor.value = codexFull;
+    document.querySelectorAll('.codex-sel-btn').forEach(b => b.classList.toggle('active', b.dataset.fmt === 'full'));
+    updateWordCount(codexFull);
+    const sections = document.getElementById('codex-sections');
+    if (sections) {
+      sections.innerHTML = Object.entries(codexVariants).map(([key, value]) => `<div class="card"><div class="card-title">${key.toUpperCase()}</div><div style="font-size:12px;color:var(--text3);line-height:1.6">${value.split('\n').slice(0,5).map(escHtml).join('<br>')}<br>…</div></div>`).join('');
+    }
+  }
+  window.renderLocalCodexInstructions = renderLocalCodexInstructions;
+  window.generateCodexInstructions = async function(){ renderLocalCodexInstructions(); };
+  window.regenerateCodex = function(){ codexFull = ''; codexVariants = {}; renderLocalCodexInstructions(); showToast('Regenerated local Codex repair brief'); };
+
+  function buildLocalAnswer(question) {
+    if (!auditResult || !projectData) return 'Upload a project ZIP first so I can audit it locally.';
+    const q = String(question || '').toLowerCase();
+    const r = auditResult;
+    const findings = topFindings(6);
+    if (/fix first|first|priority|biggest/.test(q)) {
+      return `Fix this first: ${findings[0]?.title || 'the highest-severity missing production system'}. The current survivability score is ${r.survivabilityScore}/100, so prioritize blockers that affect build verification, secrets handling, tests, deployment, and core navigation before visual polish.`;
+    }
+    if (/security|secret|auth|vulnerab/.test(q)) {
+      const securityFindings = findings.filter(f => /security|secret|auth|env|upload|validation/i.test(`${f.title} ${f.description}`));
+      const list = (securityFindings.length ? securityFindings : findings).slice(0,3).map(f => `${f.title}: ${f.description}`).join(' | ');
+      return `Security path: keep the auditor local by default, add .env.example placeholders, validate ZIP uploads, and document any future server/API boundary. Highest relevant findings: ${list}`;
+    }
+    if (/scalable|architecture|scale/.test(q)) {
+      return `Architecture verdict: ${safeText(r.architecture?.verdict, 'needs hardening')}. For scale, separate audit parsing, scoring rules, report rendering, and export logic. Do not wire paid model APIs into the browser MVP; add an optional backend adapter later if needed.`;
+    }
+    if (/money|revenue|moneti|income|profit|pricing|checkout|affiliate|lead|conversion|not making money/.test(q)) {
+      const leaks = (r.moneyLeaks || []).slice(0,5).join(' | ');
+      const moves = (r.fastestRevenueMoves || []).slice(0,5).map((m,i)=>`${i+1}. ${m}`).join(' ');
+      return `Revenue verdict: ${projectLabel()} has revenue readiness ${safeText(r.revenueScore, 'unknown')}/100. Biggest money leaks: ${leaks || 'not enough revenue evidence was detected'}. Fastest moves: ${moves || 'add a visible offer, a clear CTA, lead capture, report export, and analytics.'}`;
+    }
+    if (/cost|production|ready|readiness/.test(q)) {
+      const high = (r.risks || []).filter(x => x.severity === 'high').length + (r.missingItems || []).filter(x => x.severity === 'high').length;
+      return `Production-readiness estimate: expect ${high ? 'a focused hardening sprint' : 'a smaller cleanup pass'} before launch. Start with docs, env handling, smoke tests, CI/build verification, and the top missing systems. The current completion estimate is ${safeText(r.completionEstimate, safeText(r.completion, 'unknown'))}.`;
+    }
+    return `Local audit summary for ${projectLabel()}: score ${r.survivabilityScore}/100, phase ${safeText(r.buildPhase)}, with ${safeText((r.risks||[]).length,0)} risks and ${safeText((r.missingItems||[]).length,0)} missing items. Top action: ${findings[0]?.title || 'add production verification and documentation'}.`;
+  }
+  window.sendAsk = async function(){
+    const input = document.getElementById('ask-input');
+    const q = input?.value.trim();
+    if (!q) return;
+    if (input) input.value = '';
+    const sendBtn = document.getElementById('ask-send');
+    if (sendBtn) sendBtn.disabled = true;
+    const msgsEl = document.getElementById('ask-messages');
+    const userDiv = document.createElement('div');
+    userDiv.className = 'msg user';
+    userDiv.textContent = q;
+    msgsEl.appendChild(userDiv);
+    const aiDiv = document.createElement('div');
+    aiDiv.className = 'msg ai';
+    aiDiv.textContent = buildLocalAnswer(q);
+    msgsEl.appendChild(aiDiv);
+    chatHistory.push({role:'user', content:q}, {role:'assistant', content:aiDiv.textContent});
+    if (sendBtn) sendBtn.disabled = false;
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  };
+
+  window.generateDelegateInstructions = async function(){
+    if (!auditResult || !projectData) return;
+    const findings = topFindings(7);
+    const fallback = [{title:'Add project documentation and verification', severity:'high', effort:'low', description:'Create README, .env.example, smoke tests, and CI/build verification.'}];
+    const source = findings.length ? findings : fallback;
+    delegateData = {
+      summary: 'Local delegation plan generated from deterministic audit findings.',
+      tasks: source.map((f, i) => ({
+        id: i + 1,
+        title: f.title || `Fix audit item ${i+1}`,
+        category: f.kind || 'Implementation',
+        effort: f.effort || (severityRank(f.severity) >= 3 ? 'medium' : 'low'),
+        delegationSafety: /auth|payment|security|secret|database|migration/i.test(`${f.title} ${f.description}`) ? 'review-carefully' : 'safe-to-delegate',
+        why: f.description || 'This item improves launch readiness and reduces maintenance risk.',
+        prompt: `You are working inside ${projectLabel()}. Task: ${f.title || 'Improve project readiness'}. Context: ${f.description || 'Address the audit finding without broad rewrites.'}\n\nRules: preserve existing routes and UI behavior, avoid real secrets, make the smallest safe change, document what changed, and run ${getBuildCommand()} afterward. Return a concise summary of files changed, verification results, and any remaining risks.`,
+        caveats: 'Review the diff manually, run the build/test command, and confirm the user-facing auditor flow still works with a ZIP upload.'
+      }))
+    };
+    const p = document.getElementById('delegate-placeholder'), g = document.getElementById('delegate-generating'), c = document.getElementById('delegate-content'), a = document.getElementById('delegate-actions');
+    if (p) p.style.display = 'none'; if (g) g.style.display = 'none'; if (c) c.style.display = 'block'; if (a) a.style.display = 'flex';
+    renderDelegations(delegateData);
+  };
+  window.regenerateDelegate = function(){ delegateData = null; generateDelegateInstructions(); showToast('Regenerated local delegation plan'); };
+
+  window.generateMasterPlan = async function(){
+    if (!auditResult || !projectData) return;
+    const r = auditResult;
+    const score = Number(r.survivabilityScore || 0);
+    const rating = score >= 75 ? 'good' : score >= 45 ? 'warn' : 'bad';
+    const tasks = buildTaskLines().slice(0,10).map(t => t.replace(/^\[ \] /,''));
+    masterPlanData = {
+      verdict: {
+        rating,
+        headline: rating === 'good' ? 'Strong foundation; harden before scaling' : rating === 'warn' ? 'Promising but not launch-ready yet' : 'Prototype-stage; production blockers remain',
+        summary: `${projectLabel()} scored ${score}/100 overall with revenue readiness ${safeText(r.revenueScore, 'unknown')}/100. The fastest path is to close the money leaks first, then harden verification, documentation, security, and deployment gaps.`,
+        confidence: 'medium',
+        strengths: (r.strengths || []).slice(0,3),
+        blockers: topFindings(3).map(f => f.title || 'Unresolved blocker')
+      },
+      phases: [
+        {number:1, title:'Stabilize the current auditor', duration:'1–2 days', priority:'critical', description:'Make every tab work offline and remove external AI/API dependencies.', tasks:['Verify ZIP upload flow','Confirm Ask Auditor answers locally','Confirm Codex, Delegate, and Fix Roadmap tabs render without errors']},
+        {number:2, title:'Production readiness baseline', duration:'2–4 days', priority:'high', description:'Add docs, env placeholders, smoke tests, CI, and repeatable build checks.', tasks:tasks.slice(0,4)},
+        {number:3, title:'Authority-site integration', duration:'3–7 days', priority:'high', description:'Turn the auditor into a lead magnet and review-site asset for NoCodeReviewed.', tasks:['Add clear CTA paths','Export audit reports','Create example reports for Lovable, Bolt, Replit, and v0']},
+        {number:4, title:'Revenue engine', duration:'1–2 weeks', priority:'critical', description:'Turn the auditor into a revenue router: paid reports, lead capture, affiliate paths, premium repair plans, and comparison funnels.', tasks:['Add gated report export','Add pricing/offer block','Add contextual affiliate recommendations','Track conversions ethically']}
+      ],
+      assumptions: [
+        {type:'must-hold', text:'The browser-local MVP remains the default so users can audit projects without API keys.'},
+        {type:'must-hold', text:'All generated instructions remain deterministic and based on visible audit findings.'},
+        {type:'risk', text:'Static HTML can become hard to maintain; split logic into modules once the feature stabilizes.'},
+        {type:'unknown', text:'Exact monetization performance depends on traffic, trust signals, and report quality.'}
+      ]
+    };
+    masterPlanRaw = [
+      `# Fix Roadmap — ${projectData.name}`,'',
+      `## Verdict`, masterPlanData.verdict.headline, masterPlanData.verdict.summary, '',
+      `## Phased Roadmap`,
+      ...masterPlanData.phases.map(p => `### Phase ${p.number}: ${p.title}\nDuration: ${p.duration}\nPriority: ${p.priority}\n\n${p.description}\n\n${p.tasks.map(t=>`- ${t}`).join('\n')}`),
+      '', '## Assumptions', ...masterPlanData.assumptions.map(a => `- ${a.type}: ${a.text}`)
+    ].join('\n');
+    const p = document.getElementById('mp-placeholder'), g = document.getElementById('mp-generating'), c = document.getElementById('mp-content'), a = document.getElementById('mp-actions');
+    if (p) p.style.display = 'none'; if (g) g.style.display = 'none'; if (c) c.style.display = 'block'; if (a) a.style.display = 'flex';
+    renderMasterPlan(masterPlanData);
+  };
+  window.regenerateMasterPlan = function(){ masterPlanData = null; masterPlanRaw = ''; generateMasterPlan(); showToast('Regenerated local master plan'); };
+
+  const previousSwitchNav = window.switchNav;
+  window.switchNav = function(nav){
+    previousSwitchNav(nav);
+    if (!auditResult) return;
+    if (nav === 'codex' && !codexFull) renderLocalCodexInstructions();
+    if (nav === 'delegate' && !delegateData) generateDelegateInstructions();
+    if (nav === 'masterplan' && !masterPlanData) generateMasterPlan();
+  };
+})();
+
 </script>
 <div class="copy-toast" id="copy-toast"></div>
+
+<script id="ncr-final-local-overrides">
+(function(){
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function getAudit(){
+    return window.ncrLastAudit || window.auditResult || window.currentResults || window.auditResults || window.results || null;
+  }
+
+  function getProject(){
+    const r = getAudit();
+    return r?.projectData || r?.project || {};
+  }
+
+  function riskTitles(r){
+    return (r?.risks || []).slice(0, 8).map(x => x.title || x.name || String(x));
+  }
+
+  function missingTitles(r){
+    return (r?.missingItems || []).slice(0, 8).map(x => x.title || x.name || String(x));
+  }
+
+  function moneyLeaks(r){
+    const econ = r?.economics || {};
+    const leaks = econ.moneyLeaks || r?.moneyLeaks || [];
+    if (leaks.length) return leaks.map(x => x.title || x.name || String(x));
+    return [
+      'No obvious pricing or checkout path detected',
+      'No strong lead capture path detected',
+      'No clear post-audit upsell detected',
+      'No affiliate/referral routing detected',
+      'No conversion analytics evidence detected'
+    ];
+  }
+
+  function revenueMoves(r){
+    const econ = r?.economics || {};
+    const moves = econ.fastestRevenueMoves || r?.fastestRevenueMoves || [];
+    if (moves.length) return moves.map(x => x.title || x.name || String(x));
+    return [
+      'Add a lead capture form after audit results',
+      'Add a paid full-report export or premium audit tier',
+      'Add recommended tools with affiliate disclosure',
+      'Add a “Fix this with Codex” downloadable repair prompt',
+      'Add consultation/service CTA for low-scoring projects'
+    ];
+  }
+
+  function setBlock(ids, html){
+    for (const id of ids){
+      const el = document.getElementById(id);
+      if (el){
+        el.style.display = 'block';
+        el.innerHTML = html;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function hideBlock(ids){
+    for (const id of ids){
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    }
+  }
+
+  function makeCodexMarkdown(){
+    const r = getAudit();
+    const pd = getProject();
+    const score = r?.survivabilityScore ?? r?.readinessScore ?? 'unknown';
+    const revenue = r?.revenueScore ?? r?.economics?.revenueScore ?? 'unknown';
+    const risks = riskTitles(r);
+    const missing = missingTitles(r);
+    const leaks = moneyLeaks(r);
+    const moves = revenueMoves(r);
+
+    return `# Local Codex Repair Brief
+
+## Project
+- Name: ${pd.name || 'Uploaded project'}
+- Framework: ${pd.fw || pd.framework || 'Unknown'}
+- Language: ${pd.lang || pd.language || 'Unknown'}
+- Survivability Score: ${score}/100
+- Revenue Readiness Score: ${revenue}/100
+
+## Prime Directive
+Improve this project until it is launch-ready, revenue-ready, trustworthy, and maintainable. Prioritize fixes that directly increase user trust, conversion, lead capture, paid action, and clear next-step value.
+
+## Money Leaks To Fix First
+${leaks.map((x,i)=>`${i+1}. ${x}`).join('\n')}
+
+## Fastest Revenue Moves
+${moves.map((x,i)=>`${i+1}. ${x}`).join('\n')}
+
+## Technical Risks
+${risks.length ? risks.map((x,i)=>`${i+1}. ${x}`).join('\n') : '1. No major risks available from local static inspection.'}
+
+## Missing Launch Items
+${missing.length ? missing.map((x,i)=>`${i+1}. ${x}`).join('\n') : '1. No missing items available from local static inspection.'}
+
+## Implementation Rules
+1. Do not remove existing working features.
+2. Do not add paid dependencies without approval.
+3. Keep the auditor local-first unless a user explicitly enables external services.
+4. Add revenue features in small, testable steps.
+5. Every monetization feature must include honest disclosure where required.
+6. Prefer plain HTML/CSS/JS changes unless the project already uses a framework.
+
+## Highest-Value Next Tasks
+1. Add/strengthen pricing, checkout, or lead-capture paths.
+2. Add post-audit CTA: full report, Codex repair plan, consultation, or tool recommendation.
+3. Add trust proof: screenshots, methodology, privacy note, security note, affiliate disclosure.
+4. Add analytics events for upload, audit complete, CTA click, report download, and lead submit.
+5. Add a conversion-focused result summary explaining why the app is or is not making money.
+`;
+  }
+
+  function makeDelegateHtml(){
+    const r = getAudit();
+    const safe = [
+      'Add pricing cards, CTA copy, and lead-capture UI',
+      'Add affiliate disclosure and recommended-tool cards',
+      'Create report export/share/download UI',
+      'Improve empty states, onboarding copy, and trust sections',
+      'Add basic analytics event hooks'
+    ];
+    const review = [
+      'Payment provider integration',
+      'Authentication changes',
+      'Database schema changes',
+      'Security-sensitive file parsing changes',
+      'Anything that changes existing routing or deployment config'
+    ];
+    const prompt = makeCodexMarkdown();
+
+    return `
+      <div class="card">
+        <div class="card-title">Local Delegation Plan</div>
+        <p>This section is generated locally. No Anthropic or external AI call is used.</p>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">Safe to Delegate</div>
+          <ul>${safe.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Needs Human Review</div>
+          <ul>${review.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Paste This Into Codex / Cursor / Claude Code</div>
+        <pre style="white-space:pre-wrap">${esc(prompt)}</pre>
+      </div>
+    `;
+  }
+
+  function makeMasterPlanHtml(){
+    const r = getAudit();
+    const leaks = moneyLeaks(r);
+    const moves = revenueMoves(r);
+    const risks = riskTitles(r);
+    const missing = missingTitles(r);
+
+    return `
+      <div class="card">
+        <div class="card-title">Revenue-First Fix Roadmap</div>
+        <p>This fix roadmap is generated locally from the audit findings. It prioritizes money path, trust, conversion, launch readiness, and maintainability.</p>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">Priority 1 — Revenue Activation</div>
+          <ul>${moves.slice(0,5).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Priority 2 — Money Leak Repair</div>
+          <ul>${leaks.slice(0,5).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Priority 3 — Launch Readiness</div>
+          <ul>${missing.slice(0,5).map(x=>`<li>${esc(x)}</li>`).join('') || '<li>No launch blockers available from static audit.</li>'}</ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Priority 4 — Technical Survivability</div>
+          <ul>${risks.slice(0,5).map(x=>`<li>${esc(x)}</li>`).join('') || '<li>No major technical risks available from static audit.</li>'}</ul>
+        </div>
+      </div>
+    `;
+  }
+
+  window.generateCodexInstructions = async function(){
+    window.codexFull = makeCodexMarkdown();
+    window.codexVariants = window.codexVariants || {};
+    window.codexVariants.full = window.codexFull;
+    window.codexVariants.tasks = window.codexFull;
+    window.codexVariants.context = window.codexFull;
+    window.codexVariants.security = window.codexFull;
+    setBlock(['content-codex','codex-content','codex-output','codex-result','codex-sections'], `<pre style="white-space:pre-wrap">${esc(window.codexFull)}</pre>`);
+    hideBlock(['codex-placeholder','codex-generating']);
+  };
+
+  window.regenerateCodex = function(){
+    window.generateCodexInstructions();
+    if (window.showToast) window.showToast('Regenerated local Codex repair brief');
+  };
+
+  window.generateDelegateInstructions = async function(){
+    window.delegateData = { localOnly:true };
+    setBlock(['content-delegate','delegate-content','delegate-output','delegate-result','delegate-panel'], makeDelegateHtml());
+    hideBlock(['delegate-placeholder','delegate-generating']);
+  };
+
+  window.regenerateDelegate = function(){
+    window.generateDelegateInstructions();
+    if (window.showToast) window.showToast('Regenerated local delegation plan');
+  };
+
+  window.generateMasterPlan = async function(){
+    window.masterPlanData = { localOnly:true };
+    window.masterPlanRaw = 'Local revenue-first master plan generated.';
+    setBlock(['content-masterplan','masterplan-content','masterplan-output','masterplan-result','masterplan-panel'], makeMasterPlanHtml());
+    hideBlock(['masterplan-placeholder','masterplan-generating']);
+  };
+
+  window.regenerateMasterPlan = function(){
+    window.generateMasterPlan();
+    if (window.showToast) window.showToast('Regenerated local master plan');
+  };
+
+  window.localAskAuditor = function(question){
+    const r = getAudit();
+    const q = String(question || '').toLowerCase();
+    const revenue = r?.revenueScore ?? r?.economics?.revenueScore ?? 'unknown';
+    if (q.includes('money') || q.includes('revenue') || q.includes('monet') || q.includes('profit')) {
+      return `Revenue readiness is ${revenue}/100. The fastest path is to add a clear paid action or lead capture immediately after the audit result, then route users into a full report, repair plan, consultation offer, or recommended tools with affiliate disclosure. Biggest likely leaks: ${moneyLeaks(r).slice(0,3).join('; ')}.`;
+    }
+    return `The project should be improved in this order: revenue path, trust proof, launch blockers, then technical hardening. Current top risks: ${riskTitles(r).slice(0,3).join('; ') || 'limited static evidence available'}.`;
+  };
+
+  if (window.showToast) window.showToast('Final local-only overrides loaded');
+})();
+</script>
+
+
+<script id="ncr-revenue-productization-overrides">
+(function(){
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function getAudit(){
+    return window.ncrLastAudit || window.auditResult || window.currentResults || window.auditResults || window.results || null;
+  }
+
+  function moneyLeaks(r){
+    const econ = r?.economics || {};
+    const leaks = econ.moneyLeaks || r?.moneyLeaks || [];
+    if (leaks.length) return leaks.map(x => x.title || x.name || String(x));
+    return [
+      'No pricing or plan comparison detected',
+      'No checkout/payment/billing signal detected',
+      'No strong conversion CTA detected',
+      'No affiliate/referral/recommendation monetization signal detected',
+      'No conversion analytics signal detected'
+    ];
+  }
+
+  function revenueMoves(r){
+    const econ = r?.economics || {};
+    const moves = econ.fastestRevenueMoves || r?.fastestRevenueMoves || [];
+    if (moves.length) return moves.map(x => x.title || x.name || String(x));
+    return [
+      'Add one primary CTA above the fold and one CTA after audit results',
+      'Add a 3-tier offer block: Free Audit, Pro Report, Done-For-You Repair',
+      'Add contextual tool recommendations with affiliate disclosure',
+      'Add report export: summary, repair brief, and revenue-readiness report',
+      'Track upload, audit complete, CTA clicks, report downloads, and lead submits'
+    ];
+  }
+
+  function riskTitles(r){
+    return (r?.risks || []).slice(0, 8).map(x => x.title || x.name || String(x));
+  }
+
+  function missingTitles(r){
+    return (r?.missingItems || []).slice(0, 8).map(x => x.title || x.name || String(x));
+  }
+
+  function setBlock(ids, html){
+    for (const id of ids){
+      const el = document.getElementById(id);
+      if (el){
+        el.style.display = 'block';
+        el.innerHTML = html;
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function hideBlock(ids){
+    for (const id of ids){
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    }
+  }
+
+  function makeRevenueCTA(){
+    return `
+      <div class="card" id="ncr-revenue-cta" style="margin-top:18px;border-color:rgba(52,211,153,.35)">
+        <div class="card-title">Turn This Audit Into Revenue</div>
+        <p style="color:var(--text2);margin-top:6px">
+          The highest-value next step is to turn audit findings into a paid action, lead, tool recommendation, or repair workflow.
+        </p>
+        <div class="card-grid" style="margin-top:14px">
+          <div class="card">
+            <div class="card-title">Free Audit</div>
+            <p style="color:var(--text2)">Show basic scores, top risks, and top money leaks.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Pro Report</div>
+            <p style="color:var(--text2)">Export full repair plan, Codex brief, revenue fixes, and launch checklist.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Done-For-You Repair</div>
+            <p style="color:var(--text2)">Capture leads from low-scoring projects and offer implementation help.</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function injectRevenueCTA(){
+    const overview =
+      document.getElementById('content-overview') ||
+      document.querySelector('[id*="overview"]') ||
+      document.querySelector('.content.active');
+
+    if (!overview || document.getElementById('ncr-revenue-cta')) return;
+    overview.insertAdjacentHTML('beforeend', makeRevenueCTA());
+  }
+
+  const oldRenderDashboard = window.renderDashboard;
+  if (typeof oldRenderDashboard === 'function') {
+    window.renderDashboard = function(){
+      const out = oldRenderDashboard.apply(this, arguments);
+      setTimeout(injectRevenueCTA, 50);
+      return out;
+    };
+  }
+
+  function makeCodexMarkdown(){
+    const r = getAudit();
+    const pd = r?.projectData || r?.project || window.projectData || {};
+    const launch = r?.survivabilityScore ?? r?.readinessScore ?? 'unknown';
+    const revenue = r?.revenueScore ?? r?.economics?.revenueScore ?? 'unknown';
+    const leaks = moneyLeaks(r);
+    const moves = revenueMoves(r);
+    const risks = riskTitles(r);
+    const missing = missingTitles(r);
+
+    return `# Codex Repair Brief
+
+## Mission
+Improve this app until it is launch-ready, revenue-ready, trustworthy, and safe to keep building with AI coding tools.
+
+## Project Snapshot
+- Project: ${pd.name || 'Uploaded project'}
+- Framework: ${pd.fw || pd.framework || 'Unknown'}
+- Language: ${pd.lang || pd.language || 'Unknown'}
+- Launch Readiness: ${launch}/100
+- Revenue Readiness: ${revenue}/100
+
+## Priority 1 — Revenue Activation
+${moves.map((x,i)=>`${i+1}. ${x}`).join('\n')}
+
+## Priority 2 — Money Leak Repair
+${leaks.map((x,i)=>`${i+1}. ${x}`).join('\n')}
+
+## Priority 3 — Launch Readiness
+${missing.length ? missing.map((x,i)=>`${i+1}. ${x}`).join('\n') : '1. Add deployment docs, privacy copy, CTA placement, and analytics events.'}
+
+## Priority 4 — Technical Survivability
+${risks.length ? risks.map((x,i)=>`${i+1}. ${x}`).join('\n') : '1. Add tests, validation, error handling, and maintainability improvements.'}
+
+## Guardrails
+1. Do not remove working features.
+2. Do not add paid dependencies without approval.
+3. Do not send uploaded project files to external APIs.
+4. Do not modify auth, billing, or database logic without human review.
+5. Keep the product local-first unless cloud analysis is explicitly enabled.
+6. Every monetization feature must use honest disclosure where required.
+
+## Definition of Done
+- The app has a clear CTA.
+- The app has a visible offer or lead-capture path.
+- The app explains why users should trust it.
+- The app tracks revenue actions.
+- The app has a concrete next step after audit results.
+`;
+  }
+
+  window.generateCodexInstructions = async function(){
+    window.codexFull = makeCodexMarkdown();
+    window.codexVariants = {
+      full: window.codexFull,
+      tasks: window.codexFull,
+      context: window.codexFull,
+      security: window.codexFull
+    };
+    setBlock(
+      ['content-codex','codex-content','codex-output','codex-result','codex-sections'],
+      `<pre style="white-space:pre-wrap">${esc(window.codexFull)}</pre>`
+    );
+    hideBlock(['codex-placeholder','codex-generating']);
+  };
+
+  window.regenerateCodex = function(){
+    window.generateCodexInstructions();
+    if (window.showToast) window.showToast('Regenerated local Codex repair brief');
+  };
+
+  window.generateMasterPlan = async function(){
+    const r = getAudit();
+    const leaks = moneyLeaks(r);
+    const moves = revenueMoves(r);
+    const risks = riskTitles(r);
+    const missing = missingTitles(r);
+
+    const html = `
+      <div class="card">
+        <div class="card-title">Revenue-First Fix Roadmap</div>
+        <p style="color:var(--text2)">
+          This roadmap is generated locally from the uploaded project. It prioritizes the fixes most likely to improve launch readiness, trust, conversion, and revenue.
+        </p>
+      </div>
+      <div class="card-grid">
+        <div class="card">
+          <div class="card-title">Priority 1 — Revenue Activation</div>
+          <ul>${moves.slice(0,5).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Priority 2 — Money Leak Repair</div>
+          <ul>${leaks.slice(0,5).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Priority 3 — Launch Readiness</div>
+          <ul>${missing.slice(0,5).map(x=>`<li>${esc(x)}</li>`).join('') || '<li>Add deployment docs, privacy copy, CTA placement, and analytics events.</li>'}</ul>
+        </div>
+        <div class="card">
+          <div class="card-title">Priority 4 — Technical Survivability</div>
+          <ul>${risks.slice(0,5).map(x=>`<li>${esc(x)}</li>`).join('') || '<li>Add tests, validation, error handling, and maintainability improvements.</li>'}</ul>
+        </div>
+      </div>
+    `;
+
+    window.masterPlanData = { localOnly:true };
+    window.masterPlanRaw = 'Revenue-first fix roadmap generated locally.';
+    setBlock(['content-masterplan','masterplan-content','masterplan-output','masterplan-result','masterplan-panel'], html);
+    hideBlock(['masterplan-placeholder','masterplan-generating']);
+  };
+
+  window.regenerateMasterPlan = function(){
+    window.generateMasterPlan();
+    if (window.showToast) window.showToast('Regenerated local fix roadmap');
+  };
+
+  window.localAskAuditor = function(question){
+    const r = getAudit();
+    const q = String(question || '').toLowerCase();
+    const revenue = r?.revenueScore ?? r?.economics?.revenueScore ?? 'unknown';
+
+    if (q.includes('money') || q.includes('revenue') || q.includes('monet') || q.includes('profit')) {
+      return `Revenue readiness is ${revenue}/100. The fastest path is to add a clear post-result CTA, a paid Pro Report or repair offer, lead capture for low-scoring projects, and contextual tool recommendations with affiliate disclosure. Biggest money leaks: ${moneyLeaks(r).slice(0,3).join('; ')}.`;
+    }
+
+    if (q.includes('fix') || q.includes('first') || q.includes('priority')) {
+      return `Fix this in order: revenue activation, trust and conversion, launch blockers, then technical survivability. Start with: ${revenueMoves(r).slice(0,3).join('; ')}.`;
+    }
+
+    return `This app should be evaluated by launch readiness, revenue readiness, trust/conversion, and technical survivability. The next best move is to fix the highest-impact revenue leaks before polishing lower-impact architecture details.`;
+  };
+
+  setTimeout(injectRevenueCTA, 300);
+
+  if (window.showToast) window.showToast('Revenue productization overrides loaded');
+})();
+</script>
+
+
+<script id="ncr-export-offer-layer">
+(function(){
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function getAudit(){
+    return window.ncrLastAudit || window.auditResult || window.currentResults || window.auditResults || window.results || null;
+  }
+
+  function trackRevenueAction(action, detail){
+    window.ncrRevenueEvents = window.ncrRevenueEvents || [];
+    const event = {
+      action,
+      detail: detail || {},
+      timestamp: new Date().toISOString()
+    };
+    window.ncrRevenueEvents.push(event);
+    console.log('[NoCodeReviewed Revenue Event]', event);
+    if (window.showToast) window.showToast(action.replaceAll('_', ' '));
+  }
+
+  window.trackRevenueAction = trackRevenueAction;
+
+  function downloadText(filename, content){
+    const blob = new Blob([content], {type:'text/plain;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function moneyLeaks(r){
+    const econ = r?.economics || {};
+    const leaks = econ.moneyLeaks || r?.moneyLeaks || [];
+    if (leaks.length) return leaks.map(x => x.title || x.name || String(x));
+    return [
+      'No pricing or plan comparison detected',
+      'No checkout/payment/billing signal detected',
+      'No strong conversion CTA detected',
+      'No affiliate/referral/recommendation monetization signal detected',
+      'No conversion analytics signal detected'
+    ];
+  }
+
+  function revenueMoves(r){
+    const econ = r?.economics || {};
+    const moves = econ.fastestRevenueMoves || r?.fastestRevenueMoves || [];
+    if (moves.length) return moves.map(x => x.title || x.name || String(x));
+    return [
+      'Add one primary CTA above the fold and one CTA after audit results',
+      'Add a 3-tier offer block: Free Audit, Pro Report, Done-For-You Repair',
+      'Add contextual tool recommendations with affiliate disclosure',
+      'Add report export: summary, repair brief, and revenue-readiness report',
+      'Track upload, audit complete, CTA clicks, report downloads, and lead submits'
+    ];
+  }
+
+  function riskTitles(r){
+    return (r?.risks || []).slice(0, 10).map(x => x.title || x.name || String(x));
+  }
+
+  function missingTitles(r){
+    return (r?.missingItems || []).slice(0, 10).map(x => x.title || x.name || String(x));
+  }
+
+  function projectName(){
+    const r = getAudit();
+    const pd = r?.projectData || r?.project || window.projectData || {};
+    return String(pd.name || 'uploaded-project').replace(/[^a-z0-9-_]+/gi, '-').replace(/^-+|-+$/g, '').toLowerCase();
+  }
+
+  function buildFullReport(){
+    const r = getAudit();
+    const pd = r?.projectData || r?.project || window.projectData || {};
+    const launch = r?.survivabilityScore ?? r?.readinessScore ?? 'unknown';
+    const revenue = r?.revenueScore ?? r?.economics?.revenueScore ?? 'unknown';
+
+    return `# NoCodeReviewed Vibe Code Audit Report
+
+## Project
+- Name: ${pd.name || 'Uploaded project'}
+- Framework: ${pd.fw || pd.framework || 'Unknown'}
+- Language: ${pd.lang || pd.language || 'Unknown'}
+- Launch Readiness: ${launch}/100
+- Revenue Readiness: ${revenue}/100
+
+## Executive Summary
+This report identifies the highest-impact blockers preventing this app from becoming launch-ready, trustworthy, and revenue-ready.
+
+## Money Leaks
+${moneyLeaks(r).map((x,i)=>`${i+1}. ${x}`).join('\n')}
+
+## Fastest Revenue Moves
+${revenueMoves(r).map((x,i)=>`${i+1}. ${x}`).join('\n')}
+
+## Launch Blockers
+${missingTitles(r).length ? missingTitles(r).map((x,i)=>`${i+1}. ${x}`).join('\n') : '1. Add deployment docs, privacy copy, CTA placement, and analytics events.'}
+
+## Technical Risks
+${riskTitles(r).length ? riskTitles(r).map((x,i)=>`${i+1}. ${x}`).join('\n') : '1. Add tests, validation, error handling, and maintainability improvements.'}
+
+## Recommended Offer Ladder
+1. Free Audit: basic score, top money leaks, top risks.
+2. Pro Report: full repair roadmap, Codex repair brief, launch checklist, and revenue plan.
+3. Done-For-You Repair: implementation support for users with low-scoring apps.
+4. Monthly Pro Plan: saved audits, monitoring, benchmarks, and advanced reports.
+
+## Recommended Analytics Events
+- audit_upload_started
+- audit_completed
+- revenue_tab_opened
+- ask_auditor_used
+- codex_brief_generated
+- fix_roadmap_opened
+- full_report_downloaded
+- pro_report_clicked
+- done_for_you_clicked
+- affiliate_recommendation_clicked
+
+## Privacy Note
+This local version analyzes the uploaded ZIP in the browser and should not send project files to external AI APIs.
+`;
+  }
+
+  function buildCodexBrief(){
+    if (window.codexFull) return window.codexFull;
+    const r = getAudit();
+    return `# Codex Repair Brief
+
+## Mission
+Improve this app until it is launch-ready, revenue-ready, trustworthy, and safe to continue building with AI coding tools.
+
+## Revenue Fixes
+${revenueMoves(r).map((x,i)=>`${i+1}. ${x}`).join('\n')}
+
+## Money Leaks
+${moneyLeaks(r).map((x,i)=>`${i+1}. ${x}`).join('\n')}
+
+## Launch Blockers
+${missingTitles(r).length ? missingTitles(r).map((x,i)=>`${i+1}. ${x}`).join('\n') : '1. Add deployment docs, privacy copy, CTA placement, and analytics events.'}
+
+## Technical Risks
+${riskTitles(r).length ? riskTitles(r).map((x,i)=>`${i+1}. ${x}`).join('\n') : '1. Add tests, validation, error handling, and maintainability improvements.'}
+
+## Guardrails
+Do not remove working features. Do not add paid dependencies without approval. Do not change auth, billing, or database logic without human review.
+`;
+  }
+
+  function buildFixRoadmap(){
+    const r = getAudit();
+    return `# Revenue-First Fix Roadmap
+
+## Priority 1 — Revenue Activation
+${revenueMoves(r).map((x,i)=>`${i+1}. ${x}`).join('\n')}
+
+## Priority 2 — Money Leak Repair
+${moneyLeaks(r).map((x,i)=>`${i+1}. ${x}`).join('\n')}
+
+## Priority 3 — Launch Readiness
+${missingTitles(r).length ? missingTitles(r).map((x,i)=>`${i+1}. ${x}`).join('\n') : '1. Add deployment docs, privacy copy, CTA placement, and analytics events.'}
+
+## Priority 4 — Technical Survivability
+${riskTitles(r).length ? riskTitles(r).map((x,i)=>`${i+1}. ${x}`).join('\n') : '1. Add tests, validation, error handling, and maintainability improvements.'}
+`;
+  }
+
+  window.downloadNcrFullReport = function(){
+    trackRevenueAction('full_report_downloaded', {project: projectName()});
+    downloadText(`nocodereviewed-audit-report-${projectName()}.md`, buildFullReport());
+  };
+
+  window.downloadNcrCodexBrief = function(){
+    trackRevenueAction('codex_brief_downloaded', {project: projectName()});
+    downloadText(`codex-repair-brief-${projectName()}.md`, buildCodexBrief());
+  };
+
+  window.downloadNcrFixRoadmap = function(){
+    trackRevenueAction('fix_roadmap_downloaded', {project: projectName()});
+    downloadText(`fix-roadmap-${projectName()}.md`, buildFixRoadmap());
+  };
+
+  window.copyNcrRevenueFixes = async function(){
+    const r = getAudit();
+    const text = `Money Leaks:\n${moneyLeaks(r).map((x,i)=>`${i+1}. ${x}`).join('\n')}\n\nFastest Revenue Moves:\n${revenueMoves(r).map((x,i)=>`${i+1}. ${x}`).join('\n')}`;
+    trackRevenueAction('revenue_fixes_copied', {project: projectName()});
+    try {
+      await navigator.clipboard.writeText(text);
+      if (window.showToast) window.showToast('Copied revenue fixes');
+    } catch {
+      downloadText(`revenue-fixes-${projectName()}.txt`, text);
+    }
+  };
+
+  window.ncrProReportClick = function(){
+    trackRevenueAction('pro_report_clicked', {project: projectName(), offer:'pro_report'});
+    window.location.href = 'mailto:hello@nocodereviewed.com?subject=Pro%20Report%20Request&body=I%20want%20a%20Pro%20Report%20for%20my%20app.%0A%0AProject:%20' + encodeURIComponent(projectName());
+  };
+
+  window.ncrDoneForYouClick = function(){
+    trackRevenueAction('done_for_you_clicked', {project: projectName(), offer:'done_for_you_repair'});
+    window.location.href = 'mailto:hello@nocodereviewed.com?subject=Repair%20Help%20Request&body=I%20want%20repair%20help%20for%20my%20app.%0A%0AProject:%20' + encodeURIComponent(projectName());
+  };
+
+  function makeExportOfferLayer(){
+    return `
+      <div class="card" id="ncr-export-offer-layer-card" style="margin-top:18px;border-color:rgba(96,165,250,.35)">
+        <div class="card-title">Export & Next Actions</div>
+        <p style="color:var(--text2);margin-top:6px">
+          Turn the audit into a usable repair asset, a paid report, or a lead for done-for-you help.
+        </p>
+
+        <div class="card-grid" style="margin-top:14px">
+          <div class="card">
+            <div class="card-title">Download Assets</div>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">
+              <button class="btn" onclick="downloadNcrFullReport()">Download Full Report</button>
+              <button class="btn" onclick="downloadNcrCodexBrief()">Download Codex Brief</button>
+              <button class="btn" onclick="downloadNcrFixRoadmap()">Download Fix Roadmap</button>
+              <button class="btn" onclick="copyNcrRevenueFixes()">Copy Revenue Fixes</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Paid Offer Path</div>
+            <p style="color:var(--text2)">Start with a Pro Report or request hands-on repair help after reviewing your audit.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px">
+              <button class="btn primary" onclick="ncrProReportClick()">Get Pro Report</button>
+              <button class="btn" onclick="ncrDoneForYouClick()">Request Repair Help</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Tracking Hooks</div>
+            <p style="color:var(--text2)">
+              Events are logged to <code>window.ncrRevenueEvents</code> and the browser console so analytics can be connected later.
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function injectLayer(){
+    const overview =
+      document.getElementById('content-overview') ||
+      document.querySelector('[id*="overview"]') ||
+      document.querySelector('.content.active');
+
+    if (!overview || document.getElementById('ncr-export-offer-layer-card')) return;
+    overview.insertAdjacentHTML('beforeend', makeExportOfferLayer());
+  }
+
+  const oldRenderDashboard = window.renderDashboard;
+  if (typeof oldRenderDashboard === 'function' && !window.ncrExportLayerWrapped) {
+    window.ncrExportLayerWrapped = true;
+    window.renderDashboard = function(){
+      const out = oldRenderDashboard.apply(this, arguments);
+      setTimeout(injectLayer, 75);
+      return out;
+    };
+  }
+
+  setTimeout(injectLayer, 400);
+
+  if (window.showToast) window.showToast('Export and offer layer loaded');
+})();
+</script>
+
+
+<script id="ncr-contextual-tool-recommendations">
+(function(){
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function getAudit(){
+    return window.ncrLastAudit || window.auditResult || window.currentResults || window.auditResults || window.results || null;
+  }
+
+  function allFindingText(){
+    const r = getAudit() || {};
+    const buckets = [
+      r.risks,
+      r.missingItems,
+      r.moneyLeaks,
+      r.fastestRevenueMoves,
+      r.economics?.moneyLeaks,
+      r.economics?.fastestRevenueMoves
+    ].filter(Boolean);
+
+    return buckets.flat().map(item => {
+      if (typeof item === 'string') return item;
+      return [item.title, item.name, item.description, item.impact, item.fix].filter(Boolean).join(' ');
+    }).join(' ').toLowerCase();
+  }
+
+  function track(action, detail){
+    if (typeof window.trackRevenueAction === 'function') {
+      window.trackRevenueAction(action, detail || {});
+      return;
+    }
+    window.ncrRevenueEvents = window.ncrRevenueEvents || [];
+    const event = { action, detail: detail || {}, timestamp: new Date().toISOString() };
+    window.ncrRevenueEvents.push(event);
+    console.log('[NoCodeReviewed Revenue Event]', event);
+  }
+
+  window.ncrRecommendationClick = function(category, tool){
+    track('tool_recommendation_clicked', {category, tool});
+    alert(`${tool} recommendation placeholder.\n\nNext step: connect this card to your NoCodeReviewed review page, tutorial, affiliate link, or comparison article.`);
+  };
+
+  function recommendTools(){
+    const t = allFindingText();
+    const recs = [];
+
+    function add(category, reason, tools){
+      recs.push({category, reason, tools});
+    }
+
+    if (/deploy|deployment|hosting|runtime|vercel|netlify|server|production/.test(t)) {
+      add(
+        'Hosting & Deployment',
+        'The audit found deployment/runtime gaps. Users need a clear way to ship and maintain the app.',
+        ['Vercel', 'Netlify', 'Railway', 'Render']
+      );
+    }
+
+    if (/analytics|conversion|track|cta|event|click|lead|funnel/.test(t)) {
+      add(
+        'Analytics & Conversion Tracking',
+        'The audit found weak or missing conversion tracking. Revenue actions should be measured.',
+        ['Plausible', 'PostHog', 'Google Analytics', 'Fathom']
+      );
+    }
+
+    if (/checkout|payment|billing|stripe|subscription|pricing|plan/.test(t)) {
+      add(
+        'Payments & Billing',
+        'The audit found no clear paid action, pricing, checkout, or billing path.',
+        ['Stripe', 'Lemon Squeezy', 'Gumroad', 'Polar']
+      );
+    }
+
+    if (/auth|login|session|access-control|account|user/.test(t)) {
+      add(
+        'Auth & Access Control',
+        'The audit found missing or unclear authentication/access-control signals.',
+        ['Clerk', 'Supabase Auth', 'Auth.js', 'Firebase Auth']
+      );
+    }
+
+    if (/security|privacy|terms|policy|uploaded|file|zip|data/.test(t)) {
+      add(
+        'Security & Privacy',
+        'The audit found trust, privacy, file handling, or security documentation gaps.',
+        ['Snyk', 'Socket', 'Semgrep', 'Aikido Security']
+      );
+    }
+
+    if (/codex|repair|ai|vibe|maintainability|large file|refactor|technical/.test(t)) {
+      add(
+        'AI Coding & Repair',
+        'The audit found issues that may be good candidates for guided AI repair work.',
+        ['OpenAI Codex', 'Cursor', 'Replit', 'Claude Code']
+      );
+    }
+
+    if (/landing|cta|copy|trust|testimonial|offer|conversion|homepage/.test(t)) {
+      add(
+        'Landing Page & Offer Builders',
+        'The audit found weak CTA, trust, offer, or conversion journey signals.',
+        ['Webflow', 'Framer', 'Lovable', 'Bolt.new']
+      );
+    }
+
+    if (!recs.length) {
+      add(
+        'General Launch Stack',
+        'No specific tool gap dominated the findings, so start with the core launch stack.',
+        ['Vercel', 'Stripe', 'PostHog', 'Cursor']
+      );
+    }
+
+    return recs.slice(0, 6);
+  }
+
+  function makeRecommendationsHtml(){
+    const recs = recommendTools();
+
+    return `
+      <div class="card" id="ncr-tool-recommendations-card" style="margin-top:18px;border-color:rgba(251,191,36,.35)">
+        <div class="card-title">Contextual Tool Recommendations</div>
+        <p style="color:var(--text2);margin-top:6px">
+          These recommendations are based on the audit findings. Connect each card later to a NoCodeReviewed review, comparison page, tutorial, or affiliate link.
+        </p>
+        <p style="color:var(--text2);font-size:13px;margin-top:8px">
+          Affiliate disclosure: some future links may be affiliate links. Recommendations should remain tied to the detected project gap, not pay-to-play placement.
+        </p>
+
+        <div class="card-grid" style="margin-top:14px">
+          ${recs.map(rec => `
+            <div class="card">
+              <div class="card-title">${esc(rec.category)}</div>
+              <p style="color:var(--text2);margin-top:6px">${esc(rec.reason)}</p>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px">
+                ${rec.tools.map(tool => `
+                  <button class="btn" onclick="ncrRecommendationClick('${esc(rec.category)}','${esc(tool)}')">${esc(tool)}</button>
+                `).join('')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function injectRecommendations(){
+    const revenue =
+      document.getElementById('content-economics') ||
+      document.getElementById('content-revenue') ||
+      document.querySelector('[id*="econ"]') ||
+      document.querySelector('[id*="revenue"]') ||
+      document.getElementById('content-overview') ||
+      document.querySelector('.content.active');
+
+    if (!revenue || document.getElementById('ncr-tool-recommendations-card')) return;
+    revenue.insertAdjacentHTML('beforeend', makeRecommendationsHtml());
+  }
+
+  const oldRenderDashboard = window.renderDashboard;
+  if (typeof oldRenderDashboard === 'function' && !window.ncrRecommendationsWrapped) {
+    window.ncrRecommendationsWrapped = true;
+    window.renderDashboard = function(){
+      const out = oldRenderDashboard.apply(this, arguments);
+      setTimeout(injectRecommendations, 100);
+      return out;
+    };
+  }
+
+  const oldSwitchNav = window.switchNav;
+  if (typeof oldSwitchNav === 'function' && !window.ncrRecommendationNavWrapped) {
+    window.ncrRecommendationNavWrapped = true;
+    window.switchNav = function(nav){
+      const out = oldSwitchNav.apply(this, arguments);
+      setTimeout(injectRecommendations, 100);
+      return out;
+    };
+  }
+
+  setTimeout(injectRecommendations, 500);
+
+  if (window.showToast) window.showToast('Contextual recommendations loaded');
+})();
+</script>
+
+
+<script id="ncr-money-leak-impact-fix-upgrade">
+(function(){
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function getAudit(){
+    return window.ncrLastAudit || window.auditResult || window.currentResults || window.auditResults || window.results || null;
+  }
+
+  function findingText(){
+    const r = getAudit() || {};
+    const buckets = [
+      r.risks,
+      r.missingItems,
+      r.moneyLeaks,
+      r.fastestRevenueMoves,
+      r.economics?.moneyLeaks,
+      r.economics?.fastestRevenueMoves
+    ].filter(Boolean);
+
+    return buckets.flat().map(item => {
+      if (typeof item === 'string') return item;
+      return [item.title, item.name, item.description, item.impact, item.fix].filter(Boolean).join(' ');
+    }).join(' ').toLowerCase();
+  }
+
+  function makeLeak(title, impact, fix, priority){
+    return { title, impact, fix, priority };
+  }
+
+  function buildMoneyLeakObjects(){
+    const t = findingText();
+    const leaks = [];
+
+    function addIf(regex, leak){
+      if (regex.test(t) && !leaks.some(x => x.title === leak.title)) leaks.push(leak);
+    }
+
+    addIf(/pricing|plan|tier|subscription|offer/, makeLeak(
+      'No pricing or offer structure detected',
+      'Users may understand the app but have no clear paid option to choose.',
+      'Add a simple 3-tier offer block: Free Audit, Pro Report, Done-For-You Repair.',
+      'High'
+    ));
+
+    addIf(/checkout|payment|billing|stripe|gumroad|lemon|invoice/, makeLeak(
+      'No checkout or payment path detected',
+      'Interested users cannot turn intent into revenue inside the product flow.',
+      'Add a placeholder paid-action button now, then connect Stripe, Lemon Squeezy, Gumroad, or a booking form later.',
+      'High'
+    ));
+
+    addIf(/cta|conversion|button|call to action/, makeLeak(
+      'Weak or missing conversion CTA detected',
+      'Users may read the report and leave without taking the next step.',
+      'Add one CTA above the fold and one CTA immediately after audit results.',
+      'High'
+    ));
+
+    addIf(/lead|email|waitlist|contact|intake|form/, makeLeak(
+      'No lead capture path detected',
+      'Users who are not ready to buy cannot be followed up with later.',
+      'Add an email capture or repair-intake form for projects scoring below 70.',
+      'High'
+    ));
+
+    addIf(/affiliate|referral|recommendation|tool/, makeLeak(
+      'No affiliate or recommendation monetization path detected',
+      'The auditor finds tool gaps but does not yet route users to useful commercial recommendations.',
+      'Add contextual recommendations for hosting, builders, AI coding tools, analytics, payments, auth, and security with disclosure.',
+      'Medium'
+    ));
+
+    addIf(/analytics|track|event|click|funnel|conversion/, makeLeak(
+      'No conversion analytics detected',
+      'You cannot tell which findings create clicks, leads, downloads, or sales.',
+      'Track upload, audit completion, revenue tab opens, report downloads, CTA clicks, and recommendation clicks.',
+      'High'
+    ));
+
+    addIf(/trust|testimonial|proof|case study|privacy|security|terms/, makeLeak(
+      'Weak trust proof detected',
+      'Users may hesitate to upload code, trust the score, or pay for a report.',
+      'Add local-analysis privacy copy, methodology, sample reports, affiliate disclosure, testimonials, and security notes.',
+      'Medium'
+    ));
+
+    addIf(/download|export|report|pdf|markdown|share/, makeLeak(
+      'No strong report export value detected',
+      'The audit may feel useful in the moment but not valuable enough to save, share, or pay for.',
+      'Offer downloadable Full Report, Codex Repair Brief, Fix Roadmap, and Revenue Fixes.',
+      'Medium'
+    ));
+
+    if (!leaks.length) {
+      leaks.push(
+        makeLeak(
+          'No obvious revenue path detected',
+          'The project may be useful but does not clearly guide users toward a paid action, lead, or recommended next step.',
+          'Add a post-result CTA, offer block, lead capture, report export, and contextual recommendations.',
+          'High'
+        ),
+        makeLeak(
+          'No conversion tracking detected',
+          'You will not know whether the app is producing leads, clicks, or sales.',
+          'Define revenue events now and connect analytics later.',
+          'High'
+        )
+      );
+    }
+
+    return leaks.slice(0, 8);
+  }
+
+  function makeMoneyLeakHtml(){
+    const leaks = buildMoneyLeakObjects();
+
+    return `
+      <div class="card" id="ncr-money-leak-impact-fix-card" style="margin-top:18px;border-color:rgba(248,113,113,.38)">
+        <div class="card-title">Money Leaks — Impact & Fix</div>
+        <p style="color:var(--text2);margin-top:6px">
+          These are the highest-value revenue blockers detected in the uploaded project.
+        </p>
+        <div class="card-grid" style="margin-top:14px">
+          ${leaks.map(leak => `
+            <div class="card">
+              <div class="card-title">${esc(leak.title)}</div>
+              <p style="color:var(--text2);margin-top:8px"><strong>Impact:</strong> ${esc(leak.impact)}</p>
+              <p style="color:var(--text2);margin-top:8px"><strong>Fix:</strong> ${esc(leak.fix)}</p>
+              <p style="color:var(--text2);margin-top:8px"><strong>Priority:</strong> ${esc(leak.priority)}</p>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function injectMoneyLeakUpgrade(){
+    const revenue =
+      document.getElementById('content-economics') ||
+      document.getElementById('content-revenue') ||
+      document.querySelector('[id*="econ"]') ||
+      document.querySelector('[id*="revenue"]') ||
+      document.getElementById('content-overview') ||
+      document.querySelector('.content.active');
+
+    if (!revenue || document.getElementById('ncr-money-leak-impact-fix-card')) return;
+    revenue.insertAdjacentHTML('afterbegin', makeMoneyLeakHtml());
+  }
+
+  const oldRenderDashboard = window.renderDashboard;
+  if (typeof oldRenderDashboard === 'function' && !window.ncrMoneyLeakImpactWrapped) {
+    window.ncrMoneyLeakImpactWrapped = true;
+    window.renderDashboard = function(){
+      const out = oldRenderDashboard.apply(this, arguments);
+      setTimeout(injectMoneyLeakUpgrade, 125);
+      return out;
+    };
+  }
+
+  const oldSwitchNav = window.switchNav;
+  if (typeof oldSwitchNav === 'function' && !window.ncrMoneyLeakNavWrapped) {
+    window.ncrMoneyLeakNavWrapped = true;
+    window.switchNav = function(nav){
+      const out = oldSwitchNav.apply(this, arguments);
+      setTimeout(injectMoneyLeakUpgrade, 125);
+      return out;
+    };
+  }
+
+  setTimeout(injectMoneyLeakUpgrade, 600);
+
+  window.ncrBuildMoneyLeakObjects = buildMoneyLeakObjects;
+
+  if (window.showToast) window.showToast('Money leak impact/fix upgrade loaded');
+})();
+</script>
+
+
+<script id="ncr-trust-privacy-layer">
+(function(){
+  function injectTrustLayer(){
+    if (document.getElementById('ncr-trust-privacy-card')) return;
+
+    const uploadArea =
+      document.querySelector('[id*="upload"]') ||
+      document.querySelector('.upload') ||
+      document.querySelector('.hero') ||
+      document.querySelector('main') ||
+      document.body;
+
+    if (!uploadArea) return;
+
+    const html = `
+      <div class="card" id="ncr-trust-privacy-card" style="margin:18px 0;border-color:rgba(52,211,153,.35)">
+        <div class="card-title">Local-First Privacy Notice</div>
+        <p style="color:var(--text2);margin-top:6px">
+          This local version analyzes your project ZIP in the browser. It is designed to inspect structure, files, launch blockers, revenue signals, and risk patterns without sending your project to Anthropic, Claude, or any external AI API.
+        </p>
+        <div class="card-grid" style="margin-top:14px">
+          <div class="card">
+            <div class="card-title">What It Checks</div>
+            <ul>
+              <li>Launch readiness</li>
+              <li>Revenue readiness</li>
+              <li>Money leaks</li>
+              <li>Missing docs and setup files</li>
+              <li>Trust, conversion, and technical risk signals</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">What It Does Not Do</div>
+            <ul>
+              <li>It does not call Anthropic or Claude.</li>
+              <li>It does not require an API key.</li>
+              <li>It does not modify your uploaded app.</li>
+              <li>It does not replace human review for billing, auth, privacy, or security decisions.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <div class="card-title">Why This Matters</div>
+            <p style="color:var(--text2)">
+              Builders are more likely to trust the auditor if they understand how their files are handled before uploading.
+            </p>
+          </div>
+        </div>
+      </div>
+    `;
+
+    uploadArea.insertAdjacentHTML('afterbegin', html);
+  }
+
+  function injectResultsTrustNote(){
+    if (document.getElementById('ncr-results-trust-note')) return;
+
+    const overview =
+      document.getElementById('content-overview') ||
+      document.querySelector('[id*="overview"]') ||
+      document.querySelector('.content.active');
+
+    if (!overview) return;
+
+    const html = `
+      <div class="card" id="ncr-results-trust-note" style="margin-top:18px;border-color:rgba(52,211,153,.25)">
+        <div class="card-title">Trust Note</div>
+        <p style="color:var(--text2);margin-top:6px">
+          This report is generated from local static analysis. Treat it as a launch, revenue, and risk triage report — not a legal, financial, or security certification.
+        </p>
+      </div>
+    `;
+
+    overview.insertAdjacentHTML('beforeend', html);
+  }
+
+  const oldRenderDashboard = window.renderDashboard;
+  if (typeof oldRenderDashboard === 'function' && !window.ncrTrustLayerWrapped) {
+    window.ncrTrustLayerWrapped = true;
+    window.renderDashboard = function(){
+      const out = oldRenderDashboard.apply(this, arguments);
+      setTimeout(injectResultsTrustNote, 100);
+      return out;
+    };
+  }
+
+  setTimeout(injectTrustLayer, 300);
+  setTimeout(injectResultsTrustNote, 700);
+
+  if (window.showToast) window.showToast('Trust/privacy layer loaded');
+})();
+</script>
+
+
+<script id="ncr-methodology-layer">
+(function(){
+  function injectMethodology(){
+    if (document.getElementById('ncr-methodology-card')) return;
+
+    const overview =
+      document.getElementById('content-overview') ||
+      document.querySelector('[id*="overview"]') ||
+      document.querySelector('.content.active');
+
+    if (!overview) return;
+
+    const html = `
+      <div class="card" id="ncr-methodology-card" style="margin-top:18px;border-color:rgba(168,85,247,.35)">
+        <div class="card-title">How This Audit Works</div>
+        <p style="color:var(--text2);margin-top:6px">
+          The auditor uses local static analysis to inspect project structure, file signals, launch readiness, monetization paths, trust indicators, and technical risk patterns.
+        </p>
+
+        <div class="card-grid" style="margin-top:14px">
+          <div class="card">
+            <div class="card-title">Launch Readiness</div>
+            <p style="color:var(--text2)">
+              Checks whether the project appears ready for real users: setup docs, deployment signals, routing, error handling, onboarding, environment examples, and missing operational basics.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Revenue Readiness</div>
+            <p style="color:var(--text2)">
+              Checks whether the app has a clear money path: pricing, checkout, lead capture, CTA placement, offer structure, report export, recommendations, analytics, and follow-up actions.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Trust & Conversion</div>
+            <p style="color:var(--text2)">
+              Checks whether users are given enough confidence to upload, read, buy, subscribe, request help, or follow a recommendation.
+            </p>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Technical Survivability</div>
+            <p style="color:var(--text2)">
+              Checks whether the project looks maintainable enough to keep improving with AI tools: file organization, oversized files, missing tests, unclear auth, missing docs, and risky implementation signals.
+            </p>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <div class="card-title">Score Interpretation</div>
+          <ul>
+            <li><strong>85–100:</strong> Strong candidate for launch, polish, or certification.</li>
+            <li><strong>70–84:</strong> Promising but still missing important trust, revenue, or launch pieces.</li>
+            <li><strong>50–69:</strong> Functional prototype territory. Fix the roadmap before pushing traffic or charging users.</li>
+            <li><strong>0–49:</strong> Early/incomplete. Focus on launch blockers, money path, and repair brief first.</li>
+          </ul>
+        </div>
+      </div>
+    `;
+    overview.insertAdjacentHTML('beforeend', html);
+  }
+
+  const oldRenderDashboard = window.renderDashboard;
+  if (typeof oldRenderDashboard === 'function' && !window.ncrMethodologyWrapped) {
+    window.ncrMethodologyWrapped = true;
+    window.renderDashboard = function(){
+      const out = oldRenderDashboard.apply(this, arguments);
+      setTimeout(injectMethodology, 150);
+      return out;
+    };
+  }
+
+  setTimeout(injectMethodology, 800);
+
+  if (window.showToast) window.showToast('Methodology layer loaded');
+})();
+</script>
+
+
+<script id="ncr-conversion-hero-layer">
+(function(){
+  function track(action, detail){
+    if (typeof window.trackRevenueAction === 'function') {
+      window.trackRevenueAction(action, detail || {});
+      return;
+    }
+    window.ncrRevenueEvents = window.ncrRevenueEvents || [];
+    const event = { action, detail: detail || {}, timestamp: new Date().toISOString() };
+    window.ncrRevenueEvents.push(event);
+    console.log('[NoCodeReviewed Revenue Event]', event);
+  }
+
+  window.ncrStartAuditClick = function(){
+    track('primary_audit_cta_clicked', {location:'above_fold_hero'});
+    const fileInput =
+      document.querySelector('input[type="file"]') ||
+      document.querySelector('[id*="file"]') ||
+      document.querySelector('[id*="upload"] input');
+
+    if (fileInput && typeof fileInput.click === 'function') {
+      fileInput.click();
+      return;
+    }
+
+    const uploadArea =
+      document.querySelector('[id*="upload"]') ||
+      document.querySelector('.upload') ||
+      document.querySelector('main');
+
+    if (uploadArea) uploadArea.scrollIntoView({behavior:'smooth', block:'center'});
+  };
+
+  function injectHero(){
+    if (document.getElementById('ncr-conversion-hero')) return;
+
+    const anchor = document.querySelector('.topbar');
+    const target =
+      document.querySelector('.main') ||
+      document.querySelector('.container') ||
+      document.body;
+
+    if (!target) return;
+
+    const html = `
+      <section id="ncr-conversion-hero" class="ncr-conversion-hero" aria-label="Launch and revenue audit overview">
+        <div class="ncr-conversion-copy">
+          <div class="ncr-kicker">Local-first launch + revenue audit</div>
+          <h1>Find the launch blockers and money leaks before your AI-built app goes public.</h1>
+          <p>
+            Upload a Lovable, Bolt, Replit, Cursor, v0, Bubble, Webflow, or no-code project ZIP. Vibe Auditor checks launch readiness, revenue gaps, trust blockers, technical risk, and generates a repair roadmap.
+          </p>
+          <div class="ncr-conversion-actions">
+            <button class="ncr-btn ncr-btn-primary" onclick="ncrStartAuditClick()">Run Free Audit</button>
+            <button class="ncr-btn" onclick="document.getElementById('ncr-export-offer-layer-card')?.scrollIntoView({behavior:'smooth'})">Paid Repair Options</button>
+            <button class="ncr-btn ncr-btn-ghost" onclick="document.getElementById('ncr-methodology-card')?.scrollIntoView({behavior:'smooth'})">Scoring Method</button>
+          </div>
+        </div>
+
+        <aside class="ncr-deliverables" aria-label="What the audit includes">
+          <div class="ncr-panel-label">What you get</div>
+          <div class="ncr-deliverables-grid">
+            <span>Launch score</span>
+            <span>Revenue score</span>
+            <span>Money leaks</span>
+            <span>Codex brief</span>
+            <span>Fix roadmap</span>
+            <span>Audit report</span>
+          </div>
+          <p>Start free. Use the report to decide whether the app needs a repair plan, review, or implementation sprint.</p>
+        </aside>
+      </section>
+    `;
+
+    if (anchor) {
+      anchor.insertAdjacentHTML('afterend', html);
+    } else {
+      target.insertAdjacentHTML('afterbegin', html);
+    }
+  }
+
+  // Disabled: this injected conversion strip pushed the fixed app shell and broke scrolling.
+  // The premium Vibe Auditor upload hero is now the primary entry hero.
+  // setTimeout(injectHero, 200);
+
+  if (window.showToast) window.showToast('Conversion hero loaded');
+})();
+</script>
+
+
+<script id="ncr-offer-recommendation-layer">
+(function(){
+  function esc(v){
+    return String(v ?? '').replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[c]));
+  }
+
+  function getAudit(){
+    return window.ncrLastAudit || window.auditResult || window.currentResults || window.auditResults || window.results || null;
+  }
+
+  function projectText(){
+    const r = getAudit() || {};
+    const pd = r.projectData || r.project || window.projectData || {};
+    const buckets = [
+      pd.name,
+      pd.framework,
+      pd.fw,
+      pd.language,
+      pd.lang,
+      r.summary,
+      r.description,
+      r.risks,
+      r.missingItems,
+      r.moneyLeaks,
+      r.economics?.moneyLeaks,
+      r.economics?.fastestRevenueMoves
+    ].filter(Boolean);
+
+    return buckets.flat().map(item => {
+      if (typeof item === 'string') return item;
+      return [item.title, item.name, item.description, item.impact, item.fix].filter(Boolean).join(' ');
+    }).join(' ').toLowerCase();
+  }
+
+  function detectAppType(){
+    const t = projectText();
+
+    if (/audit|scanner|score|report|analyz|review|checklist/.test(t)) return 'Audit / report tool';
+    if (/marketplace|listing|seller|buyer|directory|vendor/.test(t)) return 'Marketplace / directory';
+    if (/course|lesson|learn|tutorial|education|training/.test(t)) return 'Education / training app';
+    if (/dashboard|admin|crm|client|manager|tracking|workflow/.test(t)) return 'Dashboard / business operations tool';
+    if (/content|generator|prompt|ai|writer|image|video|social/.test(t)) return 'AI content tool';
+    if (/booking|appointment|calendar|schedule|reservation/.test(t)) return 'Booking / scheduling app';
+    if (/ecommerce|shop|store|cart|product|checkout/.test(t)) return 'Ecommerce app';
+    if (/community|member|forum|chat|social|profile/.test(t)) return 'Community / membership app';
+
+    return 'General SaaS / utility app';
+  }
+
+  function offersForType(type){
+    const universal = [
+      {
+        name: 'Free Starter',
+        price: '$0',
+        purpose: 'Let users experience the core value with limits.',
+        includes: ['Basic result or limited usage', 'Top 3 findings', 'Email capture or account prompt']
+      },
+      {
+        name: 'Pro Report',
+        price: '$9–$49',
+        purpose: 'Turn the output into a downloadable paid asset.',
+        includes: ['Full report export', 'Detailed repair roadmap', 'Priority fixes', 'Copy/paste AI repair brief']
+      },
+      {
+        name: 'Done-For-You',
+        price: '$199–$2,500+',
+        purpose: 'Capture high-intent users who want the problem solved for them.',
+        includes: ['Manual review', 'Implementation plan', 'Repair help', 'Follow-up consultation']
+      }
+    ];
+
+    const map = {
+      'Audit / report tool': [
+        ...universal,
+        {
+          name: 'Agency / Client Mode',
+          price: '$29–$199/mo',
+          purpose: 'Let freelancers audit multiple client projects.',
+          includes: ['Saved reports', 'Client-ready PDF', 'White-label summary', 'Multiple project history']
+        }
+      ],
+      'Marketplace / directory': [
+        {
+          name: 'Featured Listing',
+          price: '$19–$299/mo',
+          purpose: 'Charge vendors or products for premium placement.',
+          includes: ['Featured placement', 'Lead button', 'Verified badge', 'Analytics']
+        },
+        {
+          name: 'Lead Package',
+          price: '$10–$100 per lead',
+          purpose: 'Sell qualified buyer inquiries.',
+          includes: ['Contact details', 'Project details', 'Buyer intent summary']
+        },
+        {
+          name: 'Vendor Pro',
+          price: '$29–$499/mo',
+          purpose: 'Create recurring revenue from sellers.',
+          includes: ['Enhanced profile', 'Performance analytics', 'Priority placement', 'Trust badge']
+        }
+      ],
+      'Education / training app': [
+        {
+          name: 'Mini Course',
+          price: '$19–$99',
+          purpose: 'Sell a focused outcome instead of broad content.',
+          includes: ['Step-by-step lessons', 'Templates', 'Checklists', 'Examples']
+        },
+        {
+          name: 'Membership',
+          price: '$9–$49/mo',
+          purpose: 'Create recurring revenue around new lessons and support.',
+          includes: ['New tutorials', 'Community access', 'Monthly updates', 'Resource library']
+        },
+        {
+          name: 'Coaching / Review',
+          price: '$99–$1,000+',
+          purpose: 'Monetize high-touch help.',
+          includes: ['Personal review', 'Action plan', 'Live call', 'Follow-up']
+        }
+      ],
+      'Dashboard / business operations tool': [
+        {
+          name: 'Team Plan',
+          price: '$29–$299/mo',
+          purpose: 'Charge based on business usage and team seats.',
+          includes: ['Multiple users', 'Saved records', 'Exports', 'Admin controls']
+        },
+        {
+          name: 'Setup Service',
+          price: '$300–$5,000+',
+          purpose: 'Sell implementation because business users value time saved.',
+          includes: ['Data setup', 'Workflow configuration', 'Training', 'Custom fields']
+        },
+        {
+          name: 'Monthly Support',
+          price: '$99–$1,000/mo',
+          purpose: 'Add recurring maintenance revenue.',
+          includes: ['Priority support', 'Small changes', 'Reporting', 'Backups']
+        }
+      ],
+      'AI content tool': [
+        {
+          name: 'Credit Pack',
+          price: '$5–$99',
+          purpose: 'Charge by usage instead of a flat subscription.',
+          includes: ['Generation credits', 'Export options', 'Premium templates']
+        },
+        {
+          name: 'Creator Pro',
+          price: '$12–$49/mo',
+          purpose: 'Recurring revenue for frequent users.',
+          includes: ['Higher limits', 'Saved projects', 'Brand presets', 'Batch generation']
+        },
+        {
+          name: 'Prompt Pack / Template Library',
+          price: '$9–$99',
+          purpose: 'Sell reusable assets around the app.',
+          includes: ['Prompt templates', 'Workflow guides', 'Examples', 'Use-case packs']
+        }
+      ],
+      'Booking / scheduling app': [
+        {
+          name: 'Pro Booking Page',
+          price: '$9–$49/mo',
+          purpose: 'Charge businesses for better intake and scheduling.',
+          includes: ['Custom form', 'Reminders', 'Calendar sync', 'Branding']
+        },
+        {
+          name: 'Commission / Deposit',
+          price: '2%–10% or fixed fee',
+          purpose: 'Take a cut of transactions or bookings.',
+          includes: ['Deposit collection', 'Booking confirmation', 'Payment tracking']
+        },
+        {
+          name: 'Business Setup',
+          price: '$199–$1,500+',
+          purpose: 'Sell setup help to local businesses.',
+          includes: ['Page setup', 'Service configuration', 'Automation', 'Training']
+        }
+      ],
+      'Ecommerce app': [
+        {
+          name: 'Product Margin',
+          price: 'Varies',
+          purpose: 'Make money through product sales.',
+          includes: ['Clear product pages', 'Cart recovery', 'Upsells', 'Bundles']
+        },
+        {
+          name: 'Bundle / Upsell',
+          price: '$10–$200+',
+          purpose: 'Increase average order value.',
+          includes: ['Related products', 'Bulk discount', 'Premium add-on']
+        },
+        {
+          name: 'Subscription Box / Refill',
+          price: '$15–$199/mo',
+          purpose: 'Create recurring commerce revenue.',
+          includes: ['Recurring delivery', 'Member discount', 'Exclusive items']
+        }
+      ],
+      'Community / membership app': [
+        {
+          name: 'Paid Membership',
+          price: '$5–$99/mo',
+          purpose: 'Charge for access, status, content, or network value.',
+          includes: ['Member-only areas', 'Resources', 'Events', 'Community access']
+        },
+        {
+          name: 'Premium Profile',
+          price: '$9–$99/mo',
+          purpose: 'Monetize users who want visibility.',
+          includes: ['Featured profile', 'Badges', 'Analytics', 'Priority discovery']
+        },
+        {
+          name: 'Sponsor Slot',
+          price: '$50–$2,000/mo',
+          purpose: 'Sell attention to relevant businesses.',
+          includes: ['Sponsored placement', 'Newsletter mention', 'Featured resource']
+        }
+      ]
+    };
+
+    return map[type] || universal;
+  }
+
+  function makeOfferHtml(){
+    const type = detectAppType();
+    const offers = offersForType(type);
+
+    return `
+      <div class="card" id="ncr-offer-recommendation-card" style="margin-top:18px;border-color:rgba(52,211,153,.38)">
+        <div class="card-title">What Should This App Sell?</div>
+        <p style="color:var(--text2);margin-top:6px">
+          Detected app type: <strong>${esc(type)}</strong>. These are practical offer paths this project could use to make money.
+        </p>
+
+        <div class="card-grid" style="margin-top:14px">
+          ${offers.map(offer => `
+            <div class="card">
+              <div class="card-title">${esc(offer.name)} <span style="color:var(--text2);font-weight:500">(${esc(offer.price)})</span></div>
+              <p style="color:var(--text2);margin-top:8px"><strong>Purpose:</strong> ${esc(offer.purpose)}</p>
+              <ul style="margin-top:10px">
+                ${offer.includes.map(item => `<li>${esc(item)}</li>`).join('')}
+              </ul>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  function injectOffers(){
+    const revenue =
+      document.getElementById('content-economics') ||
+      document.getElementById('content-revenue') ||
+      document.querySelector('[id*="econ"]') ||
+      document.querySelector('[id*="revenue"]') ||
+      document.getElementById('content-overview') ||
+      document.querySelector('.content.active');
+
+    if (!revenue || document.getElementById('ncr-offer-recommendation-card')) return;
+    revenue.insertAdjacentHTML('beforeend', makeOfferHtml());
+  }
+
+  const oldRenderDashboard = window.renderDashboard;
+  if (typeof oldRenderDashboard === 'function' && !window.ncrOfferRecommendationWrapped) {
+    window.ncrOfferRecommendationWrapped = true;
+    window.renderDashboard = function(){
+      const out = oldRenderDashboard.apply(this, arguments);
+      setTimeout(injectOffers, 150);
+      return out;
+    };
+  }
+
+  const oldSwitchNav = window.switchNav;
+  if (typeof oldSwitchNav === 'function' && !window.ncrOfferRecommendationNavWrapped) {
+    window.ncrOfferRecommendationNavWrapped = true;
+    window.switchNav = function(nav){
+      const out = oldSwitchNav.apply(this, arguments);
+      setTimeout(injectOffers, 150);
+      return out;
+    };
+  }
+
+  setTimeout(injectOffers, 800);
+
+  window.ncrDetectAppType = detectAppType;
+  window.ncrOffersForDetectedType = function(){
+    return offersForType(detectAppType());
+  };
+
+  if (window.showToast) window.showToast('Offer recommendation layer loaded');
+})();
+</script>
+
+
+<script id="ncr-self-test-panel">
+(function(){
+  function test(name, pass, detail){
+    return { name, pass: !!pass, detail: detail || '' };
+  }
+
+  window.ncrRunSelfTest = function(){
+    const tests = [
+      test('Local Ask Auditor available', typeof window.localAskAuditor === 'function'),
+      test('Codex generator available', typeof window.generateCodexInstructions === 'function'),
+      test('Delegate generator available', typeof window.generateDelegateInstructions === 'function'),
+      test('Roadmap generator available', typeof window.generateMasterPlan === 'function'),
+      test('Report download available', typeof window.downloadNcrFullReport === 'function'),
+      test('Fix roadmap download available', typeof window.downloadNcrFixRoadmap === 'function'),
+      test('Revenue tracking available', typeof window.trackRevenueAction === 'function' || Array.isArray(window.ncrRevenueEvents)),
+      test('Offer detection available', typeof window.ncrDetectAppType === 'function'),
+      test('Money leak builder available', typeof window.ncrBuildMoneyLeakObjects === 'function')
+    ];
+
+    const passed = tests.filter(t => t.pass).length;
+    const failed = tests.length - passed;
+
+    const html = `
+      <div class="card" id="ncr-self-test-results" style="margin-top:14px;border-color:${failed ? 'rgba(248,113,113,.45)' : 'rgba(52,211,153,.45)'}">
+        <div class="card-title">Self-Test Results: ${passed}/${tests.length} Passed</div>
+        <ul style="margin-top:10px">
+          ${tests.map(t => `<li>${t.pass ? '✅' : '❌'} ${t.name}${t.detail ? ' — ' + t.detail : ''}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+
+    const existing = document.getElementById('ncr-self-test-results');
+    if (existing) existing.outerHTML = html;
+    else document.getElementById('ncr-self-test-card')?.insertAdjacentHTML('beforeend', html);
+
+    console.table(tests);
+    return tests;
+  };
+
+  function injectSelfTest(){
+    if (document.getElementById('ncr-self-test-card')) return;
+
+    const target =
+      document.getElementById('content-overview') ||
+      document.querySelector('[id*="overview"]') ||
+      document.querySelector('.content.active') ||
+      document.querySelector('main') ||
+      document.body;
+
+    if (!target) return;
+
+    const html = `
+      <div class="card" id="ncr-self-test-card" style="margin-top:18px;border-color:rgba(96,165,250,.35)">
+        <div class="card-title">Auditor Self-Test</div>
+        <p style="color:var(--text2);margin-top:6px">
+          Run this after changes to confirm the local auditor, revenue features, exports, and repair generators are wired correctly.
+        </p>
+        <button class="btn" style="margin-top:12px" onclick="ncrRunSelfTest()">Run Self-Test</button>
+      </div>
+    `;
+
+    target.insertAdjacentHTML('beforeend', html);
+  }
+
+  const oldRenderDashboard = window.renderDashboard;
+  if (typeof oldRenderDashboard === 'function' && !window.ncrSelfTestWrapped) {
+    window.ncrSelfTestWrapped = true;
+    window.renderDashboard = function(){
+      const out = oldRenderDashboard.apply(this, arguments);
+      setTimeout(injectSelfTest, 200);
+      return out;
+    };
+  }
+
+  setTimeout(injectSelfTest, 900);
+
+  if (window.showToast) window.showToast('Self-test panel loaded');
+})();
+</script>
+
 </body>
 </html>
