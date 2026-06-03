@@ -2536,13 +2536,14 @@ function toolCard(tool) {
   const count = evidenceCountFor(tool.name);
   const profile = reviewProfile(tool);
   const gates = gateStatusFor(tool.name);
+  const hasEvidence = count > 0 || evidenceFileCountFor(tool.name) > 0;
   return `
-    <article class="tool-card">
+    <article class="tool-card premium-card card-hover">
       <div class="tool-card__top">
         <div><p class="eyebrow">${tool.category}</p><h3>${tool.name}</h3></div>
         <div class="score">${profile.score}</div>
       </div>
-      <div class="review-priority">${profile.verdictLabel}</div>
+      <div class="review-priority evidence-badge ${hasEvidence ? 'complete' : 'pending'}">${profile.verdictLabel}</div>
       <p class="verdict">${profile.verdict}</p>
       <div class="tool-fit-line">
         <span>Best fit: ${tool.bestFor}</span>
@@ -2553,7 +2554,7 @@ function toolCard(tool) {
         <div><dt>Commercial status</dt><dd>${tool.affiliateStatus}</dd></div>
       </dl>
       <div class="evidence-file-links">
-        ${evidenceFilesFor(tool.name).map((file) => `<a href="/${file.file}" target="_blank" rel="noopener">${file.status} evidence</a>`).join("") || `<span>Evidence file pending</span>`}
+        ${evidenceFilesFor(tool.name).map((file) => `<a href="/${file.file}" target="_blank" rel="noopener" class="evidence-badge ${file.status === 'Complete' ? 'complete' : ''}">${file.status} evidence</a>`).join("") || `<span class="evidence-badge pending">Evidence file pending</span>`}
       </div>
       <div class="gate-strip ${gates.ready ? "ready" : ""}">
         <span>${gates.hasRecord ? "Review" : "Review missing"}</span>
@@ -2563,7 +2564,7 @@ function toolCard(tool) {
         <span>${gates.hasPassingQa ? "QA passed" : "QA missing"}</span>
       </div>
       <div class="card-actions">
-        <a href="#review/${tool.slug}">Open full review <span aria-hidden="true">-></span></a>
+        <a href="#review/${tool.slug}" class="strong-cta">Open full review <span aria-hidden="true">-></span></a>
         <span>${tool.updated}</span>
       </div>
     </article>
@@ -7154,14 +7155,17 @@ function micrositesDirectoryPanel() {
   ];
 
   return `
-    <section class="lovable-microsite">
+    <section class="lovable-microsite module-shell">
+      <div class="section-marker">
+        <span class="marker-num">06</span>
+        <p class="eyebrow">Microsites Directory</p>
+        <h1 style="margin:4px 0 8px;">All Tool Microsites</h1>
+      </div>
       <div class="lovable-hero">
         <div>
-          <p class="eyebrow">Microsite control center</p>
-          <h1>All Tool Microsites</h1>
           <p class="lede">This directory shows every NoCodeReviewed tool microsite in one place. Custom flagship microsites get deeper hand-built pages. Generic microsites use the automated evidence-first engine so every tool has a review hub, pricing page, security page, autonomy page, test lab, prompt page, template page, alternatives page, and pending verdict.</p>
           <div class="status-row">
-            <span class="status-pill">${tools.length} total tools</span>
+            <span class="status-pill complete">${tools.length} total tools</span>
             <span class="status-pill">${totalCustom} custom flagship microsites</span>
             <span class="status-pill">${totalGeneric} automated microsites</span>
           </div>
@@ -7175,7 +7179,7 @@ function micrositesDirectoryPanel() {
 
       <div class="microsite-filter-bar" aria-label="Microsite filters">
         ${micrositeFilters.map(([key, label, count]) => `
-          <a class="${activeFilter === key ? "active" : ""}" href="${micrositeDirectoryHref(key)}">
+          <a class="${activeFilter === key ? "active" : ""} evidence-badge" href="${micrositeDirectoryHref(key)}" style="margin:2px;">
             <span>${label}</span>
             <strong>${count}</strong>
           </a>
@@ -7249,9 +7253,9 @@ function micrositesDirectoryPanel() {
               const completion = micrositeCompletionForTool(tool, isCustom);
 
               return `
-                <article class="microsite-directory-card">
+                <article class="microsite-directory-card premium-card card-hover">
                   <div class="microsite-card-topline">
-                    <span>${type}</span>
+                    <span class="evidence-badge ${isCustom ? 'complete' : ''}">${type}</span>
                     <strong>${tool.score || "Pending"}</strong>
                   </div>
 
@@ -7269,10 +7273,10 @@ function micrositesDirectoryPanel() {
                   </div>
 
                   <div class="microsite-checklist">
-                    <span class="status-${micrositeStatusClass(completion.pricing)}">Pricing: ${completion.pricing}</span>
-                    <span class="status-${micrositeStatusClass(completion.testLab)}">Test lab: ${completion.testLab}</span>
-                    <span class="status-${micrositeStatusClass(completion.security)}">Security: ${completion.security}</span>
-                    <span class="status-${micrositeStatusClass(completion.verdict)}">Verdict: ${completion.verdict}</span>
+                    <span class="status-${micrositeStatusClass(completion.pricing)} evidence-badge">Pricing: ${completion.pricing}</span>
+                    <span class="status-${micrositeStatusClass(completion.testLab)} evidence-badge">Test lab: ${completion.testLab}</span>
+                    <span class="status-${micrositeStatusClass(completion.security)} evidence-badge">Security: ${completion.security}</span>
+                    <span class="status-${micrositeStatusClass(completion.verdict)} evidence-badge">Verdict: ${completion.verdict}</span>
                   </div>
 
                   <div class="directory-badges">
@@ -7280,7 +7284,7 @@ function micrositesDirectoryPanel() {
                   </div>
 
                   <div class="microsite-card-links">
-                    <a href="#tool/${tool.slug}">Hub</a>
+                    <a href="#tool/${tool.slug}" class="strong-cta">Hub</a>
                     <a href="#tool/${tool.slug}/test-lab">Test Lab</a>
                     <a href="#tool/${tool.slug}/security">Security</a>
                     <a href="#tool/${tool.slug}/pricing">Pricing</a>
@@ -7419,15 +7423,25 @@ function render() {
     <main>
       <header class="topbar">
         <a class="brand" href="#top"><span></span>NoCodeReviewed</a>
-        <nav><a href="#reviews">Reviews</a><a href="#best">Best Tools</a><a href="#compare">Compare</a><a href="#methodology" data-tab="methodology">Methodology</a><a href="#microsites">Microsites</a></nav>
-        <button class="submit-button" data-tab="intake">Submit a Tool</button>
+        <nav>
+          <a href="#reviews">Reviews</a>
+          <a href="#best">Best Tools</a>
+          <a href="#compare">Compare</a>
+          <a href="#methodology" data-tab="methodology">Methodology</a>
+          <a href="#microsites">Microsites</a>
+        </nav>
+        <button class="submit-button strong-cta" data-tab="intake">Submit a Tool</button>
       </header>
       <section class="hero" id="top">
         <div class="hero-copy">
           <p class="eyebrow">No-code tool reviews, tested</p>
           <h1>Find the right no-code and AI app builder with evidence you can trust.</h1>
           <p>NoCodeReviewed compares tools like Lovable, Bolt.new, Replit, v0, Cursor, Bubble, Webflow, and more using hands-on tests, pricing checks, production-readiness gates, and plain-English verdicts.</p>
-          <div class="hero-actions"><a class="button" href="/tools/vibe-auditor.html">Run the Vibe Code Audit</a><button data-tab="best">Browse best tools</button><button class="secondary" data-tab="compare">Compare tools</button></div>
+          <div class="hero-actions">
+            <a class="button strong-cta" href="/tools/vibe-auditor.html">Run the Vibe Code Audit</a>
+            <button data-tab="best" class="strong-cta">Browse best tools</button>
+            <button class="secondary" data-tab="compare">Compare tools</button>
+          </div>
           <div class="homepage-trust-bar">
             <span>Hands-on testing</span>
             <span>Pricing checks</span>
@@ -7439,7 +7453,7 @@ function render() {
               <strong>Built an AI app already?</strong>
               <p>Run the free audit to find survivability gaps, launch risks, and paid repair options.</p>
             </div>
-            <a href="/tools/vibe-auditor.html">Audit your app</a>
+            <a href="/tools/vibe-auditor.html" class="strong-cta">Audit your app</a>
           </div>
         </div>
         <div class="hero-image-card" aria-label="NoCodeReviewed evidence dashboard preview">
@@ -7447,48 +7461,76 @@ function render() {
         </div>
       </section>
       <section class="evidence-strip" aria-label="Evidence system">
-        <div><span>01</span><strong>Repeatable build prompts</strong><p>Every platform faces the same benchmark tasks before rankings move.</p></div>
-        <div><span>02</span><strong>Fresh pricing snapshots</strong><p>Plans, credits, exports, and deployment paths expire automatically.</p></div>
-        <div><span>03</span><strong>Production-readiness gates</strong><p>Auth, data, secrets, deploys, and handoff determine credibility.</p></div>
-        <div><span>04</span><strong>QA before publishing</strong><p>Autonomous content cannot ship until evidence and editorial checks pass.</p></div>
+        <div class="trust-panel"><span>01</span><strong>Repeatable build prompts</strong><p>Every platform faces the same benchmark tasks before rankings move.</p></div>
+        <div class="trust-panel"><span>02</span><strong>Fresh pricing snapshots</strong><p>Plans, credits, exports, and deployment paths expire automatically.</p></div>
+        <div class="trust-panel"><span>03</span><strong>Production-readiness gates</strong><p>Auth, data, secrets, deploys, and handoff determine credibility.</p></div>
+        <div class="trust-panel"><span>04</span><strong>QA before publishing</strong><p>Autonomous content cannot ship until evidence and editorial checks pass.</p></div>
       </section>
       <section class="homepage-proof-band" aria-label="NoCodeReviewed evidence promise">
-        <div>
-          <p class="eyebrow">Evidence-first review system</p>
+        <div class="section-marker">
+          <span class="marker-num">01</span>
+          <p class="eyebrow">Evidence System</p>
           <h2>Built for serious builders, not recycled AI tool listicles.</h2>
         </div>
         <div class="homepage-proof-cards">
-          <article>
+          <article class="trust-panel">
             <strong>Hands-on tests</strong>
             <span>Benchmark prompts, real builds, deployment checks, and recorded failures.</span>
           </article>
-          <article>
+          <article class="trust-panel">
             <strong>Production gates</strong>
             <span>Security, autonomy, pricing, export paths, and handoff quality affect every verdict.</span>
           </article>
-          <article>
+          <article class="trust-panel">
             <strong>Fresh evidence</strong>
             <span>Scores expire when pricing, features, limits, or product behavior changes.</span>
           </article>
-          <article>
+          <article class="trust-panel">
+            <div class="section-marker section-marker-dark" style="margin-bottom:4px;"><span class="marker-num" style="font-size:38px;top:-8px;">VAULT</span></div>
             <strong>Chat Intelligence Vault</strong>
             <span>Upload ChatGPT or Grok exports to recover projects, prompts, code, commands, business ideas, and monetizable assets from your AI history.</span>
-            <a href="/tools/chat-intelligence-vault.html">Open Vault</a>
+            <a href="/tools/chat-intelligence-vault.html" class="strong-cta">Open Vault</a>
           </article>
         </div>
       </section>
 
-      <section class="evidence-microsites" aria-label="Evidence-backed microsite reviews" style="max-width:1080px;margin:0 auto 24px;padding:0 24px;">
-        <p class="eyebrow" style="margin-bottom:8px;">Evidence-backed microsite reviews (first 3)</p>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <a href="/microsites/lovable.html" style="padding:8px 14px;border:1px solid rgba(255,255,255,0.16);border-radius:8px;text-decoration:none;color:inherit;font-size:0.9rem;">Lovable Evidence Microsite</a>
-          <a href="/microsites/bolt-new.html" style="padding:8px 14px;border:1px solid rgba(255,255,255,0.16);border-radius:8px;text-decoration:none;color:inherit;font-size:0.9rem;">Bolt.new Evidence Microsite</a>
-          <a href="/microsites/replit.html" style="padding:8px 14px;border:1px solid rgba(255,255,255,0.16);border-radius:8px;text-decoration:none;color:inherit;font-size:0.9rem;">Replit Evidence Microsite</a>
-          <span style="font-size:0.78rem;opacity:0.6;align-self:center;">All content sourced from docs/evidence/*.md + quality gates. “Evidence pending.” for untested claims.</span>
+      <section class="evidence-microsites module-shell" aria-label="Evidence-backed microsite reviews">
+        <div class="section-marker">
+          <span class="marker-num">05</span>
+          <p class="eyebrow">Microsites</p>
+          <h2 style="margin:0 0 10px;font-size:22px;">Evidence-backed tool hubs</h2>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+          <a href="/microsites/lovable.html" class="premium-card card-hover" style="flex:1;min-width:220px;padding:12px 14px;border:1px solid #e8e0d8;border-radius:10px;text-decoration:none;color:inherit;background:#fffdfa;display:block;">
+            <span class="evidence-badge complete">Custom</span>
+            <strong style="display:block;margin:6px 0 2px;font-size:15px;">Lovable</strong>
+            <span style="font-size:12px;color:#67615a;">Full evidence microsite →</span>
+          </a>
+          <a href="/microsites/bolt-new.html" class="premium-card card-hover" style="flex:1;min-width:220px;padding:12px 14px;border:1px solid #e8e0d8;border-radius:10px;text-decoration:none;color:inherit;background:#fffdfa;display:block;">
+            <span class="evidence-badge complete">Custom</span>
+            <strong style="display:block;margin:6px 0 2px;font-size:15px;">Bolt.new</strong>
+            <span style="font-size:12px;color:#67615a;">Full evidence microsite →</span>
+          </a>
+          <a href="/microsites/replit.html" class="premium-card card-hover" style="flex:1;min-width:220px;padding:12px 14px;border:1px solid #e8e0d8;border-radius:10px;text-decoration:none;color:inherit;background:#fffdfa;display:block;">
+            <span class="evidence-badge complete">Custom</span>
+            <strong style="display:block;margin:6px 0 2px;font-size:15px;">Replit</strong>
+            <span style="font-size:12px;color:#67615a;">Full evidence microsite →</span>
+          </a>
+        </div>
+        <div style="font-size:0.78rem;opacity:0.65;margin-bottom:8px;">All content sourced from docs/evidence/*.md + quality gates. “Evidence pending.” for untested claims.</div>
+        <div style="font-size:0.85rem;opacity:0.75;display:flex;flex-wrap:wrap;gap:12px;">
+          <a href="/tools/component-library.html" style="color:#e8541a;text-decoration:underline;">Browse prototype library →</a>
+          <span style="opacity:0.5;">(review only — see AGENTS.md)</span>
+          <a href="/tools/kimi-agent-build-source-index.html" style="color:#e8541a;text-decoration:underline;">Kimi visual reference →</a>
+          <span style="opacity:0.5;">(imports/ — UI inspiration only)</span>
         </div>
       </section>
 
-      <section class="workspace" id="reviews">
+      <section class="workspace module-shell" id="reviews">
+        <div class="section-marker">
+          <span class="marker-num">03</span>
+          <p class="eyebrow">Tool Reviews</p>
+        </div>
         <div class="tabs">
           ${[
             ["reviews", "Reviews", "search"],
@@ -7502,8 +7544,12 @@ function render() {
         </div>
         <div id="panel">${renderPanel()}</div>
       </section>
-      <section class="methodology" id="methodology">
-        <div><p class="eyebrow">Editorial method</p><h2>The blog can be autonomous only if evidence is not optional.</h2></div>
+      <section class="methodology module-shell" id="methodology">
+        <div class="section-marker">
+          <span class="marker-num">04</span>
+          <p class="eyebrow">Methodology</p>
+          <h2 style="margin-top:2px;">The blog can be autonomous only if evidence is not optional.</h2>
+        </div>
         <div class="method-grid">
           <div><strong>Build tests</strong><p>Every review starts with the same benchmark prompts and records what actually worked.</p></div>
           <div><strong>Pricing checks</strong><p>Plans, credits, limits, exports, and deployment costs are rechecked on a schedule.</p></div>
@@ -7526,6 +7572,22 @@ function render() {
       </footer>
     </main>
   `;
+
+  // UI-K2: minimal vanilla nav polish (active state, no dropdowns, respects existing hash routing)
+  try {
+    const nav = document.querySelector('.topbar nav');
+    if (nav) {
+      const hash = (window.location.hash || '#reviews').slice(1).split(/[/?#]/)[0] || 'reviews';
+      nav.querySelectorAll('a').forEach(a => {
+        a.classList.remove('active');
+        const h = (a.getAttribute('href') || '').replace('#', '').split(/[/?#]/)[0];
+        if (h && (h === hash || (hash === 'top' && h === 'reviews'))) a.classList.add('active');
+        if (hash === 'methodology' && h === 'methodology') a.classList.add('active');
+        if (hash === 'microsites' && h === 'microsites') a.classList.add('active');
+      });
+    }
+  } catch (_) {}
+
   bind();
 }
 

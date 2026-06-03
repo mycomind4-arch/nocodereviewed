@@ -8995,3 +8995,221 @@ body {
     justify-content: center;
   }
 }
+
+/* === UI-K2: Kimi-inspired visual assimilation (vanilla CSS only, additive) ===
+   Premium section hierarchy via depth markers, high-end cards + subtle lift hover,
+   cleaner badges/CTAs, improved spacing rhythm, authority polish for evidence/vault/auditor surfaces.
+   Preserves cream bg + dark hero + #e8541a orange + evidence-first identity.
+   No Tailwind, no libs, no fakes, no framework. Adapted for static SPA.
+*/
+.section-marker {
+  position: relative;
+  margin-bottom: 14px;
+  z-index: 1;
+}
+.section-marker .marker-num {
+  position: absolute;
+  top: -16px;
+  left: -4px;
+  font-size: clamp(48px, 7.5vw, 92px);
+  font-weight: 700;
+  line-height: 0.82;
+  color: rgba(23, 20, 18, 0.045);
+  user-select: none;
+  pointer-events: none;
+  z-index: 0;
+  letter-spacing: -0.01em;
+}
+.section-marker-dark .marker-num,
+.hero .section-marker .marker-num {
+  color: rgba(255, 255, 255, 0.055);
+}
+
+.card-hover {
+  transition: transform 160ms ease-out, box-shadow 160ms ease-out;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+}
+
+.premium-card {
+  border-radius: 10px;
+}
+
+.tool-card,
+.microsite-directory-card {
+  border-radius: 10px;
+}
+
+.evidence-badge,
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  border-radius: 999px;
+  border: 1px solid #e8e0d8;
+  background: #fff7ed;
+  color: #9d431c;
+}
+.evidence-badge.complete,
+.status-pill.complete,
+.status-checked {
+  background: #ecfdf3;
+  border-color: #86efac;
+  color: #15803d;
+}
+.evidence-badge.pending {
+  background: #fff7ed;
+  border-color: #f0d1bf;
+  color: #9d431c;
+}
+
+.module-shell {
+  background: #fff;
+  border: 1px solid #e8e0d8;
+  border-radius: 10px;
+  padding: 22px 24px;
+}
+
+.trust-panel {
+  background: #fffdfa;
+  border: 1px solid #e8e0d8;
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.strong-cta,
+.hero-actions .button,
+.hero-actions a.button {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.topbar {
+  transition: box-shadow 120ms ease;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02);
+}
+.topbar nav a {
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 120ms ease, background 120ms ease;
+}
+.topbar nav a:hover {
+  color: #e8541a;
+  background: rgba(232, 84, 26, 0.06);
+}
+.topbar nav a.active {
+  color: #171412;
+  font-weight: 600;
+}
+
+/* Improved rhythm + grouping */
+.homepage-proof-band,
+.evidence-microsites,
+.workspace,
+.methodology {
+  max-width: 1180px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.homepage-proof-band .homepage-proof-cards {
+  gap: 14px;
+}
+.homepage-proof-band .homepage-proof-cards article {
+  transition: transform 140ms ease, box-shadow 140ms ease;
+  border-radius: 10px;
+}
+.homepage-proof-band .homepage-proof-cards article:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
+}
+
+/* Microsite directory polish (Kimi card influence, evidence status) */
+.microsite-directory-card {
+  padding: 16px 18px;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+.microsite-directory-card:hover {
+  border-color: #d8d2ca;
+}
+.microsite-filter-bar a {
+  transition: all 120ms ease;
+}
+.microsite-filter-bar a:hover {
+  background: #f4f2ef;
+  border-color: #d8d2ca;
+}
+.microsite-filter-bar a.active {
+  background: #171412;
+  color: #fff;
+  border-color: #171412;
+}
+
+/* Hero polish for premium composition */
+.hero {
+  padding-top: 78px;
+  padding-bottom: 48px;
+}
+.hero-copy h1 {
+  letter-spacing: -0.015em;
+}
+.hero-actions {
+  gap: 10px;
+}
+.hero-actions a,
+.hero-actions button {
+  padding: 11px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.hero-actions .secondary:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.4);
+}
+
+/* Evidence strip premium */
+.evidence-strip div {
+  border-radius: 10px;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+.evidence-strip div:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(38, 32, 27, 0.1);
+}
+
+/* General authority polish */
+.panel,
+.lovable-microsite,
+.method-grid > div {
+  border-radius: 10px;
+}
+
+.gate-strip span,
+.review-priority {
+  border-radius: 999px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  .card-hover,
+  .tool-card,
+  .microsite-directory-card,
+  .homepage-proof-band .homepage-proof-cards article,
+  .evidence-strip div {
+    transition: none !important;
+  }
+  .card-hover:hover,
+  .tool-card:hover,
+  .microsite-directory-card:hover {
+    transform: none !important;
+  }
+}
