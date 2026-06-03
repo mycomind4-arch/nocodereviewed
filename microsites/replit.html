@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Replit (Agent) • Evidence-Backed Review | NoCodeReviewed</title>
+  <meta name="description" content="Evidence-backed review of Replit / Replit Agent. All claims sourced from official evidence files. Unverified areas marked Evidence pending.">
+  <link rel="stylesheet" href="/src/styles.css">
+  <style>
+    /* Microsite-specific advanced styles (adapted from nucleus styles, no site redesign) */
+    :root { color-scheme: dark; }
+    body { background: #07090d; color: #eef3f8; font-family: Inter, system-ui, sans-serif; line-height: 1.6; margin:0; padding:0; }
+    .micro-header { display:flex; align-items:center; justify-content:space-between; padding:16px 24px; border-bottom:1px solid rgba(255,255,255,0.1); background:rgba(0,0,0,0.3); position:sticky; top:0; z-index:10; }
+    .micro-header .brand { font-weight:600; letter-spacing:-0.02em; text-decoration:none; color:#fff; }
+    .micro-hero { padding:48px 24px 32px; background: linear-gradient(180deg, rgba(255,124,51,0.08) 0%, transparent 60%); }
+    .micro-hero h1 { font-size: clamp(2.2rem,5vw,3.2rem); margin:8px 0 12px; letter-spacing:-0.04em; }
+    .micro-hero .summary { max-width:820px; font-size:1.08rem; opacity:0.92; }
+    .status-badges { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+    .status-badge { font-size:0.78rem; padding:4px 10px; border-radius:999px; background:rgba(255,191,87,0.12); border:1px solid rgba(255,191,87,0.35); }
+    .status-badge.pending { background:rgba(255,99,71,0.12); border-color:rgba(255,99,71,0.4); }
+    .micro-nav { display:flex; gap:8px; flex-wrap:wrap; padding:12px 24px; background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(255,255,255,0.08); }
+    .micro-nav a { color:#a1acbc; text-decoration:none; padding:6px 14px; border-radius:999px; font-size:0.9rem; }
+    .micro-nav a:hover, .micro-nav a.active { color:#fff; background:rgba(255,255,255,0.1); }
+    .section { padding:32px 24px; max-width:1080px; margin:0 auto; }
+    .section h2 { font-size:1.35rem; margin:0 0 12px; letter-spacing:-0.02em; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px; }
+    .grid-2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:18px; }
+    .card { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:18px; }
+    .card h3 { margin:0 0 10px; font-size:1rem; }
+    ul.evidence-list { margin:0; padding-left:20px; }
+    ul.evidence-list li { margin:8px 0; line-height:1.55; }
+    .pending { display:inline-block; background:#2a2100; color:#ffcc66; font-size:0.82rem; padding:2px 8px; border-radius:4px; margin-left:6px; }
+    .source-cite { display:block; font-size:0.72rem; opacity:0.6; margin-top:4px; }
+    .findings { border-left:4px solid #3dd77e; padding-left:14px; margin:12px 0; }
+    .gap-note { background:rgba(255,99,71,0.08); border:1px solid rgba(255,99,71,0.3); padding:12px; border-radius:10px; }
+    .cta-bar { display:flex; gap:12px; flex-wrap:wrap; margin-top:24px; }
+    .cta-bar a { display:inline-flex; align-items:center; padding:12px 20px; background:#ff7c33; color:#fff; text-decoration:none; border-radius:10px; font-weight:500; }
+    .cta-bar a.secondary { background:transparent; border:1px solid rgba(255,255,255,0.25); color:#eef3f8; }
+    .footer-note { font-size:0.78rem; opacity:0.65; max-width:1080px; margin:40px auto 24px; padding:0 24px; border-top:1px solid rgba(255,255,255,0.08); padding-top:16px; }
+    @media (max-width:720px) { .micro-hero { padding:32px 16px 24px; } .section { padding:24px 16px; } }
+  </style>
+</head>
+<body>
+  <header class="micro-header">
+    <a class="brand" href="/">NoCodeReviewed</a>
+    <span style="font-size:0.85rem;opacity:0.6;">Evidence-backed • Quality gated</span>
+  </header>
+
+  <div class="micro-hero">
+    <div>
+      <span class="status-badge">Replit / Replit Agent</span>
+      <span class="status-badge pending">Evidence pending for production claims</span>
+      <h1>Replit Agent: Cloud AI App Builder + IDE + Hosting</h1>
+      <p class="summary">Replit / Replit Agent is an AI app builder, cloud development environment, and hosted deployment platform. “Make apps &amp; sites with natural language prompts.” (replit.com/ai). Combines prompt-based generation, cloud IDE, built-in database/storage, publishing, and collaboration. Primary evidence: 01_replit_complete_evidence_file.md (canonical). All untested production aspects marked <span class="pending">Evidence pending.</span></p>
+      <div class="status-badges">
+        <span class="status-badge">Official AI/pricing/deployment/shared-resp docs captured</span>
+        <span class="status-badge pending">Research status: in-progress (May 30, 2026)</span>
+        <span class="status-badge pending">Publication not approved</span>
+      </div>
+    </div>
+  </div>
+
+  <nav class="micro-nav" id="nav">
+    <a href="#best-fit">Best-Fit Use Cases</a>
+    <a href="#strengths">Strengths</a>
+    <a href="#limitations">Limitations</a>
+    <a href="#findings">Evidence-Backed Findings</a>
+    <a href="#gaps">Evidence Gaps</a>
+    <a href="#prod">Production-Readiness Notes</a>
+    <a href="#security">Security &amp; Trust Notes</a>
+    <a href="#ai">AI Workflow Suitability</a>
+    <a href="#monet">Monetization &amp; Use-Case Fit</a>
+    <a href="#compare">Comparison Notes</a>
+    <a href="#ctas">Auditor &amp; Vault CTAs</a>
+  </nav>
+
+  <div class="section" id="best-fit">
+    <h2>Best-Fit Use Cases</h2>
+    <div class="grid-2">
+      <div class="card">
+        <h3>From official positioning (01)</h3>
+        <ul class="evidence-list">
+          <li>Nontechnical founders, students, solo builders, developers, teams, and enterprises building apps/sites in a browser.</li>
+          <li>Natural-language app/site generation with cloud IDE, collaborative editing, built-in database/storage options, deployment, and enterprise governance controls.</li>
+          <li>Builders who want agentic workflow + real development environment + hosting in one platform.</li>
+        </ul>
+        <span class="source-cite">Source: 01_replit_complete_evidence_file.md Tool Identity + Official Positioning</span>
+      </div>
+      <div class="card">
+        <h3>Supported by docs</h3>
+        <ul class="evidence-list">
+          <li>Replit Agent can build apps and sites from natural-language prompts (official AI page).</li>
+          <li>Includes planning, background tasks, Design Canvas, connectors, billing/spending management (Agent docs).</li>
+          <li>Publishing supports multiple deployment types, custom domains, analytics, monitoring, access controls, feedback collection (plan-qualified).</li>
+        </ul>
+        <span class="source-cite">Source: replit.com/ai, docs.replit.com/core-concepts/agent, llms-full.txt (quoted in 01)</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="strengths">
+    <h2>Strengths (Official or Verified Sources Only)</h2>
+    <ul class="evidence-list">
+      <li>Replit combines prompt-based app generation, cloud IDE, database/storage, publishing, and collaboration in one platform.</li>
+      <li>Official docs provide a clear shared-responsibility model, which helps frame responsible review claims.</li>
+      <li>Replit has documented deployment pricing and publishing behavior, including credit-based billing.</li>
+      <li>Pro/Enterprise docs surface governance features relevant for teams: SSO/SAML, SCIM, private deployments, admin controls, Security Center, CVE detection, and SBOM downloads.</li>
+      <li>Replit has a current Security Agent announcement (May 2026 blog) that can be evaluated in testing (codebase security review using threat-modeling + Semgrep + HoundDog.ai).</li>
+    </ul>
+    <span class="source-cite">Sources: 01 section 7 Strengths + section 3 Official Claims (replit.com, docs.replit.com, blog.replit.com/meet-replit-security-agent)</span>
+  </div>
+
+  <div class="section" id="limitations">
+    <h2>Limitations (Official / Verified / Reputable Sources)</h2>
+    <div class="grid-2">
+      <div class="card">
+        <ul class="evidence-list">
+          <li>Security is shared responsibility — review must not imply secure-by-default app outcomes (users responsible for app contents and configuring tools).</li>
+          <li>Costs can exceed subscription price — Agent, deployment, storage, bandwidth, compute produce extra costs beyond headline plan.</li>
+          <li>Starter deployments expire after 30 days (can be re-published) — important for free-plan builders.</li>
+          <li>Published filesystem persistence warning — “do not rely on data written to a published app’s filesystem”; use database/storage.</li>
+          <li>Agent reliability/safety not verified; third-party incident reporting (Business Insider 2025: Replit Agent deleted a production database during external test; CEO apologized).</li>
+          <li>Sensitive app exposure is a broader vibe-coding risk (Axios May 2026 reporting on public apps across platforms including Replit) — use as category risk, not Replit-only conclusion.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <p><strong>Production-readiness summary from evidence:</strong> “Replit can generate and host real apps quickly, but official documentation explicitly frames security as shared responsibility. Production claims require tests for private deployment settings, auth, environment variables, database/storage persistence, rollback/version control, prompt safety, generated code quality, secrets handling, security scans, cost controls, and deployment behavior.”</p>
+        <span class="source-cite">Source: 01 section 5 + section 8</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="findings">
+    <h2>Evidence-Backed Findings</h2>
+    <div class="findings">
+      <p><strong>Safe claims to publish (with source attribution only):</strong></p>
+      <ul class="evidence-list">
+        <li>Replit Agent is an AI tool for making apps and sites from natural-language prompts. <span class="source-cite">01 section 10</span></li>
+        <li>Replit includes app publishing/deployment options and credit-based deployment billing. <span class="source-cite">01</span></li>
+        <li>Replit’s deployment docs say Starter includes one free published app that expires after 30 days and can be re-published. <span class="source-cite">docs.replit.com/billing/deployment-pricing</span></li>
+        <li>Replit’s shared-responsibility model says secure app building and publishing is shared between Replit and the user. <span class="source-cite">docs.replit.com/references/security/shared-responsibility-model</span></li>
+        <li>Replit says users are responsible for their application contents and for configuring the tools Replit provides. <span class="source-cite">01</span></li>
+        <li>Replit Pro/Enterprise docs describe enterprise controls including SOC-2 compliant platform, SSO/SAML, SCIM, private deployments, and security-center functionality. <span class="source-cite">01</span></li>
+      </ul>
+      <p class="pending">Evidence pending: All production, security, cost, and quality outcomes.</p>
+    </div>
+  </div>
+
+  <div class="section" id="gaps">
+    <h2>Evidence Gaps</h2>
+    <div class="gap-note">
+      <ul class="evidence-list">
+        <li>Current evidence confidence: High for official AI/pricing/deployment/security-shared-responsibility claims; medium for enterprise security claims pending Trust Center/report review; low for generated-app production quality because NoCodeReviewed hands-on tests are not yet complete. (01)</li>
+        <li>Claims requiring verification: “Replit Agent builds production-ready apps”; “Replit apps are secure by default”; “Security Agent catches critical issues”; “Replit is cheap for full-stack app deployment”; “Agent follows freeze instructions and avoids destructive changes”; “Enterprise SOC-2 controls cover all customer use cases”. (01 section 11)</li>
+        <li>Needs testing: 12-item plan including prompt-to-app build, iteration quality, auth/private data, secrets, deployment, Starter expiry, persistence, cost tracking, Security Agent, destructive action, fake-data integrity, comparisons. (01 section 12)</li>
+        <li>Research status: in-progress (May 30, 2026). Publication approval: not approved. Human approval gate required. (01 section 13)</li>
+        <li>Evidence status: “in-progress — complete official-source evidence file drafted; hands-on Agent/security/deployment testing required before publication”.</li>
+      </ul>
+      <p><strong>Per quality gateway:</strong> Final verdict outruns available evidence. Production-ready language appears without deploy, auth, data, and handoff proof. (static-app.js + vca-quality-gateway-model.md)</p>
+    </div>
+  </div>
+
+  <div class="section" id="prod">
+    <h2>Production-Readiness Notes</h2>
+    <p>Replit can generate and host real apps quickly, but official documentation explicitly frames security as shared responsibility. Production claims require tests for private deployment settings, auth, environment variables, database/storage persistence, rollback/version control, prompt safety, generated code quality, secrets handling, security scans, cost controls, and deployment behavior.</p>
+    <p class="pending">Evidence pending: All items in the 12-step Testing Plan (section 12 of 01). Agent safety incident (2025 prod db deletion) and broader vibe-coding exposure reports make these non-optional.</p>
+    <span class="source-cite">Source: 01 section 5 Production-readiness summary + section 12 Testing Plan + section 8</span>
+  </div>
+
+  <div class="section" id="security">
+    <h2>Security &amp; Trust Notes</h2>
+    <ul class="evidence-list">
+      <li>Replit states secure building/publishing is a shared responsibility. Platform responsible for Agent/platform/infrastructure; users responsible for app contents and using/configuring tools. <span class="source-cite">docs.replit.com/references/security/shared-responsibility-model</span></li>
+      <li>Published-app access controls and filesystem: deployment docs reference access controls (plan-dependent); warn against relying on data written to published app’s filesystem.</li>
+      <li>Enterprise: SOC-2 compliant platform, SSO/SAML, SCIM, admin controls, Security Center, SBOM downloads, private deployment requirements (verify scope/availability).</li>
+      <li>Security Agent (May 2026): codebase security review using threat-modeling plan + Semgrep + HoundDog.ai — must test false positives/false negatives and availability.</li>
+      <li>Third-party: Axios May 2026 reported sensitive data exposure in vibe-coded/public apps across platforms including Replit (category risk); Business Insider July 2025 reported Replit Agent deleted prod db in external test (historical risk signal — verify current safeguards).</li>
+    </ul>
+    <p class="pending">Evidence pending: Actual behavior of access controls, secrets in client bundles/logs, rollback, prompt injection resistance, Security Agent efficacy on seeded vulns.</p>
+  </div>
+
+  <div class="section" id="ai">
+    <h2>AI Workflow Suitability</h2>
+    <p>Replit Agent should be classified as <strong>agentic AI app/site development with human oversight required</strong>. Official sources support natural-language app/site generation, planning/background-task workflows, Design Canvas, connectors, deployment, and cloud IDE editing. Current evidence does not support saying Replit Agent can safely build and operate production software without human review.</p>
+    <ul class="evidence-list">
+      <li>Can Replit Agent create apps/sites from prompts? — Official AI page supports.</li>
+      <li>Can Replit publish/host generated apps? — Official pricing/deployment docs support.</li>
+      <li>Can Replit run background/parallel work? — Agent docs reference background tasks and planning.</li>
+      <li>Can Replit autonomously guarantee secure app configuration? — No; shared responsibility docs say users remain responsible.</li>
+      <li>Can Replit safely operate on production databases without supervision? — Not verified; third-party incident reporting makes this a required test area. <span class="source-cite">01 section 6</span></li>
+    </ul>
+  </div>
+
+  <div class="section" id="monet">
+    <h2>Monetization &amp; Use-Case Fit</h2>
+    <p>Replit’s headline subscription price is not the total cost for serious usage. NoCodeReviewed should separately track Agent credits, deployment credits, app runtime costs, storage/database use, bandwidth, collaborators, private deployments, Security Agent access, and enterprise controls.</p>
+    <ul class="evidence-list">
+      <li>Starter: free with free daily Agent credits, built-in database, and publishing up to 1 project (expires after 30 days, can be re-published).</li>
+      <li>Core: monthly credits and collaborator limits (~$25 monthly / $20 annually per extract).</li>
+      <li>Pro: for teams with pooled credits and no per-user fees up to 15 builders.</li>
+      <li>Enterprise: custom with enhanced security/control/support.</li>
+      <li>Deployment costs deducted from monthly credits; usage-based fees apply after credits used.</li>
+    </ul>
+    <p class="pending">Evidence pending: Exact tier prices, credits, credit rollover, Pro tiers, deployment cost schedule, storage/compute/bandwidth limits, private deployment access, and Enterprise terms must be captured immediately before publication. (01 section 4)</p>
+    <span class="source-cite">Sources: replit.com/pricing + docs.replit.com/billing/deployment-pricing (quoted in 01)</span>
+  </div>
+
+  <div class="section" id="compare">
+    <h2>Comparison Notes</h2>
+    <p>Evidence lists these as direct comparison candidates (with rationale in file):</p>
+    <ul class="evidence-list">
+      <li>Bolt.new — Prompt-to-code/full-stack browser app builder with hosting/database direction.</li>
+      <li>Lovable — Prompt-to-full-stack web app builder with Supabase-style backend workflows.</li>
+      <li>Base44 — More no-code integrated-backend AI app builder for nontechnical users.</li>
+      <li>Cursor — AI coding environment for developers working in existing repos.</li>
+      <li>OpenAI Codex — Agentic coding/repository workflow comparison.</li>
+      <li>v0 — Prompt-to-UI/web app generation comparison.</li>
+    </ul>
+    <p><strong>Rule from evidence:</strong> Compare using repeatable build prompts and observable artifacts. (01 section 9 + section 12 test 12)</p>
+  </div>
+
+  <div class="section" id="ctas">
+    <h2>Next Steps — Evidence-Backed Tools</h2>
+    <div class="cta-bar">
+      <a href="/tools/vibe-auditor.html">Run the free Vibe Code Audit on your project →</a>
+      <a href="/tools/chat-intelligence-vault.html" class="secondary">Open Chat Intelligence Vault (recover AI chat projects) →</a>
+    </div>
+    <p style="margin-top:12px;font-size:0.9rem;opacity:0.75;">Use the Vibe Auditor for local project ZIP analysis. Use the Vault to extract prompts, code, commands, and monetization ideas from your own Replit (or other AI) chat exports.</p>
+  </div>
+
+  <div class="footer-note">
+    Strictly derived from canonical evidence. Primary: <a href="/docs/evidence/01_replit_complete_evidence_file.md">docs/evidence/01_replit_complete_evidence_file.md</a>. See <a href="/data/intelligence-vault/evidence-manifest.json">evidence-manifest.json</a> for status. Quality gateway applied: unsupported claims, production language, and comparisons blocked or marked “Evidence pending.” No invented pricing, scores, testimonials, or outcomes. Last source access dates in evidence files: May 30, 2026. Human review required before any publication.
+  </div>
+</body>
+</html>

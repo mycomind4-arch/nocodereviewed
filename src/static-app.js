@@ -3206,9 +3206,9 @@ function reviewDetailPanel(tool) {
           <div class="review-actions">
             <a class="button" href="#compare">Compare tools</a>
             <a href="#methodology">How this review works</a>
-            ${tool.slug === "lovable" ? `<a class="button" href="#tool/lovable">Open Lovable Ultimate Microsite →</a>` : ""}
-            ${tool.slug === "bolt-new" ? `<a class="button" href="#tool/bolt-new">Open Bolt.new Ultimate Microsite →</a>` : ""}
-            ${tool.slug === "replit-agent" ? `<a class="button" href="#tool/replit-agent">Open Replit Agent Ultimate Microsite →</a>` : ""}            ${tool.slug === "v0" ? `<a class="button" href="#tool/v0">Open v0 Ultimate Microsite →</a>` : ""}
+            ${tool.slug === "lovable" ? `<a class="button" href="/microsites/lovable.html">Open Lovable Evidence-Backed Microsite →</a>` : ""}
+            ${tool.slug === "bolt-new" ? `<a class="button" href="/microsites/bolt-new.html">Open Bolt.new Evidence-Backed Microsite →</a>` : ""}
+            ${tool.slug === "replit-agent" ? `<a class="button" href="/microsites/replit.html">Open Replit Evidence-Backed Microsite →</a>` : ""}            ${tool.slug === "v0" ? `<a class="button" href="#tool/v0">Open v0 Ultimate Microsite →</a>` : ""}
             ${["lovable", "bolt-new", "replit-agent", "v0"].includes(tool.slug) ? "" : `<a class="button" href="#tool/${tool.slug}">Open ${tool.name} Microsite →</a>`}
           </div>
         </div>
@@ -7475,6 +7475,16 @@ function render() {
             <span>Upload ChatGPT or Grok exports to recover projects, prompts, code, commands, business ideas, and monetizable assets from your AI history.</span>
             <a href="/tools/chat-intelligence-vault.html">Open Vault</a>
           </article>
+        </div>
+      </section>
+
+      <section class="evidence-microsites" aria-label="Evidence-backed microsite reviews" style="max-width:1080px;margin:0 auto 24px;padding:0 24px;">
+        <p class="eyebrow" style="margin-bottom:8px;">Evidence-backed microsite reviews (first 3)</p>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a href="/microsites/lovable.html" style="padding:8px 14px;border:1px solid rgba(255,255,255,0.16);border-radius:8px;text-decoration:none;color:inherit;font-size:0.9rem;">Lovable Evidence Microsite</a>
+          <a href="/microsites/bolt-new.html" style="padding:8px 14px;border:1px solid rgba(255,255,255,0.16);border-radius:8px;text-decoration:none;color:inherit;font-size:0.9rem;">Bolt.new Evidence Microsite</a>
+          <a href="/microsites/replit.html" style="padding:8px 14px;border:1px solid rgba(255,255,255,0.16);border-radius:8px;text-decoration:none;color:inherit;font-size:0.9rem;">Replit Evidence Microsite</a>
+          <span style="font-size:0.78rem;opacity:0.6;align-self:center;">All content sourced from docs/evidence/*.md + quality gates. “Evidence pending.” for untested claims.</span>
         </div>
       </section>
 

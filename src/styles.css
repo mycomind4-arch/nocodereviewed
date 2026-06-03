@@ -6859,6 +6859,9 @@ svg {
   }
 }
 
+/* Evidence microsites directory (homepage) */
+.evidence-microsites a:hover { background: rgba(255,255,255,0.06); }
+
 /* Homepage graphics section */
 .homepage-graphics {
   max-width: 1180px;
