@@ -7941,7 +7941,7 @@ function ncrHomePage() {
     slug: t.slug
   }));
 
-  const nav = premiumNav('home');
+  const nav = premiumNav('microsites');
 
   return `
   ${nav}
@@ -8367,7 +8367,7 @@ function ncrToolMicrositeFunnel(slug) {
 
   const html = `
   <div class="tool-funnel-page ${themeClass}">
-    ${premiumNav('home')}
+    ${premiumNav('microsites')}
     <div class="ncr-container">
       <!-- Hero (brand inspired) -->
       <section class="tool-funnel-hero">
@@ -8516,7 +8516,7 @@ function ncrToolTutorials(slug) {
 
   return `
   <div class="tool-funnel-page ${themeClass}">
-    ${premiumNav('home')}
+    ${premiumNav('microsites')}
     <div class="ncr-container" style="padding:40px 20px;">
       <h1>${tool.name} Tutorials &amp; Guides</h1>
       <p style="opacity:0.8;">Evidence-backed and practical guides for getting the most out of ${tool.name}. All content will be grounded in real testing and official capabilities.</p>
