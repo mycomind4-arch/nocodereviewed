@@ -1,4 +1,5 @@
 .DS_Store
+*.DS_Store
 node_modules/
 dist/
 build/
@@ -6,3 +7,13 @@ build/
 .env
 .env.local
 coverage/
+_INBOX_NEW_FILES/
+__MACOSX/
+backups/
+*.zip
+*.tar
+*.tar.gz
+.last-*
+*.backup-*
+*.backup-before-*
+*.log

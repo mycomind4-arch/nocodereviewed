@@ -1,0 +1,273 @@
+{
+  "generatedAt": "2026-06-03T06:03:05.603Z",
+  "sourceDirectory": "docs/evidence",
+  "expectedNumbers": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28
+  ],
+  "missingNumbers": [
+    10,
+    11,
+    28
+  ],
+  "duplicateEvidenceNumbers": [],
+  "summary": {
+    "canonicalCount": 22,
+    "duplicateCandidateCount": 3,
+    "missingCount": 3,
+    "scannedFileCount": 25,
+    "totalRecordCount": 28
+  },
+  "records": [
+    {
+      "fileName": "01_replit_complete_evidence_file.md",
+      "evidenceNumber": 1,
+      "inferredToolName": "Replit",
+      "path": "docs/evidence/01_replit_complete_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "02_base_44_complete_evidence_file.md",
+      "evidenceNumber": 2,
+      "inferredToolName": "Base44",
+      "path": "docs/evidence/02_base_44_complete_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "03_bolt_new_complete_evidence_file.md",
+      "evidenceNumber": 3,
+      "inferredToolName": "Bolt.new",
+      "path": "docs/evidence/03_bolt_new_complete_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "04_lovable_complete_evidence_file.md",
+      "evidenceNumber": 4,
+      "inferredToolName": "Lovable",
+      "path": "docs/evidence/04_lovable_complete_evidence_file.md",
+      "duplicateWarning": "Likely duplicate coverage for Lovable: 04_lovable_complete_evidence_file.md, 12_lovable_evidence_file.md",
+      "status": "canonical"
+    },
+    {
+      "fileName": "05_cursor_complete_evidence_file.md",
+      "evidenceNumber": 5,
+      "inferredToolName": "Cursor",
+      "path": "docs/evidence/05_cursor_complete_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "06_windsurf_complete_evidence_file.md",
+      "evidenceNumber": 6,
+      "inferredToolName": "Windsurf",
+      "path": "docs/evidence/06_windsurf_complete_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "07_claude_code_complete_evidence_file.md",
+      "evidenceNumber": 7,
+      "inferredToolName": "Claude Code",
+      "path": "docs/evidence/07_claude_code_complete_evidence_file.md",
+      "duplicateWarning": "Likely duplicate coverage for Claude Code: 07_claude_code_complete_evidence_file.md, 13_claude_code_evidence_file.md",
+      "status": "canonical"
+    },
+    {
+      "fileName": "08_openai_codex_complete_evidence_file.md",
+      "evidenceNumber": 8,
+      "inferredToolName": "OpenAI Codex",
+      "path": "docs/evidence/08_openai_codex_complete_evidence_file.md",
+      "duplicateWarning": "Likely duplicate coverage for OpenAI Codex: 08_openai_codex_complete_evidence_file.md, 14_openai_codex_evidence_file.md",
+      "status": "canonical"
+    },
+    {
+      "fileName": "09_v_0_complete_evidence_file.md",
+      "evidenceNumber": 9,
+      "inferredToolName": "v0",
+      "path": "docs/evidence/09_v_0_complete_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "12_lovable_evidence_file.md",
+      "evidenceNumber": 12,
+      "inferredToolName": "Lovable",
+      "path": "docs/evidence/12_lovable_evidence_file.md",
+      "duplicateWarning": "Likely duplicate coverage for Lovable: 04_lovable_complete_evidence_file.md, 12_lovable_evidence_file.md",
+      "status": "duplicate-candidate"
+    },
+    {
+      "fileName": "13_claude_code_evidence_file.md",
+      "evidenceNumber": 13,
+      "inferredToolName": "Claude Code",
+      "path": "docs/evidence/13_claude_code_evidence_file.md",
+      "duplicateWarning": "Likely duplicate coverage for Claude Code: 07_claude_code_complete_evidence_file.md, 13_claude_code_evidence_file.md",
+      "status": "duplicate-candidate"
+    },
+    {
+      "fileName": "14_openai_codex_evidence_file.md",
+      "evidenceNumber": 14,
+      "inferredToolName": "OpenAI Codex",
+      "path": "docs/evidence/14_openai_codex_evidence_file.md",
+      "duplicateWarning": "Likely duplicate coverage for OpenAI Codex: 08_openai_codex_complete_evidence_file.md, 14_openai_codex_evidence_file.md",
+      "status": "duplicate-candidate"
+    },
+    {
+      "fileName": "15_supabase_ai_assistant_evidence_file.md",
+      "evidenceNumber": 15,
+      "inferredToolName": "Supabase AI Assistant",
+      "path": "docs/evidence/15_supabase_ai_assistant_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "16_bubble_ai_evidence_file.md",
+      "evidenceNumber": 16,
+      "inferredToolName": "Bubble AI",
+      "path": "docs/evidence/16_bubble_ai_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "17_flutterflow_ai_evidence_file.md",
+      "evidenceNumber": 17,
+      "inferredToolName": "FlutterFlow AI",
+      "path": "docs/evidence/17_flutterflow_ai_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "18_webflow_ai_evidence_file.md",
+      "evidenceNumber": 18,
+      "inferredToolName": "Webflow AI",
+      "path": "docs/evidence/18_webflow_ai_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "19_framer_ai_evidence_file.md",
+      "evidenceNumber": 19,
+      "inferredToolName": "Framer AI",
+      "path": "docs/evidence/19_framer_ai_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "20_glide_ai_evidence_file.md",
+      "evidenceNumber": 20,
+      "inferredToolName": "Glide AI",
+      "path": "docs/evidence/20_glide_ai_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "21_softr_ai_evidence_file.md",
+      "evidenceNumber": 21,
+      "inferredToolName": "Softr AI",
+      "path": "docs/evidence/21_softr_ai_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "22_adalo_evidence_file.md",
+      "evidenceNumber": 22,
+      "inferredToolName": "Adalo",
+      "path": "docs/evidence/22_adalo_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "23_retool_ai_evidence_file.md",
+      "evidenceNumber": 23,
+      "inferredToolName": "Retool AI",
+      "path": "docs/evidence/23_retool_ai_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "24_thunkable_evidence_file.md",
+      "evidenceNumber": 24,
+      "inferredToolName": "Thunkable",
+      "path": "docs/evidence/24_thunkable_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "25_appsmith_evidence_file.md",
+      "evidenceNumber": 25,
+      "inferredToolName": "Appsmith",
+      "path": "docs/evidence/25_appsmith_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "26_weweb_evidence_file.md",
+      "evidenceNumber": 26,
+      "inferredToolName": "WeWeb",
+      "path": "docs/evidence/26_weweb_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": "27_builder_io_fusion_evidence_file.md",
+      "evidenceNumber": 27,
+      "inferredToolName": "Builder.io Fusion",
+      "path": "docs/evidence/27_builder_io_fusion_evidence_file.md",
+      "duplicateWarning": null,
+      "status": "canonical"
+    },
+    {
+      "fileName": null,
+      "evidenceNumber": 10,
+      "inferredToolName": null,
+      "path": null,
+      "duplicateWarning": null,
+      "status": "missing"
+    },
+    {
+      "fileName": null,
+      "evidenceNumber": 11,
+      "inferredToolName": null,
+      "path": null,
+      "duplicateWarning": null,
+      "status": "missing"
+    },
+    {
+      "fileName": null,
+      "evidenceNumber": 28,
+      "inferredToolName": null,
+      "path": null,
+      "duplicateWarning": null,
+      "status": "missing"
+    }
+  ]
+}

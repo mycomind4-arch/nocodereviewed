@@ -1,0 +1,14 @@
+flowchart LR
+  A[Webhook: Evidence Intake] --> B[Normalize Intake + Build AI Prompt]
+  B --> C[Gemini: Extract Evidence Bundle]
+  C --> D[Parse JSON + Quality Gate]
+  D --> E[Supabase RPC: ingest_evidence_bundle]
+  E --> F[Webhook Response]
+
+  E --> T[(tools)]
+  E --> S[(evidence_sources)]
+  E --> I[(evidence_items)]
+  E --> C2[(claims)]
+  E --> Q[(quality_gate_results)]
+  E --> P[(content_pages)]
+  E --> R[(automation_runs)]

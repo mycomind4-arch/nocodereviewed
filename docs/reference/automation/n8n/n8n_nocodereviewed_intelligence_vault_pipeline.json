@@ -1,0 +1,214 @@
+{
+  "name": "NoCodeReviewed - Intelligence Vault Evidence Pipeline v1",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ncr-evidence-intake",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1e7e0f90-6e2f-4af5-bf41-2c82835c6a11",
+      "name": "Evidence Intake Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -780,
+        0
+      ],
+      "webhookId": "ncr-evidence-intake-v1"
+    },
+    {
+      "parameters": {
+        "jsCode": "function slugify(value) {\n  return String(value || '')\n    .toLowerCase()\n    .trim()\n    .replace(/https?:\\/\\//g, '')\n    .replace(/www\\./g, '')\n    .replace(/\\.[a-z]{2,}.*$/g, '')\n    .replace(/[^a-z0-9]+/g, '-')\n    .replace(/^-+|-+$/g, '')\n    .slice(0, 80);\n}\n\nconst incoming = $json.body || $json;\nconst toolName = incoming.tool_name || incoming.name || incoming.tool || incoming.product_name || '';\nconst officialUrl = incoming.official_url || incoming.website_url || incoming.url || '';\nconst slug = slugify(incoming.tool_slug || incoming.slug || toolName || officialUrl || 'unknown-tool');\nconst sourceText = String(incoming.source_text || incoming.raw_text || incoming.evidence_file || incoming.markdown || incoming.notes || '').slice(0, 90000);\n\nif (!toolName && !officialUrl && !sourceText) {\n  throw new Error('Missing intake data. Send at least tool_name, official_url, or source_text.');\n}\n\nconst normalized = {\n  workflow_name: 'NCR Intelligence Vault Evidence Pipeline',\n  run_type: incoming.run_type || 'evidence_intake',\n  tool: {\n    slug,\n    name: toolName || slug.replace(/-/g, ' ').replace(/\\b\\w/g, c => c.toUpperCase()),\n    category: incoming.category || incoming.tool_category || 'no-code / AI builder',\n    official_url: officialUrl,\n    affiliate_url: incoming.affiliate_url || '',\n    metadata: {\n      intake_source: incoming.intake_source || 'n8n_webhook',\n      requested_pages: incoming.requested_pages || ['review', 'public_evidence', 'comparison_seed'],\n      commercial_priority: incoming.commercial_priority || 'high',\n      audience: incoming.audience || 'founders, builders, agencies, and non-technical product creators'\n    }\n  },\n  source: {\n    source_type: incoming.source_type || 'submitted_evidence',\n    source_url: incoming.source_url || officialUrl || '',\n    source_title: incoming.source_title || `${toolName || slug} submitted evidence`,\n    publisher: incoming.publisher || '',\n    raw_text_excerpt: sourceText.slice(0, 5000)\n  },\n  source_text: sourceText,\n  user_project_context: incoming.user_project_context || incoming.project_context || '',\n  monetization_context: incoming.monetization_context || 'Recommend tools only when they solve user pain points. Prefer affiliate-tracked links where available, but preserve trust with clear disclosures and evidence-backed recommendations.',\n  quality_rules: {\n    min_sources_for_publish: 2,\n    min_evidence_items_for_publish: 8,\n    min_claims_for_publish: 5,\n    min_score_for_publish: 85,\n    auto_publish: false\n  }\n};\n\nconst prompt = `You are the NoCodeReviewed Intelligence Vault evidence analyst. Convert the intake into a structured evidence bundle that can power public reviews, comparisons, tutorials, recommendations, and the Vibe Auditor.\n\nRules:\n- Return ONLY valid JSON. No markdown.\n- Evidence must be conservative, specific, and traceable.\n- Do not invent pricing, features, benchmarks, dates, integrations, security posture, or affiliate claims. If unknown, mark it as unknown or needs_review.\n- Every recommendation must connect a user pain point to evidence.\n- Monetization is important, but trust is more important. Use affiliate disclosure language when affiliate_url exists.\n- Produce public evidence items that can be shown transparently on /evidence/{tool_slug}.\n\nRequired JSON shape:\n{\n  \"workflow_name\": \"NCR Intelligence Vault Evidence Pipeline\",\n  \"run_type\": \"evidence_intake\",\n  \"tool\": {\"slug\": \"...\", \"name\": \"...\", \"category\": \"...\", \"official_url\": \"...\", \"affiliate_url\": \"...\", \"metadata\": {}},\n  \"sources\": [{\"source_type\": \"official|docs|pricing|review|submitted_evidence|github|other\", \"source_url\": \"...\", \"source_title\": \"...\", \"publisher\": \"...\", \"source_quality_score\": 0-100, \"raw_text_excerpt\": \"short supporting excerpt\", \"metadata\": {}}],\n  \"evidence_items\": [{\"source_url\": \"...\", \"evidence_type\": \"pricing|feature|security|integration|limit|workflow|performance|support|use_case|risk|monetization\", \"extracted_claim\": \"specific claim\", \"raw_excerpt\": \"short excerpt or note\", \"confidence_score\": 0-100, \"freshness_score\": 0-100, \"contradiction_status\": \"unchecked|clear|possible_conflict\", \"public_visibility\": true, \"metadata\": {}}],\n  \"claims\": [{\"claim_category\": \"positioning|best_for|avoid_if|pricing|security|automation|workflow|monetization\", \"claim_text\": \"claim for review page\", \"confidence_score\": 0-100, \"evidence_count\": 0, \"metadata\": {}}],\n  \"scores\": [{\"dimension\": \"launch_readiness|builder_power|ease_of_use|automation|security|pricing_clarity|evidence_confidence|monetization_fit|overall\", \"score\": 0-100, \"reason\": \"short evidence-backed reason\", \"evidence_claims\": []}],\n  \"pain_point_matches\": [{\"pain_point_slug\": \"build-mvp-fast\", \"match_score\": 0-100, \"reason\": \"why this tool fits or does not fit\", \"evidence_claims\": []}],\n  \"content_pages\": [{\"page_type\": \"tool_review|public_evidence|comparison_seed|tutorial_seed\", \"slug\": \"/tools/{tool_slug}\", \"title\": \"...\", \"status\": \"draft|needs_review|ready_for_publish\", \"content_json\": {}}]\n}\n\nNormalized intake:\n${JSON.stringify(normalized, null, 2)}\n\nSource/evidence text:\n${sourceText || '(No long source text provided. Build a conservative skeleton and mark unknowns.)'}\n`;\n\nreturn [{ json: { ...normalized, prompt } }];"
+      },
+      "id": "ab1d021e-7c88-4c7b-81ff-496c7fb65c62",
+      "name": "Normalize Intake + Build Prompt",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -500,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{\"https://generativelanguage.googleapis.com/v1beta/models/\" + ($env.GEMINI_MODEL || \"gemini-2.0-flash\") + \":generateContent?key=\" + $env.GEMINI_API_KEY}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { contents: [{ role: 'user', parts: [{ text: $json.prompt }] }], generationConfig: { temperature: 0.1, responseMimeType: 'application/json' } } }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "f9b17155-e7da-4309-8b72-117145ab883d",
+      "name": "Gemini - Extract Evidence Bundle",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -180,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "function extractJsonText(response) {\n  if (typeof response === 'string') return response;\n  return response?.candidates?.[0]?.content?.parts?.[0]?.text\n    || response?.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('')\n    || response?.text\n    || response?.data\n    || JSON.stringify(response);\n}\n\nfunction parsePossiblyFencedJson(text) {\n  const cleaned = String(text || '')\n    .replace(/^```json\\s*/i, '')\n    .replace(/^```\\s*/i, '')\n    .replace(/```$/i, '')\n    .trim();\n  try { return JSON.parse(cleaned); } catch (e) {}\n  const first = cleaned.indexOf('{');\n  const last = cleaned.lastIndexOf('}');\n  if (first >= 0 && last > first) return JSON.parse(cleaned.slice(first, last + 1));\n  throw new Error('Gemini did not return parseable JSON. Raw text starts: ' + cleaned.slice(0, 400));\n}\n\nfunction arr(value) { return Array.isArray(value) ? value : []; }\nfunction num(value, fallback = 0) {\n  const n = Number(value);\n  return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : fallback;\n}\nfunction slugify(value) {\n  return String(value || 'unknown-tool').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);\n}\n\nconst ai = parsePossiblyFencedJson(extractJsonText($json));\nconst tool = ai.tool || {};\ntool.slug = slugify(tool.slug || ai.tool_slug || tool.name);\ntool.name = tool.name || tool.slug.replace(/-/g, ' ').replace(/\\b\\w/g, c => c.toUpperCase());\ntool.category = tool.category || 'no-code / AI builder';\ntool.metadata = tool.metadata || {};\n\nconst sources = arr(ai.sources);\nconst evidence = arr(ai.evidence_items);\nconst claims = arr(ai.claims);\nconst scores = arr(ai.scores);\nconst pages = arr(ai.content_pages);\nconst painMatches = arr(ai.pain_point_matches);\n\nconst issues = [];\nlet score = 100;\nconst officialSources = sources.filter(s => /official|docs|pricing|github/i.test(String(s.source_type || '') + ' ' + String(s.publisher || '') + ' ' + String(s.source_url || ''))).length;\n\nif (sources.length < 1) { score -= 30; issues.push('No source records generated.'); }\nif (sources.length < 2) { score -= 10; issues.push('Needs at least two sources before publication.'); }\nif (officialSources < 1) { score -= 15; issues.push('Needs at least one official/docs/pricing/GitHub source.'); }\nif (evidence.length < 5) { score -= 20; issues.push('Too few evidence items for a reliable public review.'); }\nif (evidence.length < 8) { score -= 8; issues.push('Below recommended evidence depth for auto-ready publishing.'); }\nif (claims.length < 3) { score -= 10; issues.push('Too few review claims generated.'); }\nif (!evidence.some(e => /pricing|cost|plan/i.test(String(e.evidence_type || '') + ' ' + String(e.extracted_claim || '')))) {\n  score -= 8; issues.push('Pricing evidence is missing or unclear.');\n}\nif (!scores.some(s => s.dimension === 'overall')) {\n  scores.push({ dimension: 'overall', score: Math.max(0, score), reason: 'Computed by gateway fallback from evidence completeness.', evidence_claims: [] });\n}\nconst hypeClaims = claims.filter(c => /best|perfect|guaranteed|revolutionary|ultimate/i.test(String(c.claim_text || '')) && num(c.confidence_score, 0) < 80);\nif (hypeClaims.length) { score -= 10; issues.push('Potential hype claims need stronger evidence or softer wording.'); }\n\nscore = Math.max(0, Math.min(100, Math.round(score)));\nconst status = score >= 85 ? 'ready_for_publish' : score >= 60 ? 'needs_review' : 'blocked';\n\nconst defaultPages = [\n  {\n    page_type: 'tool_review',\n    slug: `/tools/${tool.slug}`,\n    title: `${tool.name} Review: Evidence, Best Use Cases, Limits, and Alternatives`,\n    status,\n    content_json: { tool, summary: ai.summary || '', claims, scores, pain_point_matches: painMatches, monetization: ai.monetization || {}, disclosure: tool.affiliate_url ? 'Some links may be affiliate links. Recommendations are based on evidence and fit, not commissions.' : '' }\n  },\n  {\n    page_type: 'public_evidence',\n    slug: `/evidence/${tool.slug}`,\n    title: `${tool.name} Public Evidence File`,\n    status: score >= 60 ? 'ready_for_publish' : 'needs_review',\n    content_json: { tool, sources, evidence_items: evidence, quality_gate: { score, status, issues } }\n  },\n  {\n    page_type: 'comparison_seed',\n    slug: `/compare/${tool.slug}-alternatives`,\n    title: `${tool.name} Alternatives and Best-Fit Comparisons`,\n    status: 'draft',\n    content_json: { tool, pain_point_matches: painMatches, scores, comparison_angle: ai.comparison_angle || '' }\n  }\n];\n\nconst bundle = {\n  workflow_name: 'NCR Intelligence Vault Evidence Pipeline',\n  run_type: ai.run_type || 'evidence_intake',\n  tool,\n  sources,\n  evidence_items: evidence,\n  claims,\n  scores,\n  pain_point_matches: painMatches,\n  content_pages: pages.length ? pages : defaultPages,\n  evidence_confidence: score,\n  quality_gate: {\n    target_type: 'tool_review',\n    score,\n    status,\n    issues,\n    metadata: {\n      source_count: sources.length,\n      official_source_count: officialSources,\n      evidence_item_count: evidence.length,\n      claim_count: claims.length,\n      generated_at: new Date().toISOString()\n    }\n  }\n};\n\nreturn [{ json: { bundle, response_preview: { tool_slug: tool.slug, tool_name: tool.name, quality_score: score, quality_status: status, issues } } }];"
+      },
+      "id": "f35dd3ae-1807-46ef-8212-199e740877f3",
+      "name": "Parse JSON + Quality Gate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        160,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{$env.SUPABASE_URL + \"/rest/v1/rpc/ingest_evidence_bundle\"}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{$env.SUPABASE_SERVICE_ROLE_KEY}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "={{\"Bearer \" + $env.SUPABASE_SERVICE_ROLE_KEY}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { bundle: $json.bundle } }}",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "7d4388e5-54db-4893-80ae-058c59ab3f4a",
+      "name": "Supabase RPC - Ingest Bundle",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{$json}}",
+        "options": {}
+      },
+      "id": "e86d9d3d-6c86-4a40-b6a6-bb0c52267dd6",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        820,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Evidence Intake Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Intake + Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Intake + Build Prompt": {
+      "main": [
+        [
+          {
+            "node": "Gemini - Extract Evidence Bundle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gemini - Extract Evidence Bundle": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON + Quality Gate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON + Quality Gate": {
+      "main": [
+        [
+          {
+            "node": "Supabase RPC - Ingest Bundle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase RPC - Ingest Bundle": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "80dd4433-f268-4c95-a22d-72ffb1b02026",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "description": "Webhook pipeline that turns submitted evidence or research notes into public evidence files, tool scores, quality gate records, and draft review/comparison pages in Supabase."
+  },
+  "id": "NCR_INTEL_VAULT_PIPELINE_V1",
+  "tags": [
+    {
+      "name": "NoCodeReviewed"
+    },
+    {
+      "name": "Intelligence Vault"
+    },
+    {
+      "name": "Evidence Automation"
+    }
+  ]
+}

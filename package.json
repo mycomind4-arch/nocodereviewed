@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "node server.mjs",
     "build": "node scripts/verify-static-app.mjs",
-    "preview": "node server.mjs"
+    "preview": "node server.mjs",
+    "inventory:evidence": "node scripts/inventory-evidence.mjs --write data/intelligence-vault/evidence-manifest.json",
+    "validate:evidence": "node scripts/validate-evidence-manifest.mjs"
   },
   "dependencies": {},
   "devDependencies": {}
