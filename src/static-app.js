@@ -7417,45 +7417,109 @@ function renderPanel() {
 }
 
 function render() {
-  const route = window.location.hash.match(/^#([a-z-]+)(?:\/([^/?#]+))?/);
-  if (route && route[1] !== "review") activeTab = route[1] === "top" ? activeTab : route[1];
+  const hash = (window.location.hash || '#top').toLowerCase();
+  const routeMatch = hash.match(/^#([a-z-]+)(?:\/([^/?#]+))?/);
+  const r = routeMatch ? routeMatch[1] : 'top';
+  const sub = routeMatch ? routeMatch[2] : null;
 
-  const r = route ? route[1] : '';
-  // UI-K4 new premium routes (full page dark glass style, no dead links)
-  if (r === 'reviews') return ncrReviewsPage();
-  if (r === 'microsites') return ncrMicrositesPage();
-  if (r === 'tools') return ncrToolsPage();
-  if (r === 'evidence') return ncrEvidencePage();
-  if (r === 'methodology') return ncrMethodologyPage();
-  if (r === 'blog') return ncrBlogPage();
-  if (r === 'about') return ncrAboutPage();
-  if (r === 'submit') return ncrSubmitPage();
-  if (r === 'evidence-library') return ncrEvidenceLibraryPage();
-  if (r === 'benchmarks') return ncrBenchmarksPage();
-  if (r === 'contact') return ncrContactPage();
-  if (r === 'privacy') return ncrPrivacyPage();
-  if (r === 'terms') return ncrTermsPage();
-  if (r === 'newsletter') return ncrNewsletterPage();
+  // UI-K5: Robust router - simple top-level premium routes from mockup nav first (no sub)
+  if (!sub) {
+    let pageHtml = null;
+    const simple = r || 'top';
+    switch (simple) {
+      case 'reviews':
+        pageHtml = ncrReviewsRealPage();
+        break;
+      case 'microsites':
+        pageHtml = ncrMicrositesRealPage();
+        break;
+      case 'tools':
+        pageHtml = ncrToolsRealPage();
+        break;
+      case 'evidence':
+        pageHtml = ncrEvidenceRealPage();
+        break;
+      case 'methodology':
+        pageHtml = ncrMethodologyPage();
+        break;
+      case 'blog':
+        pageHtml = ncrBlogPage();
+        break;
+      case 'about':
+        pageHtml = ncrAboutPage();
+        break;
+      case 'submit':
+        pageHtml = ncrSubmitPage();
+        break;
+      case 'evidence-library':
+        pageHtml = ncrEvidenceLibraryPage();
+        break;
+      case 'benchmarks':
+        pageHtml = ncrBenchmarksPage();
+        break;
+      case 'contact':
+        pageHtml = ncrContactPage();
+        break;
+      case 'privacy':
+        pageHtml = ncrPrivacyPage();
+        break;
+      case 'terms':
+        pageHtml = ncrTermsPage();
+        break;
+      case 'newsletter':
+        pageHtml = ncrNewsletterPage();
+        break;
+      case 'top':
+      case 'home':
+      case '':
+        pageHtml = ncrHomePage();
+        break;
+    }
+    if (pageHtml) {
+      document.querySelector("#app").innerHTML = pageHtml;
+      setupNcrPremiumNavActive(simple === 'top' || simple === 'home' || simple === '' ? 'home' : simple);
+      return;
+    }
+  }
 
-  document.querySelector("#app").innerHTML = ncrHomePage();
+  // Complex routes (with sub like #review/xxx, #tool/xxx etc) or old simple tabs: delegate to old renderPanel logic
+  // This keeps existing detailed microsite/review/benchmark flows working.
+  try {
+    const oldContent = renderPanel();
+    document.querySelector("#app").innerHTML = `<div class="ncr-legacy-wrap">${oldContent}</div>`;
+    setupNcrPremiumNavActive(r);
+    try { bind(); } catch (_) {}
+  } catch (e) {
+    // ultimate fallback
+    document.querySelector("#app").innerHTML = ncrHomePage();
+    setupNcrPremiumNavActive('home');
+  }
+}
 
-  // UI-K4: premium nav active state for both old and new navs
+function setupNcrPremiumNavActive(activeKey) {
   try {
     const navs = document.querySelectorAll('.ncr-nav-links, .topbar nav');
-    const hash = (window.location.hash || '#top').slice(1).split(/[/?#]/)[0] || 'top';
+    const key = (activeKey || 'home').toLowerCase();
     navs.forEach(nav => {
       nav.querySelectorAll('a').forEach(a => {
         a.classList.remove('active');
-        const h = (a.getAttribute('href') || '').replace('#', '').split(/[/?#]/)[0] || '';
-        if (h && (h === hash || (hash === 'top' && h === 'reviews') || (hash === 'reviews' && h === 'reviews'))) a.classList.add('active');
-        if (hash === 'methodology' && h === 'methodology') a.classList.add('active');
-        if (hash === 'microsites' && h === 'microsites') a.classList.add('active');
+        let h = (a.getAttribute('href') || '').replace('#', '').split(/[/?#]/)[0] || '';
+        h = h.toLowerCase();
+        if (!h) return;
+        if (h === key) {
+          a.classList.add('active');
+        } else if (key === 'home' && (h === 'top' || h === 'home')) {
+          a.classList.add('active');
+        } else if (key === 'reviews' && h === 'reviews') {
+          a.classList.add('active');
+        } else if (key === 'methodology' && h === 'methodology') {
+          a.classList.add('active');
+        } else if (key === 'microsites' && h === 'microsites') {
+          a.classList.add('active');
+        }
       });
     });
   } catch (_) {}
-
-  // Safe bind (old panels may not exist on new premium pages)
-  try { bind(); } catch (_) {}
 }
 
 function bind() {
@@ -7972,10 +8036,134 @@ function ncrPlaceholder(title, desc, extra = '') {
   </div>`;
 }
 
-function ncrReviewsPage() { return ncrPlaceholder('Reviews', 'Evidence-backed tool reviews directory. All verdicts trace to repeatable build tests, pricing snapshots, and production-readiness gates.'); }
-function ncrMicrositesPage() { return ncrPlaceholder('Microsites', 'Tool microsite intelligence directory. Custom flagship microsites receive deep hand-built evidence pages. Generic microsites are auto-generated from the evidence manifest.'); }
-function ncrToolsPage() { return ncrPlaceholder('Tools', 'All indexed no-code and AI builder tools with evidence availability, category filters, and links to reviews or microsites.'); }
-function ncrEvidencePage() { return ncrPlaceholder('Evidence', 'The canonical evidence library. 25+ complete evidence files, manifests, and quality gates power every public claim.'); }
+function ncrReviewsRealPage() {
+  const nav = premiumNav('reviews');
+  const allTools = (typeof tools !== 'undefined' ? tools : []).slice(0, 12);
+  const cards = allTools.map(t => {
+    const hasEv = (typeof evidenceFileIndex !== 'undefined') && evidenceFileIndex.some(e => (e.tool || '').toLowerCase().includes((t.name || '').toLowerCase().split(' ')[0]));
+    return `
+      <div class="ncr-card">
+        <div class="ncr-card-head">
+          <div class="logo">${(t.name || 'T')[0]}</div>
+          <div><div class="name">${t.name}</div><div class="cat">${t.category || 'Tool'}</div></div>
+        </div>
+        ${hasEv ? '<span class="ncr-evidence-pill">EVIDENCE-BACKED</span>' : '<span class="ncr-evidence-pill" style="background:rgba(245,158,11,0.12);color:#f59e0b;border-color:rgba(245,158,11,0.3)">EVIDENCE PENDING</span>'}
+        <div class="ncr-checklist">
+          ${hasEv ? '<div class="ok">✓ Evidence file available</div>' : '<div class="pend">○ Evidence file pending</div>'}
+          <div class="pend">○ Review record ${hasEv ? 'available' : 'pending'}</div>
+          <div class="pend">○ Quality gate pending</div>
+        </div>
+        <a class="cta" href="#review/${t.slug}">View Review →</a>
+      </div>`;
+  }).join('');
+  return `
+  ${nav}
+  <div class="ncr-container ncr-placeholder">
+    <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
+      <div class="eyebrow">EVIDENCE-BACKED REVIEWS</div>
+      <h1>Tool Reviews</h1>
+      <p style="max-width:640px;">All reviews are grounded in repeatable benchmarks, pricing snapshots, production gates, and the evidence manifest. Click any card for the full dossier.</p>
+    </div>
+    <div class="ncr-review-grid" style="margin-bottom:30px;">
+      ${cards || '<div class="ncr-card">No tools loaded yet.</div>'}
+    </div>
+    <div style="text-align:center; margin:20px 0;">
+      <a class="ncr-btn ncr-btn-primary" href="/tools/vibe-auditor.html">Run the Vibe Auditor</a>
+      <a class="ncr-btn ncr-btn-secondary" href="#top" style="margin-left:8px;">Back to Home</a>
+    </div>
+  </div>`;
+}
+
+function ncrMicrositesRealPage() {
+  const nav = premiumNav('microsites');
+  const allTools = (typeof tools !== 'undefined' ? tools : []).slice(0, 10);
+  const cards = allTools.map((t, i) => {
+    const isCustom = ['lovable','bolt-new','replit-agent','replit'].some(s => (t.slug || '').includes(s));
+    return `
+      <div class="ncr-card ncr-ms-card">
+        <div class="header"></div>
+        <div class="name">${t.name}</div>
+        <div class="cat">${t.category || 'Platform'}</div>
+        ${isCustom ? '<span class="ncr-evidence-pill">AUDITED</span>' : '<span class="ncr-evidence-pill" style="background:rgba(245,158,11,0.12);color:#f59e0b;border-color:rgba(245,158,11,0.3)">PENDING</span>'}
+        <a class="cta" href="#tool/${t.slug}">View Audit →</a>
+      </div>`;
+  }).join('');
+  return `
+  ${nav}
+  <div class="ncr-container ncr-placeholder">
+    <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
+      <div class="eyebrow">INTELLIGENCE DIRECTORY</div>
+      <h1>Microsite Intelligence Directory</h1>
+      <p style="max-width:640px;">Custom flagship microsites have deep evidence pages. Others are auto-generated from the evidence manifest and quality gates.</p>
+    </div>
+    <div class="ncr-micro-grid" style="margin-bottom:30px;">
+      ${cards || '<div class="ncr-card">No tools loaded yet.</div>'}
+    </div>
+    <div style="text-align:center;">
+      <a class="ncr-btn ncr-btn-primary" href="#submit">Submit a Microsite</a>
+      <a class="ncr-btn ncr-btn-secondary" href="#top" style="margin-left:8px;">Back to Home</a>
+    </div>
+  </div>`;
+}
+
+function ncrToolsRealPage() {
+  const nav = premiumNav('tools');
+  const allTools = (typeof tools !== 'undefined' ? tools : []);
+  const cards = allTools.map(t => {
+    const hasEv = (typeof evidenceFileIndex !== 'undefined') && evidenceFileIndex.some(e => (e.tool || '').toLowerCase().includes((t.name || '').toLowerCase().split(' ')[0]));
+    return `
+      <div class="ncr-card">
+        <div class="ncr-card-head">
+          <div class="logo">${(t.name || 'T')[0]}</div>
+          <div><div class="name">${t.name}</div><div class="cat">${t.category || 'Tool'}</div></div>
+        </div>
+        <div class="ncr-checklist">
+          ${hasEv ? '<div class="ok">✓ Evidence available</div>' : '<div class="pend">○ Evidence pending</div>'}
+          <div>Price: ${t.price || 'See details'}</div>
+          <div>Status: ${t.affiliateStatus || 'Researching'}</div>
+        </div>
+        <a class="cta" href="#review/${t.slug}">View Review →</a>
+        <a class="cta" href="#tool/${t.slug}" style="margin-top:4px;opacity:0.8;">Microsite Hub →</a>
+      </div>`;
+  }).join('');
+  return `
+  ${nav}
+  <div class="ncr-container ncr-placeholder">
+    <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
+      <div class="eyebrow">INDEX</div>
+      <h1>All Tools</h1>
+      <p style="max-width:640px;">Every no-code and AI builder tool we track, with evidence status and quick links to reviews or microsites.</p>
+    </div>
+    <div class="ncr-review-grid" style="margin-bottom:30px;">
+      ${cards || '<div class="ncr-card">No tools loaded yet.</div>'}
+    </div>
+    <div style="text-align:center;">
+      <a class="ncr-btn ncr-btn-primary" href="#reviews">Browse Reviews</a>
+      <a class="ncr-btn ncr-btn-secondary" href="#top" style="margin-left:8px;">Back to Home</a>
+    </div>
+  </div>`;
+}
+
+function ncrEvidenceRealPage() {
+  const nav = premiumNav('evidence');
+  const numEv = (typeof evidenceFileIndex !== 'undefined' ? evidenceFileIndex.length : 25);
+  return `
+  ${nav}
+  <div class="ncr-container ncr-placeholder">
+    <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
+      <div class="eyebrow">EVIDENCE SYSTEM</div>
+      <h1>Evidence</h1>
+      <p style="max-width:640px;">The canonical source of truth. ${numEv}+ evidence files, manifests, and quality gates power every claim on this platform.</p>
+    </div>
+    <div class="ncr-glass ncr-ph-card" style="max-width:720px;margin:0 auto 24px;">
+      <p>Evidence files live in <code>docs/evidence/</code>. The manifest tracks completeness and duplicates. All public verdicts must trace back to these records.</p>
+      <div style="margin-top:16px;">
+        <a class="ncr-btn ncr-btn-primary" href="#evidence-library">Open Evidence Library</a>
+        <a class="ncr-btn ncr-btn-secondary" href="#methodology" style="margin-left:8px;">Read Methodology</a>
+      </div>
+    </div>
+  </div>`;
+}
 function ncrMethodologyPage() { 
   return `
   ${premiumNav('methodology')}
@@ -8005,4 +8193,21 @@ function ncrContactPage() { return ncrPlaceholder('Contact', 'For press, partner
 function ncrPrivacyPage() { return ncrPlaceholder('Privacy Policy', 'NoCodeReviewed is local-first by default. User-owned exports (ChatGPT, Grok, ZIPs) are processed in the browser and never uploaded unless you explicitly connect a future approved cloud feature.'); }
 function ncrTermsPage() { return ncrPlaceholder('Terms of Service', 'All reviews and audits are editorially independent. No paid rankings. All claims must trace to evidence files or approved methodology records.'); }
 function ncrNewsletterPage() { return ncrPlaceholder('Newsletter', 'Periodic evidence updates and methodology notes. Sign-up form coming soon. In the meantime, the Intelligence Command Center and Vault are the best way to stay current.'); }
+
+/* UI-K5 Link QA helper (for manual/dev use; lists expected routes from the mockup nav + homepage) */
+const UI_K5_EXPECTED_ROUTES = [
+  '#top', '#home', '#reviews', '#microsites', '#tools', '#evidence', '#methodology',
+  '#blog', '#about', '#submit', '#evidence-library', '#benchmarks', '#contact',
+  '#privacy', '#terms', '#newsletter',
+  // dynamic examples
+  '#review/lovable', '#tool/lovable', '/tools/vibe-auditor.html', '/tools/chat-intelligence-vault.html'
+];
+
+function auditHomepageLinks() {
+  // Dev helper: console log expected vs current nav/footer links found in DOM
+  console.log('[UI-K5 Link Audit] Expected routes:', UI_K5_EXPECTED_ROUTES);
+  const links = Array.from(document.querySelectorAll('a[href^="#"], a[href^="/tools/"]')).map(a => a.getAttribute('href'));
+  console.log('[UI-K5 Link Audit] Found links:', [...new Set(links)]);
+  // In real usage, open console and call auditHomepageLinks() after render
+}
 
