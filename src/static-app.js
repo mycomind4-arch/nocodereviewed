@@ -26,6 +26,61 @@ const evidenceFileIndex = [
   { tool: "Builder.io Fusion", slug: "builder-io-fusion", file: "docs/evidence/27_builder_io_fusion_evidence_file.md", status: "Supplemental" },
 ];
 
+/* R1: Brand Icon System - local assets + polished fallbacks. Never hotlink externals. */
+const TOOL_BRAND_ASSETS = {
+  "lovable": {
+    logo: "/images/tool-logos/lovable-logo.jpg",
+    fallback: "L",
+    brandColor: "#ff5ba7",
+    accentColor: "#8b5cf6"
+  },
+  "bolt-new": {
+    logo: "/images/tool-logos/bolt-new-logo.jpg",
+    fallback: "B",
+    brandColor: "#facc15",
+    accentColor: "#38bdf8"
+  },
+  "replit": {
+    logo: "/images/tool-logos/replit-logo.jpg",
+    fallback: "R",
+    brandColor: "#f26207",
+    accentColor: "#38bdf8"
+  },
+  "replit-agent": {
+    logo: "/images/tool-logos/replit-logo.jpg",
+    fallback: "R",
+    brandColor: "#f26207",
+    accentColor: "#38bdf8"
+  },
+  "v0": { logo: null, fallback: "v0", brandColor: "#000000", accentColor: "#ffffff" },
+  "cursor": { logo: null, fallback: "C", brandColor: "#0ea5e9", accentColor: "#6366f1" },
+  "windsurf": { logo: null, fallback: "W", brandColor: "#06b6d4", accentColor: "#8b5cf6" }
+  // Extend for others as assets are added. Use null for missing logos -> fallback orb.
+};
+
+function toolBrandAsset(slugOrTool) {
+  if (!slugOrTool) return TOOL_BRAND_ASSETS["lovable"];
+  const key = (typeof slugOrTool === "string" ? slugOrTool : (slugOrTool.slug || slugOrTool.name || "")).toLowerCase();
+  return TOOL_BRAND_ASSETS[key] || { logo: null, fallback: key[0] ? key[0].toUpperCase() : "?", brandColor: "#3b82f6", accentColor: "#a78bfa" };
+}
+
+function toolLogoMarkup(toolOrSlug, size = 32, className = "tool-logo") {
+  const asset = toolBrandAsset(toolOrSlug);
+  const name = (typeof toolOrSlug === "string" ? toolOrSlug : (toolOrSlug.name || toolOrSlug.slug || "Tool"));
+  if (asset.logo) {
+    return `<img src="${asset.logo}" alt="${name} logo" class="${className}-img" style="width:${size}px;height:${size}px;object-fit:contain;border-radius:6px;" />`;
+  }
+  // Polished fallback orb
+  const bg = asset.brandColor || "#1e3a8a";
+  const fg = "#fff";
+  return `<span class="${className}-fallback tool-logo-orb" style="width:${size}px;height:${size}px;background:${bg};color:${fg};display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:${Math.round(size*0.55)}px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);box-shadow:0 1px 3px rgba(0,0,0,0.3);">${asset.fallback}</span>`;
+}
+
+function toolBrandStyleVars(toolOrSlug) {
+  const asset = toolBrandAsset(toolOrSlug);
+  return `--tool-brand:${asset.brandColor};--tool-accent:${asset.accentColor};`;
+}
+
 const tools = [
   { name: "Lovable", slug: "lovable", category: "Prompt-to-app", price: "Free + paid", score: 94, evidence: 0, bestFor: "Founders turning product ideas into full-stack web apps", verdict: "The benchmark for fast prompt-to-product iteration, but production readiness still needs testing.", affiliateStatus: "Researching", updated: "Needs first test" },
   { name: "Bolt.new", slug: "bolt-new", category: "Prompt-to-app", price: "Free + paid", score: 93, evidence: 0, bestFor: "Browser-based app builds with code visibility and fast iteration", verdict: "One of the strongest app-generation sandboxes for builders who want speed plus editable code.", affiliateStatus: "Researching", updated: "Needs first test" },
@@ -2539,7 +2594,8 @@ function toolCard(tool) {
   const hasEvidence = count > 0 || evidenceFileCountFor(tool.name) > 0;
   return `
     <article class="tool-card premium-card card-hover">
-      <div class="tool-card__top">
+      <div class="tool-card__top tool-logo-row">
+        ${toolLogoMarkup(tool, 26, "tool-logo")}
         <div><p class="eyebrow">${tool.category}</p><h3>${tool.name}</h3></div>
         <div class="score">${profile.score}</div>
       </div>
@@ -3196,8 +3252,8 @@ function reviewDetailPanel(tool) {
       <a class="back-link" href="#reviews">Back to all reviews</a>
       <div class="review-hero review-hero--branded" style="${brandStyle}">
         <div class="review-brand-plate" aria-label="${tool.name} brand">
-          <div class="review-brand-orb">
-            <img src="${brand.logo}" alt="${tool.name} logo" loading="lazy" decoding="async" onerror="this.closest('.review-brand-plate')?.classList.add('is-fallback'); this.remove();">
+          <div class="review-brand-orb tool-logo-row">
+            ${toolLogoMarkup(tool, 28, "tool-logo")}
             <span>${brand.monogram}</span>
           </div>
           <div class="review-brand-copy">
@@ -8027,8 +8083,8 @@ function ncrHomePage() {
       <div class="ncr-review-grid">
         ${latestReviews.map(r => `
           <div class="ncr-card glass-3d ncr-tilt stat-slide-in">
-            <div class="ncr-card-head">
-              <div class="logo">${r.name[0]}</div>
+            <div class="ncr-card-head tool-logo-row">
+              ${toolLogoMarkup(r, 28, "tool-logo")}
               <div>
                 <div class="name">${r.name}</div>
                 <div class="cat">${r.cat}</div>
@@ -8059,7 +8115,9 @@ function ncrHomePage() {
       <div class="ncr-micro-grid">
         ${msTools.map(m => `
           <div class="ncr-card ncr-ms-card glass-3d ncr-tilt stat-slide-in">
-            <div class="header"></div>
+            <div class="header tool-logo-row" style="height:auto;padding:4px 0;">
+              ${toolLogoMarkup(m, 28, "tool-logo")}
+            </div>
             <div class="name">${m.name}</div>
             <div class="cat">${m.cat}</div>
             ${m.audited ? '<span class="ncr-evidence-pill">AUDITED</span>' : '<span class="ncr-evidence-pill" style="background:rgba(245,158,11,0.12);color:#f59e0b;border-color:rgba(245,158,11,0.3)">PENDING</span>'}
@@ -8152,8 +8210,8 @@ function ncrReviewsRealPage() {
     const hasEv = (typeof evidenceFileIndex !== 'undefined') && evidenceFileIndex.some(e => (e.tool || '').toLowerCase().includes((t.name || '').toLowerCase().split(' ')[0]));
     return `
       <div class="ncr-card glass-3d ncr-tilt stat-slide-in">
-        <div class="ncr-card-head">
-          <div class="logo">${(t.name || 'T')[0]}</div>
+        <div class="ncr-card-head tool-logo-row">
+          ${toolLogoMarkup(t, 28, "tool-logo")}
           <div><div class="name">${t.name}</div><div class="cat">${t.category || 'Tool'}</div></div>
         </div>
         ${hasEv ? '<span class="ncr-evidence-pill">EVIDENCE-BACKED</span>' : '<span class="ncr-evidence-pill" style="background:rgba(245,158,11,0.12);color:#f59e0b;border-color:rgba(245,158,11,0.3)">EVIDENCE PENDING</span>'}
@@ -8222,8 +8280,8 @@ function ncrToolsRealPage() {
     const hasEv = (typeof evidenceFileIndex !== 'undefined') && evidenceFileIndex.some(e => (e.tool || '').toLowerCase().includes((t.name || '').toLowerCase().split(' ')[0]));
     return `
       <div class="ncr-card glass-3d ncr-tilt stat-slide-in">
-        <div class="ncr-card-head">
-          <div class="logo">${(t.name || 'T')[0]}</div>
+        <div class="ncr-card-head tool-logo-row">
+          ${toolLogoMarkup(t, 28, "tool-logo")}
           <div><div class="name">${t.name}</div><div class="cat">${t.category || 'Tool'}</div></div>
         </div>
         <div class="ncr-checklist">
@@ -8372,6 +8430,9 @@ function ncrToolMicrositeFunnel(slug) {
       <!-- Hero (brand inspired) -->
       <section class="tool-funnel-hero">
         <div style="max-width:720px;margin:0 auto;">
+          <div class="tool-logo-row" style="justify-content:center;margin-bottom:8px;">
+            ${toolLogoMarkup(tool, 36, "tool-logo")}
+          </div>
           <div style="font-size:12px;letter-spacing:1.5px;opacity:0.7;margin-bottom:8px;">NO CODEREVIEWED • MICROSITE FUNNEL</div>
           <h1 style="font-size:42px;line-height:1.05;margin:0 0 12px;font-weight:800;">${tool.name}</h1>
           <p style="font-size:18px;max-width:560px;margin:0 auto 20px;opacity:0.9;">${tool.bestFor || 'Build faster with AI.'}</p>
@@ -8459,52 +8520,232 @@ function ncrToolReviewPage(slug) {
   const tool = getToolData(slug);
   const evFiles = getEvidenceForTool(slug);
   const hasEv = evFiles.length > 0;
+  const asset = toolBrandAsset(slug);
+  const logoHtml = toolLogoMarkup(tool, 42, "tool-logo");
+  const styleVars = toolBrandStyleVars(tool);
+
+  // Contextual frame content map (evidence-grounded or pending)
+  const contextMap = {
+    verdict: { eyebrow: "Evidence context", title: "Independent verdict", body: "This section summarizes the tool using NoCodeReviewed’s evidence-first review structure. Unsupported claims remain marked pending.", cta: "See methodology", ctaHref: "#review-methodology" },
+    evidence: { eyebrow: "Evidence status", title: "Evidence snapshot", body: hasEv ? `${evFiles.length} canonical/supplemental file(s) available. Claims trace to official docs + tests.` : "Evidence pending for full verification.", cta: "Open evidence", ctaHref: "#review-evidence" },
+    strengths: { eyebrow: "Grounded strengths", title: "What works well", body: "Fast iteration, real code export, and built-in hosting/database options are supported by current evidence.", cta: "See use cases", ctaHref: "#review-use-cases" },
+    limitations: { eyebrow: "Transparent limitations", title: "Production & security", body: "Production readiness, auth, data ownership, and long-term maintainability require hands-on verification (evidence pending for full gates).", cta: "Run Vibe Auditor", ctaHref: "/tools/vibe-auditor.html" },
+    pricing: { eyebrow: "Pricing notes", title: "Pricing needs verification", body: "Pricing, tokens, and scaling change frequently. Current evidence may be incomplete — always re-check official plans.", cta: "Pricing section", ctaHref: "#review-pricing" },
+    security: { eyebrow: "Launch risk", title: "Security & trust", body: "Auth, data rules, secrets, export, and deployment posture determine if this tool is safe for serious projects.", cta: "Security notes", ctaHref: "#review-security" },
+    production: { eyebrow: "Can it survive?", title: "Production readiness", body: "Database, auth, deploy, secrets, handoff, maintainability, and testing affect real-world viability.", cta: "Production notes", ctaHref: "#review-production" },
+    "use-cases": { eyebrow: "Best-fit workflow", title: "Recommended use cases", body: "Use-case recommendations come from observed strengths, limitations, and evidence-backed fit.", cta: "Open microsite", ctaHref: `#tool/${slug}` },
+    alternatives: { eyebrow: "Adjacent tools", title: "Consider alternatives if", body: "Need deeper IDE control, specific legacy stack, or different production guarantees? Explore comparisons.", cta: "See tools", ctaHref: "#tools" },
+    gaps: { eyebrow: "Evidence gaps", title: "Help close the gap", body: "When evidence is incomplete, NoCodeReviewed labels it clearly instead of inventing certainty.", cta: "Methodology", ctaHref: "#review-methodology" },
+    methodology: { eyebrow: "How we evaluate", title: "NoCodeReviewed methodology", body: "Repeatable build tests, pricing snapshots, production gates, and quality checks. All claims must trace to evidence.", cta: "Full methodology", ctaHref: "#methodology" },
+    cta: { eyebrow: "Next step", title: "Ready to evaluate?", body: "Run your own project through the Vibe Auditor for personalized survivability insights.", cta: "Run Vibe Auditor", ctaHref: "/tools/vibe-auditor.html" }
+  };
+
+  const sections = [
+    { id: "review-verdict", label: "Verdict", icon: "◇", key: "verdict" },
+    { id: "review-evidence", label: "Evidence", icon: "◉", key: "evidence" },
+    { id: "review-strengths", label: "Strengths", icon: "▲", key: "strengths" },
+    { id: "review-limitations", label: "Limitations", icon: "!", key: "limitations" },
+    { id: "review-pricing", label: "Pricing", icon: "$", key: "pricing" },
+    { id: "review-security", label: "Security", icon: "🔒", key: "security" },
+    { id: "review-production", label: "Production", icon: "⚙", key: "production" },
+    { id: "review-use-cases", label: "Use Cases", icon: "◎", key: "use-cases" },
+    { id: "review-alternatives", label: "Alternatives", icon: "↔", key: "alternatives" },
+    { id: "review-gaps", label: "Gaps", icon: "?", key: "gaps" },
+    { id: "review-methodology", label: "Methodology", icon: "§", key: "methodology" },
+    { id: "review-cta", label: "CTA", icon: "→", key: "cta" }
+  ];
+
+  const railHtml = sections.map(s => `
+    <a href="#${s.id}" class="review-rail-item review-context-trigger" data-section="${s.key}" data-context="${s.key}" aria-label="${s.label}">
+      <span class="review-rail-icon">${s.icon}</span>
+      <span class="review-rail-label">${s.label}</span>
+    </a>
+  `).join("");
 
   const html = `
-  <div class="tool-review-page">
+  <div class="tool-review-page" style="${styleVars}">
     ${premiumNav('reviews')}
-    <div class="ncr-container" style="padding:40px 20px;">
-      <div style="max-width:820px;margin:0 auto;">
-        <div style="font-size:11px;opacity:0.6;letter-spacing:1px;">NO CODEREVIEWED • EVIDENCE REVIEW</div>
-        <h1 style="font-size:36px;margin:8px 0 4px;">${tool.name} Review</h1>
-        <p style="opacity:0.8;">${tool.category} • Evidence status: ${hasEv ? 'Canonical files available' : 'Evidence pending'}</p>
+    <div class="review-layout ncr-container">
+      <!-- Left rail -->
+      <nav class="review-section-rail" aria-label="Review sections">
+        ${railHtml}
+      </nav>
 
-        <div class="tool-review-evidence">
-          <strong>Evidence-backed findings</strong>
-          <p style="margin:8px 0 0;">This review draws from official sources and NoCodeReviewed evidence files. Unsupported claims are marked.</p>
-          ${hasEv ? `<p style="margin-top:8px;font-size:12px;">Source files: ${evFiles.map(f => `<a href="/${f.file}" target="_blank">${f.file}</a>`).join(', ')}</p>` : `<span class="evidence-gap">No complete evidence file yet for ${tool.name}.</span>`}
-        </div>
+      <!-- Main content -->
+      <div class="review-content">
+        <!-- Hero -->
+        <header class="review-hero" id="review-verdict">
+          <div class="tool-logo-row" style="margin-bottom:12px;">
+            ${logoHtml}
+            <div>
+              <div class="tool-brand-chip"><span class="tool-brand-mark" style="background:var(--tool-brand);">${asset.fallback}</span> ${tool.name}</div>
+              <div style="font-size:11px;opacity:0.6;">${tool.category} • Evidence: ${hasEv ? 'Available' : 'Pending'}</div>
+            </div>
+          </div>
+          <h1 style="font-size:32px;margin:4px 0;">${tool.name} Review</h1>
+          <p style="opacity:0.85;max-width:620px;">Independent, evidence-first evaluation by NoCodeReviewed. Claims are grounded in available evidence files or explicitly marked pending.</p>
+          <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+            <a class="ncr-btn ncr-btn-primary" href="${slug==='lovable'?'https://lovable.dev':slug==='bolt-new'?'https://bolt.new':'https://replit.com'}" target="_blank" rel="noopener">Try ${tool.name}</a>
+            <a class="ncr-btn ncr-btn-secondary" href="#tool/${slug}">Open Microsite</a>
+            <a class="ncr-btn ncr-btn-secondary" href="/tools/vibe-auditor.html">Run Vibe Auditor</a>
+          </div>
+          <div class="affiliate-disclosure" style="margin-top:8px;">NoCodeReviewed may earn a commission on some product links. Reviews remain evidence-based and independent.</div>
+        </header>
 
-        <div class="review-neutral-panel">
-          <h3>Strengths (grounded where evidence exists)</h3>
-          <ul style="margin:8px 0;">
-            <li>Fast prompt-to-working-app iteration (per official positioning and early tests)</li>
-            <li>Real code output and export paths</li>
-            <li>Built-in hosting / database options in many cases</li>
+        <!-- Evidence Snapshot -->
+        <section id="review-evidence" class="review-section review-neutral-panel">
+          <h3>Evidence Snapshot</h3>
+          <div class="review-evidence-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:8px;">
+            <div><strong>Files</strong><br>${evFiles.length} record(s)</div>
+            <div><strong>Status</strong><br>${hasEv ? 'Canonical + supplemental' : 'Evidence pending'}</div>
+            <div><strong>Quality gates</strong><br>${hasEv ? 'Partial' : 'Pending'}</div>
+            <div><strong>Last check</strong><br>Evidence manifest</div>
+          </div>
+          ${hasEv ? `<p style="margin-top:8px;font-size:12px;">Sources: ${evFiles.map(f => `<a href="/${f.file}" target="_blank">${f.file}</a>`).join(' ')}</p>` : `<span class="evidence-gap">No complete evidence file yet. See gaps below.</span>`}
+        </section>
+
+        <!-- Strengths -->
+        <section id="review-strengths" class="review-section review-neutral-panel">
+          <h3>Strengths</h3>
+          <ul>
+            <li>Fast prompt-to-working-app iteration (supported by official positioning and early evidence).</li>
+            <li>Real code output + export paths.</li>
+            <li>Built-in hosting/database options in many generated apps.</li>
           </ul>
-          <h3>Limitations &amp; production notes</h3>
-          <ul style="margin:8px 0;">
-            <li>Production readiness, security, and long-term maintainability require hands-on verification (evidence pending for full gates)</li>
-            <li>Pricing, token usage, and scaling limits should be re-checked against current plans</li>
-            <li>Auth, data model ownership, and export fidelity vary by generated app</li>
-          </ul>
-          <p style="font-size:13px;opacity:0.75;margin-top:12px;">See Vibe Auditor for project-specific survivability checks.</p>
-        </div>
+          <p style="font-size:12px;opacity:0.7;">(Grounded where evidence exists; deeper production claims pending hands-on verification.)</p>
+        </section>
 
-        <div class="review-neutral-panel">
-          <h3>Best fit recommendation</h3>
-          <p><strong>Consider ${tool.name} if:</strong> ${tool.bestFor || 'You want rapid web app prototypes with AI assistance and code visibility.'}</p>
+        <!-- Limitations -->
+        <section id="review-limitations" class="review-section review-neutral-panel">
+          <h3>Limitations</h3>
+          <ul>
+            <li>Production readiness, security posture, and long-term maintainability require hands-on verification (evidence pending for full gates).</li>
+            <li>Pricing, token usage, and scaling limits change frequently.</li>
+            <li>Auth, data ownership, and export fidelity vary by generated app.</li>
+          </ul>
+        </section>
+
+        <!-- Pricing -->
+        <section id="review-pricing" class="review-section review-neutral-panel">
+          <h3>Pricing Notes</h3>
+          <p>${tool.price || "Pricing evidence pending"}. Always re-verify on official site — plans and limits evolve quickly.</p>
+        </section>
+
+        <!-- Security -->
+        <section id="review-security" class="review-section review-neutral-panel">
+          <h3>Security & Trust</h3>
+          <p>Auth, data rules, secrets, exportability, and deployment posture determine suitability for serious use. Full verification pending hands-on tests for most tools.</p>
+        </section>
+
+        <!-- Production -->
+        <section id="review-production" class="review-section review-neutral-panel">
+          <h3>Production Readiness</h3>
+          <p>Database, auth, deploy, secrets, handoff, maintainability, and testing affect real-world viability. See Vibe Auditor for project-specific checks. Most areas currently marked evidence pending.</p>
+        </section>
+
+        <!-- Use Cases -->
+        <section id="review-use-cases" class="review-section review-neutral-panel">
+          <h3>Best-Fit Use Cases</h3>
+          <p><strong>Consider ${tool.name} if:</strong> ${tool.bestFor || "Rapid web app prototypes with AI assistance and code visibility."}</p>
           <p><strong>Avoid or evaluate carefully if:</strong> You need guaranteed enterprise compliance, complex legacy integration, or fully audited production security before first build.</p>
-          <p style="margin-top:12px;"><a href="#evidence">Explore full evidence system</a> • <a href="#methodology">Methodology</a> • <a href="/tools/vibe-auditor.html">Run your project through the Vibe Auditor</a></p>
-        </div>
+        </section>
 
-        <div style="margin-top:20px;">
-          <a class="ncr-btn ncr-btn-primary" href="${slug==='lovable'?'https://lovable.dev':slug==='bolt-new'?'https://bolt.new':'https://replit.com'}" target="_blank" rel="noopener">Try ${tool.name}</a>
-          <a class="ncr-btn ncr-btn-secondary" href="#top" style="margin-left:8px;">Back to home</a>
-        </div>
+        <!-- Alternatives -->
+        <section id="review-alternatives" class="review-section review-neutral-panel">
+          <h3>Alternatives</h3>
+          <p>Adjacent tools from the index (see #tools and comparison pages). No fake rankings — evaluate based on your specific evidence needs.</p>
+        </section>
+
+        <!-- Gaps -->
+        <section id="review-gaps" class="review-section review-neutral-panel">
+          <h3>Evidence Gaps</h3>
+          <ul class="review-gap-list">
+            <li>Full hands-on security / production gate results (pending)</li>
+            <li>Long-term maintainability and handoff quality (pending)</li>
+            <li>Updated pricing + token scaling benchmarks (re-check official)</li>
+          </ul>
+          <p style="font-size:12px;opacity:0.7;">NoCodeReviewed explicitly marks gaps instead of guessing.</p>
+        </section>
+
+        <!-- Methodology -->
+        <section id="review-methodology" class="review-section review-neutral-panel">
+          <h3>Methodology</h3>
+          <p>Repeatable build tests, pricing snapshots, production-readiness gates, and quality checks. All public claims must trace to evidence records or approved methodology. See full methodology for details.</p>
+          <p><a href="#methodology">Read the full NoCodeReviewed methodology →</a></p>
+        </section>
+
+        <!-- CTA -->
+        <section id="review-cta" class="review-section">
+          <div class="review-cta-panel ncr-glass" style="padding:16px;">
+            <strong>Next step</strong>
+            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+              <a class="ncr-btn ncr-btn-primary" href="${slug==='lovable'?'https://lovable.dev':slug==='bolt-new'?'https://bolt.new':'https://replit.com'}" target="_blank" rel="noopener">Try ${tool.name}</a>
+              <a class="ncr-btn ncr-btn-secondary" href="#tool/${slug}">Open Microsite</a>
+              <a class="ncr-btn ncr-btn-secondary" href="/tools/vibe-auditor.html">Run Vibe Auditor</a>
+            </div>
+          </div>
+        </section>
       </div>
+
+      <!-- Right contextual frame (glassmorphic, updates on rail hover/scroll) -->
+      <aside class="review-context-frame" id="review-context-frame" aria-live="polite" aria-label="Contextual insight">
+        <button class="context-frame-close" aria-label="Close frame">×</button>
+        <p class="review-context-frame__eyebrow" id="frame-eyebrow">Evidence context</p>
+        <h4 class="review-context-frame__title" id="frame-title">Section insight</h4>
+        <p class="review-context-frame__body" id="frame-body">Relevant explanation appears here based on the section you are viewing.</p>
+        <a class="review-context-frame__cta ncr-btn ncr-btn-secondary" id="frame-cta" href="#review-methodology">See methodology</a>
+      </aside>
     </div>
   </div>`;
+
+  // Attach lightweight JS behaviors for this page render (rail + frame)
+  setTimeout(() => {
+    try {
+      const rail = document.querySelector('.review-section-rail');
+      const frame = document.getElementById('review-context-frame');
+      if (!rail || !frame) return;
+
+      const closeBtn = frame.querySelector('.context-frame-close');
+      if (closeBtn) closeBtn.addEventListener('click', () => frame.classList.remove('is-visible'));
+
+      const updateFrame = (key) => {
+        const ctx = contextMap[key] || contextMap.verdict;
+        const ey = document.getElementById('frame-eyebrow');
+        const ti = document.getElementById('frame-title');
+        const bo = document.getElementById('frame-body');
+        const ct = document.getElementById('frame-cta');
+        if (ey) ey.textContent = ctx.eyebrow;
+        if (ti) ti.textContent = ctx.title;
+        if (bo) bo.textContent = ctx.body;
+        if (ct) { ct.textContent = ctx.cta; ct.href = ctx.ctaHref; }
+        frame.classList.add('is-visible');
+      };
+
+      // Hover/focus on rail items
+      rail.querySelectorAll('.review-context-trigger').forEach(item => {
+        const key = item.dataset.context || item.dataset.section;
+        const handler = () => updateFrame(key);
+        item.addEventListener('mouseenter', handler);
+        item.addEventListener('focus', handler);
+        item.addEventListener('mouseleave', () => { /* keep last or hide after delay if desired */ });
+      });
+
+      // Scroll context via IntersectionObserver (lightweight)
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const sec = entry.target.id.replace('review-', '');
+              if (contextMap[sec]) updateFrame(sec);
+            }
+          });
+        }, { threshold: 0.4 });
+        document.querySelectorAll('.review-section[id]').forEach(sec => observer.observe(sec));
+      }
+
+      // Keyboard support already via <a href>
+    } catch (e) { /* defensive, no crash */ }
+  }, 60);
 
   return html;
 }

@@ -9217,6 +9217,15 @@ body {
     animation: none !important;
     opacity: 0.3 !important;
   }
+  .review-rail-item:hover .review-rail-label,
+  .review-rail-item:focus .review-rail-label,
+  .review-context-frame,
+  .review-context-frame.is-visible {
+    transition: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    max-width: none !important;
+  }
 }
 
 /* === UI-K4: Premium Intelligence Platform Homepage (exact mockup match) ===
@@ -10096,6 +10105,46 @@ body {
   border: 1px solid rgba(30, 39, 68, 0.6);
 }
 
+/* R1 Brand Icon System */
+.tool-logo, .tool-logo-img, .tool-logo-fallback, .tool-logo-orb {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.tool-logo-img {
+  border-radius: 6px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.tool-logo-orb {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.tool-brand-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.tool-brand-mark {
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--tool-brand, #3b82f6);
+  color: #fff;
+}
+.tool-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 /* === PHASE M1: Unique Brand-Inspired Microsite Funnels + Separate Review Pages === */
 /* Reusable + per-tool themed. Funnels are visually distinct (inspired by brand but clearly NoCodeReviewed). Reviews are neutral evidence-first. */
 
@@ -10242,4 +10291,136 @@ body {
 /* Make sure premium nav works inside funnels */
 .tool-funnel-page .ncr-nav {
   background: rgba(5,7,15,0.85);
+}
+
+/* R1: Intelligent Review Template + Rail + Contextual Frame */
+.review-layout {
+  display: grid;
+  grid-template-columns: 52px 1fr 260px;
+  gap: 16px;
+  padding: 20px 0 60px;
+  align-items: start;
+}
+@media (max-width: 980px) {
+  .review-layout { grid-template-columns: 1fr; }
+  .review-section-rail { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 8px; }
+  .review-context-frame { display: none; }
+}
+
+.review-section-rail {
+  position: sticky;
+  top: 80px;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 10;
+}
+.review-rail-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: inherit;
+  text-decoration: none;
+  font-size: 12px;
+  border: 1px solid transparent;
+  transition: all 120ms ease;
+  background: rgba(255,255,255,0.03);
+}
+.review-rail-item:hover,
+.review-rail-item:focus {
+  background: rgba(255,255,255,0.08);
+  border-color: var(--tool-accent, #3b82f6);
+  width: auto;
+}
+.review-rail-icon {
+  width: 18px;
+  text-align: center;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+.review-rail-label {
+  white-space: nowrap;
+  opacity: 0;
+  max-width: 0;
+  overflow: hidden;
+  transition: all 140ms ease;
+}
+.review-rail-item:hover .review-rail-label,
+.review-rail-item:focus .review-rail-label {
+  opacity: 0.95;
+  max-width: 140px;
+}
+
+.review-content {
+  min-width: 0;
+}
+.review-section {
+  scroll-margin-top: 80px;
+  margin-bottom: 18px;
+}
+
+.review-hero {
+  margin-bottom: 16px;
+}
+
+.review-context-frame {
+  position: sticky;
+  top: 80px;
+  align-self: start;
+  background: var(--ncr-glass);
+  border: 1px solid var(--ncr-border);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.35);
+  font-size: 12px;
+  opacity: 0;
+  transform: translateX(12px);
+  transition: all 180ms ease;
+  pointer-events: none;
+  z-index: 20;
+}
+.review-context-frame.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.review-context-frame__eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  opacity: 0.6;
+  margin: 0 0 4px;
+}
+.review-context-frame__title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.review-context-frame__body {
+  margin: 0 0 8px;
+  line-height: 1.35;
+  opacity: 0.85;
+}
+.review-context-frame__cta {
+  font-size: 11px;
+}
+.context-frame-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.5;
+  font-size: 14px;
+  cursor: pointer;
+}
+.context-frame-close:hover { opacity: 1; }
+
+/* Ensure review pages use neutral dark glass even when themed lightly */
+.tool-review-page .review-neutral-panel {
+  background: #0f1220;
+  border: 1px solid #1e2744;
 }
