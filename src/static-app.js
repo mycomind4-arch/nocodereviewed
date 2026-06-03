@@ -8299,7 +8299,7 @@ function ncrToolsRealPage() {
     <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
       <div class="eyebrow">INDEX</div>
       <h1>All Tools</h1>
-      <p style="max-width:640px;">Every no-code and AI builder tool we track, with evidence status and quick links to reviews or microsites.</p>
+      <p style="max-width:640px;">Browse AI app builders, no-code platforms, vibe-coding environments, UI generators, and automation-oriented development tools. Each tool is tracked by review status, evidence status, pricing freshness, and production-readiness coverage (from nocodereviewed_expansion_pack safe tools-index-copy). Tool Card Fields: name, category, evidence status, pricing status, primary use case, short description, link to hub/review.</p>
     </div>
     <div class="ncr-review-grid" style="margin-bottom:30px;">
       ${cards || '<div class="ncr-card glass-3d">No tools loaded yet.</div>'}
@@ -8334,27 +8334,69 @@ function ncrEvidenceRealPage() {
 function ncrMethodologyPage() { 
   return `
   ${premiumNav('methodology')}
-  <div class="ncr-container ncr-placeholder">
-    <div class="ncr-placeholder-hero">
+  <div class="ncr-container ncr-placeholder route-enter">
+    <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
       <h1>Methodology</h1>
-      <p style="max-width:620px;margin:0 auto;">NoCodeReviewed evaluates tools using a transparent, repeatable process built on the Vault Data Contract and Local Vault Handoff.</p>
+      <p style="max-width:620px;margin:0 auto;">NoCodeReviewed ratings are powered by the Vibe Code Authority testing framework. The framework scores tools across ease of use, speed, design quality, autonomy, security readiness, backend readiness, production readiness, value, documentation, and export/control. The core principle: a tool can be excellent for prototyping and still require serious review before launch (from nocodereviewed_expansion_pack safe methodology-page-copy + docs/architecture/ evidence system docs).</p>
     </div>
     <div class="ncr-glass" style="padding:20px;max-width:720px;margin:0 auto;">
       <h3 style="margin-top:0;">Core Principles</h3>
       <ul style="line-height:1.6;">
-        <li><strong>Evidence-First</strong> — Every review starts with the same benchmark prompts and records what actually worked.</li>
-        <li><strong>Production Gates</strong> — Auth, data rules, secrets, deploy path, performance, and maintainability affect every verdict.</li>
-        <li><strong>No Paid Rankings</strong> — Sponsored or affiliate status is always disclosed and never influences scoring.</li>
-        <li><strong>Freshness</strong> — Scores and snapshots expire when products ship, pricing changes, or evidence becomes stale.</li>
+        <li><strong>Evidence-First</strong> — Every review starts with the same benchmark prompts and records what actually worked. Do not claim completed testing without evidence.</li>
+        <li><strong>Production Gates</strong> — Auth, data rules, secrets, deploy path, performance, and maintainability affect every verdict. Distinguish visual polish from production readiness.</li>
+        <li><strong>No Paid Rankings</strong> — Sponsored or affiliate status is always disclosed and never influences scoring. Disclose affiliate relationships clearly.</li>
+        <li><strong>Freshness</strong> — Scores and snapshots expire when products ship, pricing changes, or evidence becomes stale. Do not hardcode pricing unless manually verified. Mark uncertainty openly.</li>
       </ul>
-      <p style="margin-top:16px;"><a class="ncr-btn ncr-btn-primary" href="/tools/vibe-auditor.html">Run the Vibe Auditor</a></p>
+      <p style="margin-top:16px;"><a class="ncr-btn ncr-btn-primary" href="/tools/vibe-auditor.html">Run the Vibe Auditor</a> • <a href="#evidence">Evidence system</a></p>
     </div>
   </div>`;
 }
-function ncrBlogPage() { return ncrPlaceholder('Blog', 'Editorial and analysis hub. Planned content: tool comparisons, builder guides, evidence updates, and no-code AI workflow analysis — all sourced from approved records.'); }
-function ncrAboutPage() { return ncrPlaceholder('About', 'NoCodeReviewed is the durable intelligence layer for the no-code and vibe-coding movement. Mission: turn fragmented AI exports, benchmarks, and evidence into trusted audits and recommendations.'); }
+function ncrBlogPage() { 
+  return `
+  ${premiumNav('blog')}
+  <div class="ncr-container ncr-placeholder route-enter">
+    <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
+      <h1>Blog &amp; Guides</h1>
+      <p style="max-width:640px;margin:0 auto;">Editorial and analysis hub. Planned content: tool comparisons, builder guides, evidence updates, and no-code AI workflow analysis — all sourced from approved records (from expansion_pack docs/content/audit-ai-built-apps-guide-copy.md and content strategy in docs).</p>
+    </div>
+    <div class="tool-funnel-grid">
+      <div class="tutorial-card"><strong>Audit AI-built apps guide</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon — launch-readiness checklist</span></div>
+      <div class="tutorial-card"><strong>Tool comparisons grounded in evidence</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+      <div class="tutorial-card"><strong>Evidence updates &amp; methodology notes</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+    </div>
+    <p style="margin-top:20px;"><a href="#methodology">Methodology</a> • <a href="#evidence">Evidence</a></p>
+  </div>`;
+}
+function ncrAboutPage() { 
+  return `
+  ${premiumNav('about')}
+  <div class="ncr-container ncr-placeholder route-enter">
+    <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
+      <h1>About NoCodeReviewed</h1>
+      <p style="max-width:620px;margin:0 auto;">Independent reviews of AI app builders, no-code platforms, and vibe-coding tools. NoCodeReviewed evaluates tools for speed, autonomy, security readiness, backend readiness, and whether the apps they create are actually launch-ready (from expansion_pack safe homepage-copy + doctrine_core_constitution and architecture docs).</p>
+    </div>
+    <div class="ncr-glass" style="padding:20px;max-width:720px;margin:0 auto;">
+      <h3 style="margin-top:0;">Mission</h3>
+      <p>The durable product direction is an Intelligence Platform that turns evidence, benchmarks, user-owned AI exports, and operational workflows into trusted audits, reviews, comparisons, tutorials, and recommendations.</p>
+      <p style="margin-top:12px;"><a class="ncr-btn ncr-btn-primary" href="#evidence">Explore evidence system</a> • <a href="#methodology">Methodology</a> • <a href="/tools/vibe-auditor.html">Run Vibe Auditor</a></p>
+    </div>
+  </div>`;
+}
 function ncrSubmitPage() { return ncrPlaceholder('Submit a Microsite', 'Submit your AI-built or no-code microsite for evidence-backed review. The process starts with the free Vibe Auditor, followed by optional deep audit and microsite publication.', '<p>Full submission form and intake pipeline coming in a later phase. For now, run the auditor and export your results via the Chat Intelligence Vault.</p>'); }
-function ncrEvidenceLibraryPage() { return ncrPlaceholder('Evidence Library', 'Browse the full set of canonical evidence files (25+ complete records). Each file is the single source of truth for claims about a specific tool.'); }
+function ncrEvidenceLibraryPage() { 
+  return `
+  ${premiumNav('evidence')}
+  <div class="ncr-container ncr-placeholder route-enter">
+    <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
+      <h1>Evidence Library</h1>
+      <p style="max-width:640px;margin:0 auto;">Browse the full set of canonical evidence files (25+ complete records per manifest). Each file is the single source of truth for claims about a specific tool. From data/intelligence-vault/evidence-manifest.json and docs/evidence/. Missing numbers: 10,11,28. Canonical 22, some duplicates noted for Lovable/Claude/OpenAI Codex.</p>
+    </div>
+    <div class="ncr-glass" style="padding:20px;max-width:720px;margin:0 auto;">
+      <p>Evidence system is the credibility layer. Public claims trace to evidence, methodology, or approved records (per AGENTS and architecture/VAULT_DATA_CONTRACT). Quality gates and manifest validators in scripts/.</p>
+      <p style="margin-top:12px;"><a href="#methodology">Methodology</a> • <a href="/tools/vibe-auditor.html">Run Vibe Auditor</a></p>
+    </div>
+  </div>`;
+}
 function ncrBenchmarksPage() { return ncrPlaceholder('Benchmarks', 'Benchmark Explorer will surface repeatable build test results, failure modes, and production-readiness scores across the tool map. Currently powered by the internal benchmark protocol and evidence manifest.'); }
 function ncrContactPage() { return ncrPlaceholder('Contact', 'For press, partnerships, or methodology questions, use the intelligence tools first (Vibe Auditor + Vault export) then reach out with grounded context.'); }
 function ncrPrivacyPage() { return ncrPlaceholder('Privacy Policy', 'NoCodeReviewed is local-first by default. User-owned exports (ChatGPT, Grok, ZIPs) are processed in the browser and never uploaded unless you explicitly connect a future approved cloud feature.'); }
@@ -8471,6 +8513,23 @@ function ncrToolMicrositeFunnel(slug) {
           <div class="tool-funnel-card">Describe your app in natural language → Get working UI + backend</div>
           <div class="tool-funnel-card">Iterate with prompts or edit real code → Preview instantly</div>
           <div class="tool-funnel-card">Add data, auth, integrations → Deploy or export</div>
+        </div>
+      </section>
+
+      <!-- Pricing (from expansion safe copy) -->
+      <section class="ncr-container" style="padding:20px 0;">
+        <h2 style="margin:0 0 12px;font-size:18px;">Pricing notes</h2>
+        <div class="tool-funnel-card">
+          Lovable offers a generous free tier and paid plans starting at $20/month for additional features and higher usage limits (per evidence and expansion lovable-pricing-copy). Use for fast MVP creation, but run the NoCodeReviewed launch-readiness checklist before treating the app as production-ready.
+        </div>
+      </section>
+
+      <!-- Security/Prompts (from copies) -->
+      <section class="ncr-container" style="padding:20px 0;">
+        <h2 style="margin:0 0 12px;font-size:18px;">Security &amp; prompts guidance</h2>
+        <div class="tool-funnel-grid">
+          <div class="tool-funnel-card">Security verdict: Lovable can help create useful app experiences quickly, but security must be verified outside the visual build experience. Priority risks: authentication, private route protection, database access rules, API key exposure (from lovable-security-copy.md in expansion).</div>
+          <div class="tool-funnel-card">Lovable is strongest when the user can clearly describe the product, the target user, the core pages, and the desired workflow. Prompts and templates help (see planned /prompts /templates links).</div>
         </div>
       </section>
 
@@ -8608,20 +8667,20 @@ function ncrToolReviewPage(slug) {
         <section id="review-strengths" class="review-section review-neutral-panel">
           <h3>Strengths</h3>
           <ul>
-            <li>Fast prompt-to-working-app iteration (supported by official positioning and early evidence).</li>
-            <li>Real code output + export paths.</li>
-            <li>Built-in hosting/database options in many generated apps.</li>
+            <li>Fast prompt-to-working-app iteration (supported by official positioning and early evidence). Lovable is strongest when the user can clearly describe the product, the target user, the core pages, and the desired workflow. The platform reduces the blank-page problem and makes first drafts dramatically faster (from nocodereviewed_expansion_pack safe claims and review-copy, and docs/content/lovable/safe-claims.md).</li>
+            <li>Real code output + export paths. Supports Supabase integration for database, auth, storage, realtime, and edge functions according to official documentation. Projects can be published to a live URL (per evidence 04 and expansion).</li>
+            <li>Built-in hosting/database options in many generated apps. GitHub sync/export for code backup, collaboration, local IDE work, and external deployment (per official docs in evidence).</li>
           </ul>
-          <p style="font-size:12px;opacity:0.7;">(Grounded where evidence exists; deeper production claims pending hands-on verification.)</p>
+          <p style="font-size:12px;opacity:0.7;">(Grounded where evidence exists per docs/evidence/04_lovable_complete + expansion_pack content; deeper production claims pending hands-on per file status "in-progress — security, generated-code, Supabase/auth, deployment, and cost testing required").</p>
         </section>
 
         <!-- Limitations -->
         <section id="review-limitations" class="review-section review-neutral-panel">
           <h3>Limitations</h3>
           <ul>
-            <li>Production readiness, security posture, and long-term maintainability require hands-on verification (evidence pending for full gates).</li>
-            <li>Pricing, token usage, and scaling limits change frequently.</li>
-            <li>Auth, data ownership, and export fidelity vary by generated app.</li>
+            <li>Production readiness, security posture, and long-term maintainability require hands-on verification (evidence pending for full gates per docs/evidence status "in-progress"). Weaknesses appear when a project needs complex permissions, strict data isolation, custom infrastructure, or deep backend control.</li>
+            <li>Pricing, token usage, and scaling limits change frequently. Every launch should include manual testing for signup, login, logout, private pages, role access, direct URL access, and unauthorized database writes (from security copy in expansion and evidence brief).</li>
+            <li>Auth, data ownership, and export fidelity vary by generated app. App-level security outcomes still require hands-on testing. Priority risks: authentication, private route protection, database access rules, API key exposure, environment variables, admin permissions, payment webhook validation, and overbroad client-side logic (per lovable-security-copy.md and safe-claims in docs/content/lovable/).</li>
           </ul>
         </section>
 
