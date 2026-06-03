@@ -54,8 +54,19 @@ const TOOL_BRAND_ASSETS = {
   },
   "v0": { logo: null, fallback: "v0", brandColor: "#000000", accentColor: "#ffffff" },
   "cursor": { logo: null, fallback: "C", brandColor: "#0ea5e9", accentColor: "#6366f1" },
-  "windsurf": { logo: null, fallback: "W", brandColor: "#06b6d4", accentColor: "#8b5cf6" }
-  // Extend for others as assets are added. Use null for missing logos -> fallback orb.
+  "windsurf": { logo: null, fallback: "W", brandColor: "#06b6d4", accentColor: "#8b5cf6" },
+  "framer-ai": { logo: null, fallback: "F", brandColor: "#00d4ff", accentColor: "#7c3aed" },
+  "webflow-ai": { logo: null, fallback: "W", brandColor: "#4353ff", accentColor: "#00c4b4" },
+  "bubble-ai": { logo: null, fallback: "B", brandColor: "#ff4d8d", accentColor: "#7b2cbf" },
+  "base44": { logo: null, fallback: "B", brandColor: "#22c55e", accentColor: "#eab308" },
+  "claude-code": { logo: null, fallback: "C", brandColor: "#d97706", accentColor: "#f472b6" },
+  "openai-codex": { logo: null, fallback: "O", brandColor: "#10a37f", accentColor: "#3b82f6" },
+  "shopify": { logo: null, fallback: "S", brandColor: "#95bf46", accentColor: "#5e8e3e" },
+  "make": { logo: null, fallback: "M", brandColor: "#6d28d9", accentColor: "#22d3ee" },
+  "zapier": { logo: null, fallback: "Z", brandColor: "#ff4a00", accentColor: "#facc15" },
+  "notion": { logo: null, fallback: "N", brandColor: "#000000", accentColor: "#9ca3af" },
+  "airtable": { logo: null, fallback: "A", brandColor: "#f82b60", accentColor: "#3b82f6" }
+  // C2: extended for primary remaining + indexed with evidence/assets. No logos invented; orbs + brand colors only. Backgrounds (cursor-bg.jpg etc) referenced in pages where A-classified.
 };
 
 function toolBrandAsset(slugOrTool) {
@@ -110,6 +121,12 @@ const tools = [
   { name: "CodeDesign.ai", slug: "codedesign-ai", category: "Site generation", price: "Free + paid", score: 74, evidence: 0, bestFor: "AI-generated marketing sites and simple pages", verdict: "Cover as a site-generation comparison, not as a full app builder.", affiliateStatus: "Researching", updated: "Needs first test" },
   { name: "Durable", slug: "durable", category: "Site generation", price: "Paid plans", score: 73, evidence: 0, bestFor: "Small business sites generated quickly", verdict: "Useful for local-business site tests, outside the core app-builder lane.", affiliateStatus: "Researching", updated: "Needs first test" },
   { name: "Pythagora", slug: "pythagora", category: "Agentic coding", price: "Open source + paid", score: 72, evidence: 0, bestFor: "Developers exploring autonomous app generation", verdict: "Technical but worth tracking as agentic app-building matures.", affiliateStatus: "Researching", updated: "Needs first test" },
+  // C2: remaining primary tools added with evidence-pending fields only (no invented scores, pricing, testimonials, or claims)
+  { name: "Shopify", slug: "shopify", category: "Ecommerce / Site builder", price: "See shopify.com", score: 0, evidence: 0, bestFor: "Merchants building online stores with apps/themes (evidence pending)", verdict: "Evidence capture pending — no dedicated file in docs/evidence/. Broader ecommerce context in empire planning docs (ref).", affiliateStatus: "None", updated: "Pending first evidence file" },
+  { name: "Make", slug: "make", category: "Automation / Integrations", price: "See make.com", score: 0, evidence: 0, bestFor: "No-code automation and workflow orchestration (evidence pending)", verdict: "Evidence capture pending. See empire/site-02-nocode-automation.md for planning context (ref only).", affiliateStatus: "None", updated: "Pending first evidence file" },
+  { name: "Zapier", slug: "zapier", category: "Automation / Integrations", price: "See zapier.com", score: 0, evidence: 0, bestFor: "Connecting apps and automating business processes (evidence pending)", verdict: "Evidence capture pending. Automation recipes noted in empire planning (ref).", affiliateStatus: "None", updated: "Pending first evidence file" },
+  { name: "Notion", slug: "notion", category: "Knowledge / Databases / Docs", price: "See notion.so", score: 0, evidence: 0, bestFor: "Flexible workspaces, wikis, and lightweight databases in no-code stacks (evidence pending)", verdict: "Evidence capture pending. Common integration example in evidence and empire notes.", affiliateStatus: "None", updated: "Pending first evidence file" },
+  { name: "Airtable", slug: "airtable", category: "Databases / Internal tools", price: "See airtable.com", score: 0, evidence: 0, bestFor: "Structured data backends, interfaces, and workflow apps (evidence pending)", verdict: "Evidence capture pending. Referenced as backend/integration in Glide/Thunkable evidence + empire notes.", affiliateStatus: "None", updated: "Pending first evidence file" },
 ];
 
 const roadmap = [
@@ -2985,6 +3002,17 @@ function toolBySlug(slug) {
   if (s === 'replit') {
     return tools.find((tool) => tool.slug === 'replit-agent') || { name: 'Replit', slug: 'replit', category: 'Agentic IDE', price: 'Paid plans', bestFor: 'Cloud development with AI assistance' };
   }
+  // C2 aliases for existing slugs (query routes use plain for some)
+  const aliasMap = {
+    'webflow': 'webflow-ai',
+    'bubble': 'bubble-ai',
+    'framer': 'framer-ai'
+  };
+  const mapped = aliasMap[s];
+  if (mapped) {
+    const found = tools.find((tool) => tool.slug === mapped);
+    if (found) return found;
+  }
   return tools.find((tool) => tool.slug === slug || tool.slug === s);
 }
 
@@ -3271,7 +3299,7 @@ function reviewDetailPanel(tool) {
             ${tool.slug === "lovable" ? `<a class="button" href="#tool/lovable">Open Lovable Microsite Funnel →</a>` : ""}
             ${tool.slug === "bolt-new" ? `<a class="button" href="#tool/bolt-new">Open Bolt.new Microsite Funnel →</a>` : ""}
             ${["replit-agent", "replit"].includes(tool.slug) ? `<a class="button" href="#tool/replit">Open Replit Microsite Funnel →</a>` : ""}            ${tool.slug === "v0" ? `<a class="button" href="#tool/v0">Open v0 Ultimate Microsite →</a>` : ""}
-            ${["lovable", "bolt-new", "replit-agent", "replit", "v0"].includes(tool.slug) ? "" : `<a class="button" href="#tool/${tool.slug}">Open ${tool.name} Microsite →</a>`}
+            ${["lovable", "bolt-new", "replit-agent", "replit", "v0", "cursor", "windsurf", "framer-ai", "webflow-ai", "bubble-ai", "framer", "webflow", "bubble", "base44", "claude-code"].includes(tool.slug) ? "" : `<a class="button" href="#tool/${tool.slug}">Open ${tool.name} Microsite →</a>`}
           </div>
         </div>
         <div class="review-scorecard">
@@ -7154,7 +7182,7 @@ function micrositeCompletionForTool(tool, isCustom) {
 }
 
 function micrositesDirectoryPanel() {
-  const customMicrosites = new Set(["lovable", "bolt-new", "replit-agent", "v0"]);
+  const customMicrosites = new Set(["lovable", "bolt-new", "replit-agent", "v0", "cursor", "windsurf", "framer-ai", "webflow-ai", "bubble-ai", "framer", "webflow", "bubble", "base44", "claude-code"]);
   const micrositeParams = new URLSearchParams(window.location.hash.split("?")[1] || "");
   const activeFilter = micrositeParams.get("filter") || "all";
   const activeSort = micrositeParams.get("sort") || "category";
@@ -7409,16 +7437,19 @@ function renderPanel() {
   }
   const v0ToolRoute = window.location.hash.match(/^#tool\/v0(?:\/([^/?#]+))?$/);
   if (v0ToolRoute) {
-    return v0MicrositePanel(v0ToolRoute[1] || "overview");
+    const sub = v0ToolRoute[1] || "overview";
+    if (sub === 'tutorials') return ncrToolTutorials('v0');
+    return ncrToolMicrositeFunnel('v0');  // C2: use enhanced ncr funnel for consistency (v0MicrositePanel legacy preserved for other paths if any)
   }
   const genericToolRoute = window.location.hash.match(/^#tool\/([^/?#]+)(?:\/([^/?#]+))?$/);
   if (genericToolRoute) {
     const tSlug = genericToolRoute[1];
     const sub = genericToolRoute[2] || "overview";
-    if (['lovable','bolt-new','replit','replit-agent'].includes(tSlug.toLowerCase()) && sub === 'tutorials') {
+    const ncrSlugs = ['lovable','bolt-new','replit','replit-agent','cursor','windsurf','v0','framer-ai','webflow-ai','bubble-ai','framer','webflow','bubble','base44','claude-code'];
+    if (ncrSlugs.includes(tSlug.toLowerCase()) && sub === 'tutorials') {
       return ncrToolTutorials(tSlug);
     }
-    if (['lovable','bolt-new','replit','replit-agent'].includes(tSlug.toLowerCase())) {
+    if (ncrSlugs.includes(tSlug.toLowerCase())) {
       return ncrToolMicrositeFunnel(tSlug);
     }
     return genericToolMicrositePanel(tSlug, sub);
@@ -7449,7 +7480,8 @@ function renderPanel() {
   const route = window.location.hash.match(/^#review\/([^/?#]+)/);
   if (route) {
     const rSlug = route[1];
-    if (['lovable','bolt-new','replit','replit-agent'].includes(rSlug.toLowerCase())) {
+    const ncrReviewSlugs = ['lovable','bolt-new','replit','replit-agent','cursor','windsurf','v0','framer-ai','webflow-ai','bubble-ai','framer','webflow','bubble','base44','claude-code'];
+    if (ncrReviewSlugs.includes(rSlug.toLowerCase())) {
       return ncrToolReviewPage(rSlug);
     }
     const tool = toolBySlug(rSlug);
@@ -8219,7 +8251,8 @@ function ncrReviewsRealPage() {
   const nav = premiumNav('reviews');
   const allTools = (typeof tools !== 'undefined' ? tools : []).slice(0, 12);
   const cards = allTools.map(t => {
-    const hasEv = (typeof evidenceFileIndex !== 'undefined') && evidenceFileIndex.some(e => (e.tool || '').toLowerCase().includes((t.name || '').toLowerCase().split(' ')[0]));
+    const evs = (typeof getEvidenceForTool === 'function') ? getEvidenceForTool(t.slug) : [];
+    const hasEv = evs.length > 0;
     return `
       <div class="ncr-card glass-3d ncr-tilt stat-slide-in">
         <div class="ncr-card-head tool-logo-row">
@@ -8289,7 +8322,8 @@ function ncrToolsRealPage() {
   const nav = premiumNav('tools');
   const allTools = (typeof tools !== 'undefined' ? tools : []);
   const cards = allTools.map(t => {
-    const hasEv = (typeof evidenceFileIndex !== 'undefined') && evidenceFileIndex.some(e => (e.tool || '').toLowerCase().includes((t.name || '').toLowerCase().split(' ')[0]));
+    const evs = (typeof getEvidenceForTool === 'function') ? getEvidenceForTool(t.slug) : [];
+    const hasEv = evs.length > 0;
     return `
       <div class="ncr-card glass-3d ncr-tilt stat-slide-in">
         <div class="ncr-card-head tool-logo-row">
@@ -8424,21 +8458,35 @@ function getToolTheme(slug) {
   if (s === 'lovable') return 'lovable';
   if (s === 'bolt-new' || s === 'bolt') return 'bolt';
   if (s === 'replit' || s === 'replit-agent') return 'replit';
+  if (s === 'cursor' || s === 'windsurf' || s === 'v0') return s;
+  if (s === 'framer' || s === 'framer-ai') return 'framer-ai';
+  if (s === 'webflow' || s === 'webflow-ai') return 'webflow-ai';
+  if (s === 'bubble' || s === 'bubble-ai') return 'bubble-ai';
+  if (s === 'base44') return 'base44';
+  if (s === 'claude-code' || s === 'claude') return 'claude-code';
+  if (s === 'shopify' || s === 'make' || s === 'zapier' || s === 'notion' || s === 'airtable') return s;
   return 'default';
 }
 
 function getToolData(slug) {
   let t = toolBySlug(slug);
   if (!t && slug === 'replit') t = toolBySlug('replit-agent');
+  const s = (slug || '').toLowerCase();
+  if (!t && ['webflow','bubble','framer'].includes(s)) {
+    const map = { webflow: 'webflow-ai', bubble: 'bubble-ai', framer: 'framer-ai' };
+    t = toolBySlug(map[s]);
+  }
   if (!t) t = { name: slug, slug: slug, category: 'Tool', price: 'See site', bestFor: 'Builders', verdict: 'Evidence pending', affiliateStatus: 'Researching' };
   return t;
 }
 
 function getEvidenceForTool(slug) {
-  const s = slug.toLowerCase();
+  const s = (slug || '').toLowerCase();
+  const aliasMap = { webflow: 'webflow-ai', bubble: 'bubble-ai', framer: 'framer-ai', replit: 'replit' };
+  const effective = aliasMap[s] || s;
   const files = evidenceFileIndex.filter(e => {
     const tool = (e.tool || '').toLowerCase();
-    return tool.includes(s) || (s === 'replit' && tool.includes('replit'));
+    return tool.includes(effective) || tool.includes(s) || (s === 'replit' && tool.includes('replit'));
   });
   return files;
 }
@@ -8451,12 +8499,26 @@ function ncrToolMicrositeFunnel(slug) {
   const evStatus = hasEv ? 'Evidence available' : 'Evidence pending';
   const themeClass = `tool-theme-${theme}`;
 
-  // Brand-inspired CTAs (use public domains, add disclosure)
+  // Brand-inspired CTAs (use public domains from evidence where available; C2 extended)
   let tryUrl = '#';
   let tryLabel = `Try ${tool.name}`;
-  if (slug === 'lovable') tryUrl = 'https://lovable.dev';
-  if (slug === 'bolt-new') tryUrl = 'https://bolt.new';
-  if (slug === 'replit') tryUrl = 'https://replit.com';
+  const safeTryUrls = {
+    'lovable': 'https://lovable.dev',
+    'bolt-new': 'https://bolt.new',
+    'replit': 'https://replit.com',
+    'replit-agent': 'https://replit.com',
+    'cursor': 'https://cursor.com',
+    'windsurf': 'https://windsurf.com',
+    'v0': 'https://v0.dev',
+    'framer-ai': 'https://framer.com',
+    'webflow-ai': 'https://webflow.com',
+    'bubble-ai': 'https://bubble.io',
+    'framer': 'https://framer.com',
+    'webflow': 'https://webflow.com',
+    'bubble': 'https://bubble.io'
+  };
+  if (safeTryUrls[slug]) { tryUrl = safeTryUrls[slug]; }
+  // For shopify/make/zapier/notion/airtable + others without verified in-evidence primary CTA: keep # + "Official site link pending" label below
 
   const disclosure = tryUrl !== '#' ? `<div class="affiliate-disclosure">NoCodeReviewed may earn a commission if you sign up through this link. Reviews and recommendations are evidence-based and independent.</div>` : '';
 
@@ -8483,87 +8545,135 @@ function ncrToolMicrositeFunnel(slug) {
         </div>
       </section>
 
-      <!-- Best fit -->
+      <!-- Best fit (C2: evidence-grounded where available or pending) -->
       <section class="ncr-container" style="padding:20px 0;">
         <h2 style="margin:0 0 12px;font-size:18px;">Best for</h2>
         <div class="tool-funnel-grid">
+          ${slug==='cursor' || slug==='windsurf' ? 
+            `<div class="tool-funnel-card"><strong>Developers &amp; engineering teams</strong><p style="font-size:13px;opacity:0.85;margin-top:8px;">AI-native code editing, agentic refactors, and repo-level work in existing codebases (safe claims from evidence 05/06).</p></div>
+             <div class="tool-funnel-card"><strong>Technical founders</strong><p style="font-size:13px;opacity:0.85;margin-top:8px;">High-leverage coding assistance when vibe prototypes need real code stewardship or complex logic.</p></div>` :
+            slug==='v0' ?
+            `<div class="tool-funnel-card"><strong>Frontend / React builders</strong><p style="font-size:13px;opacity:0.85;margin-top:8px;">Prompt-to-UI + visual edit + Vercel deploy for landing pages, prototypes, and component scaffolds (evidence 09).</p></div>` :
+            (slug==='webflow-ai' || slug==='webflow') ?
+            `<div class="tool-funnel-card"><strong>Marketing sites &amp; landing pages</strong><p style="font-size:13px;opacity:0.85;margin-top:8px;">AI-assisted design inside established no-code site builder (supplemental evidence 18).</p></div>` :
+            (slug==='bubble-ai' || slug==='bubble') ?
+            `<div class="tool-funnel-card"><strong>Traditional no-code apps</strong><p style="font-size:13px;opacity:0.85;margin-top:8px;">Apps needing explicit control + AI assistance for logic/data (supplemental 16).</p></div>` :
+            (slug==='framer-ai' || slug==='framer') ?
+            `<div class="tool-funnel-card"><strong>Fast visual marketing sites</strong><p style="font-size:13px;opacity:0.85;margin-top:8px;">Landing pages generated quickly; not a full vibe-app environment (supplemental 19).</p></div>` :
+            (['shopify','make','zapier','notion','airtable'].includes(slug)) ?
+            `<div class="tool-funnel-card"><strong>Category fit (evidence pending)</strong><p style="font-size:13px;opacity:0.85;margin-top:8px;">See empire planning docs for category context (ecommerce/automation/data). No dedicated evidence file yet — details pending capture.</p></div>` :
+            `<div class="tool-funnel-card"><strong>Founders &amp; prototypes</strong><p style="font-size:13px;opacity:0.85;margin-top:8px;">${tool.bestFor || 'Rapid iteration with AI assistance.'}</p></div>
+             <div class="tool-funnel-card"><strong>Teams needing speed</strong><p style="font-size:13px;opacity:0.85;margin-top:8px;">Natural language to working features where evidence supports.</p></div>`
+          }
           <div class="tool-funnel-card">
-            <strong>Founders &amp; prototypes</strong>
-            <p style="font-size:13px;opacity:0.85;margin-top:8px;">Rapidly turn ideas into working web apps without traditional dev bottlenecks.</p>
-          </div>
-          <div class="tool-funnel-card">
-            <strong>Internal tools &amp; MVPs</strong>
-            <p style="font-size:13px;opacity:0.85;margin-top:8px;">Build, iterate, and ship functional apps with real code export paths.</p>
-          </div>
-          <div class="tool-funnel-card">
-            <strong>Teams wanting speed + control</strong>
-            <p style="font-size:13px;opacity:0.85;margin-top:8px;">Natural language to production-grade features with governance options.</p>
+            <strong>Evidence status</strong>
+            <p style="font-size:13px;opacity:0.85;margin-top:8px;">${hasEv ? 'See ' + evFiles[0].file + ' (in-progress — hands-on testing required before full claims)' : 'Evidence pending — no file in docs/evidence/ for this tool.'}</p>
           </div>
         </div>
-        <p style="font-size:12px;opacity:0.6;margin-top:8px;">${hasEv ? 'Grounded in official docs + evidence file ' + evFiles[0].file : 'Evidence pending for detailed fit analysis.'}</p>
       </section>
 
-      <!-- Workflow -->
+      <!-- Workflow (realistic; grounded in evidence or generic pending) -->
       <section class="ncr-container" style="padding:20px 0;">
         <h2 style="margin:0 0 12px;font-size:18px;">Typical workflow</h2>
         <div class="tool-funnel-grid">
-          <div class="tool-funnel-card">Describe your app in natural language → Get working UI + backend</div>
-          <div class="tool-funnel-card">Iterate with prompts or edit real code → Preview instantly</div>
-          <div class="tool-funnel-card">Add data, auth, integrations → Deploy or export</div>
+          ${slug==='cursor' || slug==='windsurf' ? 
+            `<div class="tool-funnel-card">Open existing repo or start new → Agent / chat proposes edits across files (Cursor Agent / Windsurf Cascade)</div>
+             <div class="tool-funnel-card">Review diffs, apply rules/skills/MCP context → Iterate with follow-ups or manual code</div>
+             <div class="tool-funnel-card">Test locally / CI → Commit; Privacy Mode for sensitive work (per evidence docs)</div>` :
+            slug==='v0' ?
+            `<div class="tool-funnel-card">Prompt for UI / page / component (React/Next style) → Generate + visual Design Mode edits</div>
+             <div class="tool-funnel-card">Iterate prompts or drag → GitHub sync for code ownership</div>
+             <div class="tool-funnel-card">Deploy to Vercel (credits) or export (evidence 09)</div>` :
+            (slug==='webflow-ai' || slug==='webflow') ?
+            `<div class="tool-funnel-card">Start site or use AI to generate sections/layouts inside Webflow</div>
+             <div class="tool-funnel-card">Refine with native designer + AI assists → Add CMS, interactions, logic</div>
+             <div class="tool-funnel-card">Publish / export code where supported (supplemental evidence)</div>` :
+            (slug==='bubble-ai' || slug==='bubble') ?
+            `<div class="tool-funnel-card">Define data types + UI in no-code editor → Use AI assist for workflows / expressions</div>
+             <div class="tool-funnel-card">Configure privacy rules, API, auth explicitly</div>
+             <div class="tool-funnel-card">Preview + deploy to Bubble hosting (more control, explicit logic per evidence)</div>` :
+            (slug==='framer-ai' || slug==='framer') ?
+            `<div class="tool-funnel-card">Prompt or start with template for landing / marketing site</div>
+             <div class="tool-funnel-card">Visual edit + AI variants → Add interactions / CMS</div>
+             <div class="tool-funnel-card">Publish to Framer hosting or custom domain (fast site gen, per 19)</div>` :
+            `<div class="tool-funnel-card">Describe goals or start from template → Iterate with prompts / visual tools</div>
+             <div class="tool-funnel-card">Add data/auth/integrations per tool model</div>
+             <div class="tool-funnel-card">Preview, test, deploy or export (details + security verification pending evidence)</div>`
+          }
         </div>
+        <p style="font-size:12px;opacity:0.6;margin-top:8px;">${hasEv ? 'Examples derived from official positioning + evidence file ' + evFiles[0].file : 'Evidence pending — workflows illustrative only.'}</p>
       </section>
 
-      <!-- Pricing (from expansion safe copy) -->
+      <!-- Pricing notes (C2: grounded from evidence or pending; no hardcoded lovable) -->
       <section class="ncr-container" style="padding:20px 0;">
         <h2 style="margin:0 0 12px;font-size:18px;">Pricing notes</h2>
         <div class="tool-funnel-card">
-          Lovable offers a generous free tier and paid plans starting at $20/month for additional features and higher usage limits (per evidence and expansion lovable-pricing-copy). Use for fast MVP creation, but run the NoCodeReviewed launch-readiness checklist before treating the app as production-ready.
+          ${hasEv && (slug==='cursor' || slug==='windsurf' || slug==='v0') ? 
+            `Official pricing/docs captured in evidence file. ${slug==='cursor' ? 'Plans include Hobby/Pro/Teams with usage-based frontier models (exact rates volatile; verify on cursor.com/pricing). Privacy Mode documented.' : slug==='windsurf' ? 'Usage plans + enterprise features; Cascade agent quotas subject to capture (evidence in-progress).' : 'Credit-based for generations + Vercel deployment. See v0 evidence for current posture.'} <span style="font-size:11px;opacity:0.7;">(Source: ${evFiles[0].file} — hands-on verification pending per file status)</span>` :
+            (slug==='webflow-ai' || slug==='bubble-ai' || slug==='framer-ai' || slug==='webflow' || slug==='bubble' || slug==='framer') ?
+            `Paid plans per supplemental evidence. AI features availability and limits vary by plan. Full pricing snapshot pending re-capture. <span style="font-size:11px;opacity:0.7;">(See ${evFiles.length ? evFiles[0].file : 'evidence manifest'})</span>` :
+            (['shopify','make','zapier','notion','airtable'].includes(slug) || !hasEv) ?
+            `Pricing evidence pending — no dedicated evidence file captured for this tool. Verify on official site before use. <span style="font-size:11px;opacity:0.7;">(Broader context in empire planning docs for category; ref only.)</span>` :
+            `${tool.price || 'See official site'}. Pricing evidence pending for detailed notes.`
+          }
         </div>
       </section>
 
-      <!-- Security/Prompts (from copies) -->
+      <!-- Security & prompts guidance (C2: from evidence safe claims or pending; generalized) -->
       <section class="ncr-container" style="padding:20px 0;">
         <h2 style="margin:0 0 12px;font-size:18px;">Security &amp; prompts guidance</h2>
         <div class="tool-funnel-grid">
-          <div class="tool-funnel-card">Security verdict: Lovable can help create useful app experiences quickly, but security must be verified outside the visual build experience. Priority risks: authentication, private route protection, database access rules, API key exposure (from lovable-security-copy.md in expansion).</div>
-          <div class="tool-funnel-card">Lovable is strongest when the user can clearly describe the product, the target user, the core pages, and the desired workflow. Prompts and templates help (see planned /prompts /templates links).</div>
+          <div class="tool-funnel-card">${hasEv && slug==='cursor' ? 
+            'Privacy Mode: enable to prevent code data storage/training by supported providers (official pricing + privacy docs). Agent edits require branch/review/rollback process. Dependency security direction via Chainguard partnership (Axios context; verify official).' : 
+            hasEv && slug==='windsurf' ? 'Agent (Cascade) can code/fix/think ahead per homepage. Enterprise/team controls and usage visibility in plans. Hands-on repo testing required (evidence in-progress).' :
+            hasEv && slug==='v0' ? 'Vercel-connected deployment + GitHub sync. Generated code security/quality unverified (evidence in-progress — prompt-to-app + deployment testing required).' :
+            (slug==='webflow-ai' || slug==='webflow') ? 'AI-assisted design inside mature builder. Export fidelity and AI feature security posture per supplemental evidence (18_webflow_ai_evidence_file.md).' :
+            (slug==='bubble-ai' || slug==='bubble') ? 'Traditional no-code control with AI assistance. Slower vibe loop but more explicit logic; security rules ownership critical (supplemental evidence).' :
+            (slug==='framer-ai' || slug==='framer') ? 'Fast marketing/landing site generation. Not positioned as full app env; review export + publish security (supplemental 19_framer_ai_evidence_file.md).' :
+            'Security, auth, data rules, secrets, and export must be manually verified for production use. NoCodeReviewed evidence files repeatedly flag these as pending hands-on gates for most tools.'}</div>
+          <div class="tool-funnel-card">${tool.bestFor || 'Describe goals clearly for best results.'} ${hasEv ? 'Prompts/workflows in evidence docs where available.' : 'Evidence pending for tool-specific prompt guidance.'}</div>
         </div>
       </section>
 
-      <!-- Tutorials / Blog (placeholders) -->
+      <!-- Tutorials / Blog (placeholders per C2 spec — all labeled) -->
       <section class="ncr-container" style="padding:20px 0;">
         <h2 style="margin:0 0 12px;font-size:18px;">Tutorials &amp; guides <a href="${tutorialsLink}" style="font-size:12px;opacity:0.7;">(see all)</a></h2>
         <div class="tool-funnel-grid">
-          <div class="tutorial-card"><strong>Build your first app with ${tool.name}</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
-          <div class="tutorial-card"><strong>Export, deploy &amp; security checklist</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
-          <div class="tutorial-card"><strong>Production readiness for ${tool.name} apps</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+          <div class="tutorial-card"><strong>Build your first project with ${tool.name}</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+          <div class="tutorial-card"><strong>Production launch checklist</strong><br><span style="font-size:12px;opacity:0.7;">Draft pending / Evidence pending</span></div>
+          <div class="tutorial-card"><strong>Security / export checklist</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+          <div class="tutorial-card"><strong>Common beginner mistakes</strong><br><span style="font-size:12px;opacity:0.7;">Evidence pending</span></div>
+          <div class="tutorial-card"><strong>Alternatives and migration guide</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
         </div>
       </section>
 
-      <!-- Comparison / fit -->
+      <!-- Comparison / fit (alts from existing tools[] only; no fakes) -->
       <section class="ncr-container" style="padding:20px 0;">
         <h2 style="margin:0 0 12px;font-size:18px;">Fit &amp; alternatives</h2>
         <div class="tool-funnel-grid">
-          <div class="tool-funnel-card"><strong>Best for:</strong> ${tool.bestFor || 'Rapid prototyping and full-stack web apps'}</div>
-          <div class="tool-funnel-card"><strong>Not ideal for:</strong> Complex enterprise systems requiring heavy customization (evidence pending)</div>
-          <div class="tool-funnel-card"><strong>Consider alternatives if:</strong> You need deep IDE control or specific legacy stack support. See comparisons in reviews.</div>
+          <div class="tool-funnel-card"><strong>Best for:</strong> ${tool.bestFor || 'Rapid prototyping and full-stack web apps (verify with evidence)'}</div>
+          <div class="tool-funnel-card"><strong>Not ideal for:</strong> ${slug==='cursor' || slug==='windsurf' ? 'Pure no-code users or teams avoiding code review (evidence: developer IDE category)' : slug==='v0' ? 'Backend-heavy or non-React apps without pairing (evidence 09)' : (slug==='webflow-ai'||slug==='framer-ai') ? 'Complex app logic / data workflows (positioned for sites per evidence)' : 'Complex enterprise systems requiring heavy customization (evidence pending)'}</div>
+          <div class="tool-funnel-card"><strong>Consider alternatives if:</strong> You need deeper IDE control (Cursor/Windsurf), specific legacy stack, or different production guarantees. Explore from current index: Lovable, Bolt.new, Replit, Base44, FlutterFlow, Retool, etc. (no invented rankings).</div>
         </div>
       </section>
 
-      <!-- Trust / evidence -->
+      <!-- Trust / evidence (C2: cites real files + gaps explicit) -->
       <section class="ncr-container" style="padding:20px 0;">
         <h2 style="margin:0 0 12px;font-size:18px;">Evidence &amp; trust</h2>
         <div class="tool-funnel-card">
-          <p><strong>Evidence status:</strong> ${evStatus} (${evFiles.length} file${evFiles.length===1?'':'s'})</p>
-          ${hasEv ? `<p>Primary: <a href="/${evFiles[0].file}" target="_blank">${evFiles[0].file}</a></p>` : `<span class="evidence-gap">Evidence pending — see review page for gaps</span>`}
+          <p><strong>Evidence status:</strong> ${evStatus} (${evFiles.length} file${evFiles.length===1?'':'s'}) ${hasEv ? '— ' + (evFiles[0].status || 'canonical/supplemental') : ''}</p>
+          ${hasEv ? `<p>Primary: <a href="/${evFiles[0].file}" target="_blank">${evFiles[0].file}</a> (status per manifest: in-progress for hands-on gates)</p>` : `<span class="evidence-gap">Evidence pending — no dedicated file in docs/evidence/. See #evidence and empire planning for category context (ref only).</span>`}
+          ${ (slug==='cursor' && hasEv) ? `<p>Key gaps from file: agent safety, exact pricing capture, full security artifacts, dependency tests, cost benchmarks. See testing plan in 05_cursor_complete_evidence_file.md.</p>` : '' }
+          ${ (slug==='windsurf' && hasEv) ? `<p>Key gaps: Cascade quota/repo testing, security scope, deployment verification (06_windsurf...).</p>` : '' }
           <p style="margin-top:12px;"><a href="#review/${slug}">Read the full independent NoCodeReviewed review →</a></p>
+          ${ (['cursor','windsurf','v0'].includes(slug) && hasEv) ? `<p style="font-size:11px;opacity:0.6;margin-top:6px;">Background visual: public/images/tool-backgrounds/${slug}-bg.jpg (local asset, used for reference/brand context where relevant)</p>` : '' }
         </div>
       </section>
 
-      <!-- Final CTA -->
+      <!-- Final CTA (CTA restraint: 1 product if safe URL, 1 internal) -->
       <section class="ncr-container" style="padding:30px 20px 60px;text-align:center;">
-        <a class="tool-funnel-cta" href="${tryUrl}" target="_blank" rel="noopener" style="background:var(--tool-accent,#3b82f6);color:#fff;font-size:16px;">${tryLabel}</a>
-        <div style="margin-top:8px;"><a href="#review/${slug}">Or read the evidence-backed review first</a></div>
+        ${tryUrl !== '#' ? `<a class="tool-funnel-cta" href="${tryUrl}" target="_blank" rel="noopener" style="background:var(--tool-accent,#3b82f6);color:#fff;font-size:16px;">${tryLabel}</a>` : `<span class="evidence-gap" style="display:inline-block;padding:8px 16px;border:1px dashed var(--tool-border,#1e2744);border-radius:6px;">Official site link pending (evidence capture in progress)</span>` }
+        <div style="margin-top:8px;"><a href="#review/${slug}">Or read the evidence-backed review first</a> • <a href="/tools/vibe-auditor.html">Run Vibe Auditor</a></div>
         ${disclosure}
       </section>
     </div>
@@ -8579,6 +8689,15 @@ function ncrToolReviewPage(slug) {
   const asset = toolBrandAsset(slug);
   const logoHtml = toolLogoMarkup(tool, 42, "tool-logo");
   const styleVars = toolBrandStyleVars(tool);
+
+  // C2: safe product CTAs (same map as funnel; no fake URLs)
+  const safeTryUrls = {
+    'lovable': 'https://lovable.dev', 'bolt-new': 'https://bolt.new', 'replit': 'https://replit.com', 'replit-agent': 'https://replit.com',
+    'cursor': 'https://cursor.com', 'windsurf': 'https://windsurf.com', 'v0': 'https://v0.dev',
+    'framer-ai': 'https://framer.com', 'webflow-ai': 'https://webflow.com', 'bubble-ai': 'https://bubble.io',
+    'framer': 'https://framer.com', 'webflow': 'https://webflow.com', 'bubble': 'https://bubble.io'
+  };
+  const reviewTryUrl = safeTryUrls[slug] || '#';
 
   // Contextual frame content map (evidence-grounded or pending)
   const contextMap = {
@@ -8641,7 +8760,7 @@ function ncrToolReviewPage(slug) {
           <h1 style="font-size:32px;margin:4px 0;">${tool.name} Review</h1>
           <p style="opacity:0.85;max-width:620px;">Independent, evidence-first evaluation by NoCodeReviewed. Claims are grounded in available evidence files or explicitly marked pending.</p>
           <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
-            <a class="ncr-btn ncr-btn-primary" href="${slug==='lovable'?'https://lovable.dev':slug==='bolt-new'?'https://bolt.new':'https://replit.com'}" target="_blank" rel="noopener">Try ${tool.name}</a>
+            ${reviewTryUrl && reviewTryUrl !== '#' ? `<a class="ncr-btn ncr-btn-primary" href="${reviewTryUrl}" target="_blank" rel="noopener">Try ${tool.name}</a>` : `<span class="evidence-gap" style="padding:6px 10px;border:1px dashed #334155;border-radius:4px;font-size:12px;">Official site link pending</span>`}
             <a class="ncr-btn ncr-btn-secondary" href="#tool/${slug}">Open Microsite</a>
             <a class="ncr-btn ncr-btn-secondary" href="/tools/vibe-auditor.html">Run Vibe Auditor</a>
           </div>
@@ -8660,73 +8779,107 @@ function ncrToolReviewPage(slug) {
           ${hasEv ? `<p style="margin-top:8px;font-size:12px;">Sources: ${evFiles.map(f => `<a href="/${f.file}" target="_blank">${f.file}</a>`).join(' ')}</p>` : `<span class="evidence-gap">No complete evidence file yet. See gaps below.</span>`}
         </section>
 
-        <!-- Strengths -->
+        <!-- Strengths (C2: generalized + tool-specific safe claims from evidence; no lovable hardcode for all) -->
         <section id="review-strengths" class="review-section review-neutral-panel">
           <h3>Strengths</h3>
           <ul>
-            <li>Fast prompt-to-working-app iteration (supported by official positioning and early evidence). Lovable is strongest when the user can clearly describe the product, the target user, the core pages, and the desired workflow. The platform reduces the blank-page problem and makes first drafts dramatically faster (from nocodereviewed_expansion_pack safe claims and review-copy, and docs/content/lovable/safe-claims.md).</li>
-            <li>Real code output + export paths. Supports Supabase integration for database, auth, storage, realtime, and edge functions according to official documentation. Projects can be published to a live URL (per evidence 04 and expansion).</li>
-            <li>Built-in hosting/database options in many generated apps. GitHub sync/export for code backup, collaboration, local IDE work, and external deployment (per official docs in evidence).</li>
+            ${slug==='cursor' && hasEv ? 
+              `<li>Strong official documentation for developer workflows (Agent mode, Rules, Skills, MCP, CLI, models, Teams/Enterprise).</li>
+               <li>Privacy Mode clearly documented: enable to prevent code data from being stored by model providers or used for training (subject to scope; official pricing + privacy docs).</li>
+               <li>Models/pricing docs provide basis for measurable cost testing by model and usage pool.</li>
+               <li>Agentic features + team controls make it relevant for serious engineering teams (safe claims 1-6 in 05_cursor_complete_evidence_file.md).</li>` :
+              slug==='windsurf' && hasEv ?
+              `<li>Homepage positions Cascade as “an agent that codes, fixes and thinks 10 steps ahead.”</li>
+               <li>Full editor + agentic IDE posture with autocomplete, contextual assistance, model options, usage plans, enterprise features (evidence 06).</li>
+               <li>Official docs + pricing plans captured; relevant as Cursor alternative for code-native builders.</li>` :
+              slug==='v0' && hasEv ?
+              `<li>AI web app/UI generator with visual Design Mode, GitHub sync, and Vercel deployment workflow (evidence 09).</li>
+               <li>Strong for React/Next.js-style front-end scaffolds and rapid UI iteration from prompts.</li>
+               <li>Credit-based pricing + direct deploy path documented in official sources.</li>` :
+              (slug==='webflow-ai' || slug==='webflow') && hasEv ?
+              `<li>AI-assisted site design inside a mature, established website builder (supplemental evidence 18).</li>
+               <li>Relevant as incumbent no-code platform adding AI capabilities for marketing/landing sites.</li>` :
+              (slug==='bubble-ai' || slug==='bubble') && hasEv ?
+              `<li>Traditional no-code app platform with AI assistance; more explicit control and logic than pure prompt-to-app (supplemental 16).</li>` :
+              (slug==='framer-ai' || slug==='framer') && hasEv ?
+              `<li>Fast generation of landing pages and marketing sites; visual editing strengths (supplemental 19).</li>` :
+              `<li>Fast iteration and AI assistance supported by official positioning where evidence exists.</li>
+               <li>Real export paths or hosting options in many tools (verify per evidence file).</li>
+               <li>Evidence-backed fit for the category listed in tool data and manifest records.</li>`
+            }
+            <li>Evidence status and gaps are explicitly labeled (no unsupported claims published).</li>
           </ul>
-          <p style="font-size:12px;opacity:0.7;">(Grounded where evidence exists per docs/evidence/04_lovable_complete + expansion_pack content; deeper production claims pending hands-on per file status "in-progress — security, generated-code, Supabase/auth, deployment, and cost testing required").</p>
+          <p style="font-size:12px;opacity:0.7;">${hasEv ? '(Grounded in ' + evFiles[0].file + '; deeper production/security/autonomy claims pending hands-on per file "in-progress" status — testing required before publication.)' : '(Evidence pending — see gaps section and manifest.)'}</p>
         </section>
 
-        <!-- Limitations -->
+        <!-- Limitations (C2: honest, from evidence or general pending) -->
         <section id="review-limitations" class="review-section review-neutral-panel">
           <h3>Limitations</h3>
           <ul>
-            <li>Production readiness, security posture, and long-term maintainability require hands-on verification (evidence pending for full gates per docs/evidence status "in-progress"). Weaknesses appear when a project needs complex permissions, strict data isolation, custom infrastructure, or deep backend control.</li>
-            <li>Pricing, token usage, and scaling limits change frequently. Every launch should include manual testing for signup, login, logout, private pages, role access, direct URL access, and unauthorized database writes (from security copy in expansion and evidence brief).</li>
-            <li>Auth, data ownership, and export fidelity vary by generated app. App-level security outcomes still require hands-on testing. Priority risks: authentication, private route protection, database access rules, API key exposure, environment variables, admin permissions, payment webhook validation, and overbroad client-side logic (per lovable-security-copy.md and safe-claims in docs/content/lovable/).</li>
+            ${slug==='cursor' && hasEv ?
+              `<li>Not a no-code tool: requires developer workflow, code review, and engineering practices (official category + docs).</li>
+               <li>Privacy protection depends on mode/settings + provider scope; must verify before sensitive code use.</li>
+               <li>Agent quality, dependency security, and enterprise controls unverified (requires repo benchmark per testing plan in evidence).</li>` :
+              slug==='windsurf' && hasEv ?
+              `<li>Agentic IDE for developers; not pure no-code. Quotas, exact enterprise scope, and hands-on Cascade safety pending (evidence in-progress).</li>` :
+              slug==='v0' && hasEv ?
+              `<li>Primarily front-end / React UI generation. Backend, auth, data model, and full-app security unverified (hands-on prompt-to-app + deploy tests required per 09).</li>` :
+              (slug==='webflow-ai' || slug==='bubble-ai' || slug==='framer-ai') && hasEv ?
+              `<li>AI features are assists inside larger platforms; full AI-app-builder vs incumbent tradeoffs need hands-on (supplemental evidence notes slower or narrower loops for some).</li>` :
+              `<li>Production readiness, security posture, and long-term maintainability require hands-on verification for almost all tools (evidence files consistently mark "in-progress — security, deployment, testing required").</li>
+               <li>Pricing, usage, and limits change frequently. Manual testing for auth, private routes, data rules, secrets, and export fidelity is mandatory before real use.</li>`
+            }
+            <li>Auth, data ownership, export fidelity, and app-level security outcomes still require project-specific testing regardless of tool.</li>
           </ul>
         </section>
 
         <!-- Pricing -->
         <section id="review-pricing" class="review-section review-neutral-panel">
           <h3>Pricing Notes</h3>
-          <p>${tool.price || "Pricing evidence pending"}. Always re-verify on official site — plans and limits evolve quickly.</p>
+          <p>${hasEv && (slug==='cursor'||slug==='windsurf'||slug==='v0') ? 'Official pricing page + models/pricing docs captured in evidence. Exact plan names, included usage, overages, and per-model rates require final capture before publication (volatile). See ' + evFiles[0].file + ' for source URLs.' : tool.price || 'Pricing evidence pending'}. Always re-verify on official site — plans and limits evolve quickly. ${!hasEv ? 'No dedicated evidence file for detailed pricing snapshot.' : ''}</p>
         </section>
 
         <!-- Security -->
         <section id="review-security" class="review-section review-neutral-panel">
           <h3>Security & Trust</h3>
-          <p>Auth, data rules, secrets, exportability, and deployment posture determine suitability for serious use. Full verification pending hands-on tests for most tools.</p>
+          <p>Auth, data rules, secrets, exportability, and deployment posture determine suitability for serious use. ${hasEv ? 'Evidence file notes specific posture (e.g. Cursor Privacy Mode, admin dashboard visibility) but hands-on verification of defaults, scope, and agent behavior is required per file status.' : 'Full verification pending hands-on tests for most tools. No evidence file captured.'} ${slug==='cursor' && hasEv ? 'Priority: enable Privacy Mode for sensitive repos; test agent diffs and dependency suggestions.' : ''}</p>
         </section>
 
         <!-- Production -->
         <section id="review-production" class="review-section review-neutral-panel">
           <h3>Production Readiness</h3>
-          <p>Database, auth, deploy, secrets, handoff, maintainability, and testing affect real-world viability. See Vibe Auditor for project-specific checks. Most areas currently marked evidence pending.</p>
+          <p>Database, auth, deploy, secrets, handoff, maintainability, and testing affect real-world viability. ${hasEv ? 'Evidence for ' + tool.name + ' consistently marks these gates in-progress. Run Vibe Auditor + manual checks before treating any generated output as production-ready.' : 'Evidence files for most tools mark production gates as in-progress. No dedicated file captured for this tool.'}</p>
         </section>
 
         <!-- Use Cases -->
         <section id="review-use-cases" class="review-section review-neutral-panel">
           <h3>Best-Fit Use Cases</h3>
           <p><strong>Consider ${tool.name} if:</strong> ${tool.bestFor || "Rapid web app prototypes with AI assistance and code visibility."}</p>
-          <p><strong>Avoid or evaluate carefully if:</strong> You need guaranteed enterprise compliance, complex legacy integration, or fully audited production security before first build.</p>
+          <p><strong>Avoid or evaluate carefully if:</strong> You need guaranteed enterprise compliance, complex legacy integration, or fully audited production security before first build. ${hasEv ? 'See use-case notes derived from official positioning in ' + evFiles[0].file + '.' : ''}</p>
         </section>
 
         <!-- Alternatives -->
         <section id="review-alternatives" class="review-section review-neutral-panel">
           <h3>Alternatives</h3>
-          <p>Adjacent tools from the index (see #tools and comparison pages). No fake rankings — evaluate based on your specific evidence needs.</p>
+          <p>Adjacent tools from the index (see #tools and comparison pages). No fake rankings — evaluate based on your specific evidence needs. Examples: Cursor/Windsurf for code IDE layer; Lovable/Bolt for prompt-to-app; Framer/Webflow for site gen; Bubble for traditional no-code control.</p>
         </section>
 
         <!-- Gaps -->
         <section id="review-gaps" class="review-section review-neutral-panel">
           <h3>Evidence Gaps</h3>
           <ul class="review-gap-list">
-            <li>Full hands-on security / production gate results (pending)</li>
+            <li>Full hands-on security / production gate results (pending for Cursor, Windsurf, v0, and most indexed)</li>
             <li>Long-term maintainability and handoff quality (pending)</li>
-            <li>Updated pricing + token scaling benchmarks (re-check official)</li>
+            <li>Updated pricing + token scaling benchmarks (re-check official; captured in evidence but volatile)</li>
+            ${!hasEv ? '<li>No dedicated evidence file in docs/evidence/ (Shopify, Make, Zapier, Notion, Airtable, and several other indexed tools). Capture is the next step for completeness.</li>' : ''}
           </ul>
-          <p style="font-size:12px;opacity:0.7;">NoCodeReviewed explicitly marks gaps instead of guessing.</p>
+          <p style="font-size:12px;opacity:0.7;">NoCodeReviewed explicitly marks gaps instead of guessing. ${hasEv ? 'Full lists of "Claims Requiring Verification" and "Testing Plan" live in the evidence .md.' : 'See #evidence for current manifest coverage and missing numbers (10,11,28).'} </p>
         </section>
 
         <!-- Methodology -->
         <section id="review-methodology" class="review-section review-neutral-panel">
           <h3>Methodology</h3>
-          <p>Repeatable build tests, pricing snapshots, production-readiness gates, and quality checks. All public claims must trace to evidence records or approved methodology. See full methodology for details.</p>
+          <p>Repeatable build tests, pricing snapshots, production-readiness gates, and quality checks. All public claims must trace to evidence records (docs/evidence/* + data/intelligence-vault/evidence-manifest.json) or approved methodology. See full methodology for details and the evidence system for traceability.</p>
           <p><a href="#methodology">Read the full NoCodeReviewed methodology →</a></p>
         </section>
 
@@ -8735,7 +8888,7 @@ function ncrToolReviewPage(slug) {
           <div class="review-cta-panel ncr-glass" style="padding:16px;">
             <strong>Next step</strong>
             <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
-              <a class="ncr-btn ncr-btn-primary" href="${slug==='lovable'?'https://lovable.dev':slug==='bolt-new'?'https://bolt.new':'https://replit.com'}" target="_blank" rel="noopener">Try ${tool.name}</a>
+              ${reviewTryUrl && reviewTryUrl !== '#' ? `<a class="ncr-btn ncr-btn-primary" href="${reviewTryUrl}" target="_blank" rel="noopener">Try ${tool.name}</a>` : `<span class="evidence-gap" style="padding:6px 10px;border:1px dashed #334155;border-radius:4px;font-size:12px;">Official site link pending</span>`}
               <a class="ncr-btn ncr-btn-secondary" href="#tool/${slug}">Open Microsite</a>
               <a class="ncr-btn ncr-btn-secondary" href="/tools/vibe-auditor.html">Run Vibe Auditor</a>
             </div>
@@ -8816,14 +8969,14 @@ function ncrToolTutorials(slug) {
     ${premiumNav('microsites')}
     <div class="ncr-container" style="padding:40px 20px;">
       <h1>${tool.name} Tutorials &amp; Guides</h1>
-      <p style="opacity:0.8;">Evidence-backed and practical guides for getting the most out of ${tool.name}. All content will be grounded in real testing and official capabilities.</p>
+      <p style="opacity:0.8;">Evidence-backed and practical guides for getting the most out of ${tool.name}. All content will be grounded in real testing and official capabilities (or labeled pending).</p>
 
       <div class="tool-funnel-grid" style="margin-top:20px;">
-        <div class="tutorial-card"><strong>Build your first production-ready app</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon — based on benchmark prompts</span></div>
-        <div class="tutorial-card"><strong>Security, auth &amp; data model checklist</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
-        <div class="tutorial-card"><strong>Export, deploy, and handoff guide</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
-        <div class="tutorial-card"><strong>Common pitfalls and how to avoid them</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
-        <div class="tutorial-card"><strong>From prototype to paying customers</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+        <div class="tutorial-card"><strong>Build your first project with ${tool.name}</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+        <div class="tutorial-card"><strong>Production launch checklist</strong><br><span style="font-size:12px;opacity:0.7;">Draft pending / Evidence pending</span></div>
+        <div class="tutorial-card"><strong>Security / export checklist</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+        <div class="tutorial-card"><strong>Common beginner mistakes</strong><br><span style="font-size:12px;opacity:0.7;">Evidence pending</span></div>
+        <div class="tutorial-card"><strong>Alternatives and migration guide</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
       </div>
 
       <p style="margin-top:30px;"><a href="#tool/${slug}">Back to ${tool.name} microsite</a> • <a href="#review/${slug}">Read the evidence review</a> • <a href="/tools/vibe-auditor.html">Run your own audit</a></p>

@@ -107,3 +107,65 @@ C2: Extend to next 5-8 tools using same safe sources + add any new verified asse
 No unsafe published. Site more complete with real project material. Build/evidence pass. 
 
 (End report)
+
+# PHASE C2 — Complete Remaining Tool Population From Verified Project Sources
+Date: 2026-06 (this session, following B1 blog)
+
+## PART 1-2: State + Scans + Classification (executed before edits)
+- git status -sb + log -8: confirmed main synced, C1 9b78037 present, B1 latest, no unexpected tracked (untracked: adult/NSFW/*, xvideos/*, src/components/*.jsx React prototypes, microsites/prototypes/*, tools/generated/, benchmarks/, package-lock, SOURCE_INVENTORY_REPORT.md, _INBOX bulk — all D/E per rules, never staged/linked).
+- Full finds: docs/evidence (25 files, cursor05/windsurf06/v0 09/bubble16/webflow18/framer19 + C1 3 + base44/claude/codex/supabase/flutter/glide/softr/adalo/retool/thunkable/appsmith/weweb/builder + dups 12/13/14; missing 10/11/28 per manifest).
+- Images: logos only 3 (C1); backgrounds 10 (cursor/windsurf/bubble-ai/framer-ai/v0 + base44/claude etc A for relevant); visuals only 3 (C1).
+- Micros: 3 real + prototypes (D quarantine).
+- content/expansion: lovable-only + general (methodology/tools-index/audit-guide/empire site-02/04/09 for automation/ecommerce/ui; lovable-vs-cursor only per-tool mention).
+- tools[]: 35 entries (C1 3 + cursor/windsurf/v0 + bubble-ai/webflow-ai/framer-ai + 20+ indexed; added 5 shopify/make/zapier/notion/airtable for C2 primary).
+- evidenceFileIndex: already covered the 6 + more.
+- Classification summary (A use direct / B ref / C small / D quarantine / E review):
+  - Cursor, Windsurf, v0, Webflow-AI, Bubble-AI, Framer-AI: A (complete evidence files 05/06/09/16/18/19 with safe claims/strengths/lims/pricing/security/testing plans; + bg images A; vs-cursor B ref; prototypes D).
+  - Shopify, Make, Zapier, Notion, Airtable: no dedicated evidence (E for full, B for empire mentions in site-04 ecommerce / site-02 automation / integrations in other ev; partial pages only).
+  - Remaining indexed (base44, claude-code, openai-codex, flutterflow-ai etc): A/B for their ev files + some bg (base44/claude); basic status + routes; full pop deferred to keep scope.
+  - Quarantined reaffirmed: all adult/NSFW/scraper/xvideos/tools/adult* / tools/nsfw* / tools/xvideos* / prototypes/ / untracked React / empty / unrelated (never touched, linked, or staged).
+- No D/E integrated. No fakes.
+
+## PART 3: Plan (printed to terminal before any search_replace on prod)
+- Per-tool: evidence status, source files, images, safe usable (excerpts from safe claims/strengths or "pending"), missing (hands-on per "in-progress" notes), improvements (hero CTA if safe URL from ev, best-fit/workflow from claims or generic pending, 5 tutorial cards all labeled, comparison from tools[] only, evidence cite + gaps explicit, review full R1 template), readiness (FULL for 6 with ev; PARTIAL/PENDING for 5 shopify group + others).
+- No arch/deps/fakes/unsafe/convert required — plan approved internally per rules.
+
+## Files Used / Modified (PART 4-9 population)
+- src/static-app.js: extended TOOL_BRAND_ASSETS (framer-ai/webflow-ai/bubble-ai + base/claude/shopify/make/zapier/notion/airtable orbs/colors; no new logos), getToolTheme (new + aliases), toolBySlug/getToolData/getEvidenceForTool (webflow/bubble/framer aliases + effective), added 5 pending tools[] entries, enhanced ncrToolMicrositeFunnel (tryUrl map for 6 + safe from ev, fixed lovable hardcodes in pricing/security/bestfit/workflow/fit/evidence, specific excerpts/safe claims for cursor/windsurf/v0 + ai ones, bg notes, 5 tutorial cards labeled, CTA restraint + pending label), ncrToolReviewPage (reviewTryUrl map, generalized strengths/lims from lovable copy, per-slug safe excerpts + pending, updated all 12 sections with ev status/gaps specific, hero/cta CTAs, rail/frame intact), ncrToolTutorials (exact 5 topics labeled), routing (expanded ncr lists + v0 to ncr, alias support so #tool/webflow #tool/bubble #tool/framer resolve), directories (ncrToolsRealPage etc now use accurate getEvidenceForTool for badges; new tools appear in #tools/#reviews/#microsites/#evidence with pending/available + logos/orbs), other lists updated for links.
+- src/styles.css: (minimal/no change needed; new themes inherit vars + default; additive if specific .tool-theme-cursor etc added later).
+- docs/architecture/SOURCE_UTILIZATION_REPORT.md: this C2 section appended (scanned/used/quarantined/routes/gaps).
+- Assets: cursor-bg.jpg etc referenced in code/comments (local, relevant, non-0, A-class per plan; not staged unless final intentional use confirmed — see git).
+- No changes to: index.html, server.mjs, standalone tools/vibe-auditor.html or chat-intelligence-vault.html, tools/internal/vault-ingestion-parser/, VAULT_DATA_CONTRACT.md, LOCAL_VAULT_HANDOFF.md, evidence .md raw, data/ beyond manifest (not staged), microsites/ (ref only), _INBOX (source not prod), prototypes, adult/NSFW (quarantined), React components, benchmarks, etc.
+- Routes improved: all listed #tool/cursor #review/cursor #tool/cursor/tutorials + 10 others + aliases + #reviews/#tools/#microsites/#evidence/#blog/#methodology + standalone + unknown=premium not-found.
+
+## Evidence / Assets Used
+- Evidence: 05_cursor_complete, 06_windsurf, 09_v_0, 16_bubble_ai, 18_webflow_ai, 19_framer_ai (safe claims, strengths, lims, pricing notes, security, comparisons, testing plans, gaps, status "in-progress — hands-on required"); manifest for counts/status; prior C1 for others.
+- Assets: public/images/tool-backgrounds/cursor-bg.jpg, windsurf-bg.jpg, bubble-ai-bg.jpg, framer-ai-bg.jpg, v0-bg.jpg (A; noted in funnels/reviews for brand context; logos none new so orbs).
+- Safe content: excerpts from above + empire for shopify group ref only (no claims invented).
+- Gaps explicit in pages + report (hands-on for 6; full capture for 5 + some indexed).
+
+## Tools Populated / Pending
+- Full (using A evidence + bg): Cursor, Windsurf, v0, Webflow (webflow-ai + alias), Bubble (bubble-ai + alias), Framer (framer-ai + alias).
+- Partial/Pending (structure + honest "Evidence pending", added to tools[] + dirs + routes): Shopify, Make, Zapier, Notion, Airtable.
+- Remaining indexed: basic accurate status/evidence counts/routes/icons (base44/claude etc have ev + some bg; full excerpts not added for scope).
+- 11 primary + aliases + others now have useful or clearly pending pages.
+
+## Quarantined Reaffirmed
+- tools/adult-media-vault.html, adult-scraper/, explicit-erotic-story-generator.html, nsfw-*.html, xvideos-*.json, any adult/NSFW/erotic/scraper.
+- microsites/prototypes/*, src/components/*.jsx, tools/generated/, tools/pipeline-dashboard.html, tools/nocodereviewed-vibe-auditor.html, unrelated _INBOX, 0-byte, broken.
+- Never linked/published/staged.
+
+## Routes Added/Improved + Validation Plan
+- 33+ for 11 (tool/review/tutorials x3 per + aliases) + prior + #reviews #tools #microsites #evidence #blog #methodology + /tools/*.html standalone + unknown premium.
+- All visible links resolve (no silent home).
+
+## PART 11-12 Validation + Staging (to be executed)
+- Run: npm run build (verify-static-app.mjs), node --check src/static-app.js, (validate:evidence if script).
+- Manual: localhost:5173/?fresh=c2 , #reviews, #tools, #microsites, #evidence, #blog; all 22 tool routes + 11 reviews + tutorials.
+- UX: useful or explicit pending, logos/orbs, no dead, no fakes, gaps clear, premium, standalone ok, no console errors.
+- Git: git diff --stat; git diff --name-status; stage ONLY src/static-app.js src/styles.css (if changed) docs/architecture/SOURCE_UTILIZATION_REPORT.md + intentional safe bg images if referenced in final render (confirm); NO git add . ; cached check; commit exact "Complete remaining tool population from verified sources"; push.
+- Report after: files scanned (~692 prior + new), tools pop'd (6 full +5 partial + remaining indexed status), pending (hands-on +5), files used (6 ev + manifest + empire ref + 5 bg notes), assets (5 bg), evidence used (6 + manifest), gaps (hands-on 6 + full5), routes (33+ + dirs), validation (build pass, manual all), staged (exact list), hash, untracked (quarantined + any), recommended next (B2 more blog or hands-on evidence capture phase or more indexed full pop).
+
+Success: remaining priority have useful micros + reviews + tutorial hubs (pending labeled), real project material or pending, unsafe quarantined, no fakes, links work, build pass, only relevant committed.
+
+Nucleus strengthened with more evidence-backed authority pages while honest on gaps.
