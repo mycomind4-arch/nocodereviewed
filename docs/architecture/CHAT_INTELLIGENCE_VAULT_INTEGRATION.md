@@ -71,6 +71,54 @@ The tool uses:
 
 No cloud feature is connected yet.
 
+## Phase 5 Local Vault Handoff
+
+Phase 5 adds a local-only Vault handoff export to `tools/chat-intelligence-vault.html`.
+
+New local export:
+
+- `vault-export.zip`
+
+The bundle follows:
+
+- `docs/architecture/LOCAL_VAULT_HANDOFF.md`
+- `docs/architecture/VAULT_DATA_CONTRACT.md`
+
+Bundle layout:
+
+- `manifest.json`
+- `conversations/*.json`
+- `messages/*.json`
+- `artifacts/*.json`
+- `projects/*.json`
+- `prompts/*.json`
+- `code-blocks/*.json`
+- `commands/*.json`
+- `audit-handoffs/*.json`
+- `raw/chat-intelligence-vault-source.json`
+- `indexes/records.json`
+- `indexes/tags.json`
+
+The export is generated entirely in the browser. It does not call remote APIs, write to Supabase, trigger n8n, create embeddings, or perform Vibe Auditor scoring.
+
+## Parser Ingestion Mapping
+
+Current parser compatibility:
+
+1. Chat Intelligence Vault exports `vault-export.zip`.
+2. Vault Ingestion Parser can ingest the ZIP as local JSON documents through its generic document parser.
+3. The parser preserves the ZIP/raw input and can index the JSON content as documents.
+
+Future parser adapter direction:
+
+- Add a dedicated `local-vault-handoff` adapter under `tools/internal/vault-ingestion-parser/src/parsers/`.
+- Detect `manifest.json` with `export_version: "local-handoff.v1"`.
+- Promote record files into first-class normalized parser outputs instead of generic documents.
+- Preserve raw bundle contents before normalization.
+- Keep parsing deterministic and local.
+
+The Chat Intelligence Vault remains the browser-local producer. The parser remains the reusable internal ingestion layer.
+
 ## Future Supabase Table Mapping
 
 Future Intelligence Vault mapping should be reviewed against the reconciled schema before implementation.
@@ -111,4 +159,3 @@ Recommended Phase 3 flow:
 - File reconstruction depends on fenced code blocks and guessed file names.
 - Local storage can be cleared by the browser.
 - No Supabase sync, sharing, team workflow, or n8n automation is connected in Phase 2.
-

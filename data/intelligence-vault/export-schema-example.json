@@ -1,0 +1,222 @@
+{
+  "schema_version": "vault.v1",
+  "export_version": "local-handoff.v1",
+  "generated_at": "2026-06-03T10:00:00.000Z",
+  "source_application": "Chat Intelligence Vault",
+  "parser_compatibility_version": "vault-ingestion-parser.local-json.v1",
+  "privacy_notice": "Processed locally in browser. No data was uploaded by this export.",
+  "bundle_layout": [
+    "manifest.json",
+    "conversations/",
+    "messages/",
+    "artifacts/",
+    "projects/",
+    "prompts/",
+    "code-blocks/",
+    "commands/",
+    "audit-handoffs/",
+    "raw/",
+    "indexes/"
+  ],
+  "record_counts": {
+    "conversations": 1,
+    "messages": 1,
+    "artifacts": 1,
+    "projects": 1,
+    "prompts": 1,
+    "code_blocks": 1,
+    "commands": 1,
+    "audit_handoffs": 1
+  },
+  "included_record_types": [
+    "VaultConversation",
+    "VaultMessage",
+    "VaultArtifact",
+    "VaultProject",
+    "VaultPrompt",
+    "VaultCodeBlock",
+    "VaultCommand",
+    "VaultAuditHandoff"
+  ],
+  "records": {
+    "conversations": [
+      {
+        "id": "conv_example_001",
+        "schema_version": "vault.v1",
+        "record_type": "VaultConversation",
+        "source_platform": "chatgpt",
+        "source_account": "browser-local",
+        "source_ref": {
+          "raw_path": "raw/chat-intelligence-vault-source.json",
+          "conversation_id": "source-conversation-001"
+        },
+        "created_at": "2026-06-03T09:00:00.000Z",
+        "updated_at": "2026-06-03T09:00:00.000Z",
+        "tags": ["chatgpt", "conversation"],
+        "privacy_level": "local_private",
+        "title": "Example Project Planning",
+        "source_conversation_id": "source-conversation-001",
+        "messages": ["msg_example_001"],
+        "artifact_ids": ["artifact_example_001"]
+      }
+    ],
+    "messages": [
+      {
+        "id": "msg_example_001",
+        "schema_version": "vault.v1",
+        "record_type": "VaultMessage",
+        "source_platform": "chatgpt",
+        "source_account": "browser-local",
+        "source_ref": {
+          "raw_path": "raw/chat-intelligence-vault-source.json",
+          "conversation_id": "source-conversation-001",
+          "message_id": "source-message-001"
+        },
+        "created_at": "2026-06-03T09:01:00.000Z",
+        "tags": ["chatgpt", "message"],
+        "privacy_level": "local_private",
+        "conversation_id": "conv_example_001",
+        "role": "user",
+        "content": "Example local message content.",
+        "artifact_ids": ["artifact_example_001"],
+        "references": []
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "artifact_example_001",
+        "schema_version": "vault.v1",
+        "record_type": "VaultArtifact",
+        "source_platform": "chatgpt",
+        "source_account": "browser-local",
+        "source_ref": {
+          "raw_path": "raw/chat-intelligence-vault-source.json",
+          "conversation_id": "source-conversation-001",
+          "message_id": "source-message-001"
+        },
+        "created_at": "2026-06-03T09:02:00.000Z",
+        "tags": ["detected", "workflow"],
+        "confidence": 0.62,
+        "privacy_level": "local_private",
+        "artifact_type": "workflow",
+        "title": "Example workflow artifact",
+        "content": "Example deterministic workflow note."
+      }
+    ],
+    "projects": [
+      {
+        "id": "project_example_001",
+        "schema_version": "vault.v1",
+        "record_type": "VaultProject",
+        "source_platform": "chatgpt",
+        "source_account": "browser-local",
+        "source_ref": {
+          "raw_path": "raw/chat-intelligence-vault-source.json",
+          "conversation_id": "source-conversation-001"
+        },
+        "created_at": "2026-06-03T09:03:00.000Z",
+        "tags": ["recovered-project"],
+        "confidence": 0.76,
+        "privacy_level": "local_private",
+        "name": "Example Project",
+        "description": "Example recovered project description.",
+        "status": "candidate",
+        "features": ["local export", "parser-compatible bundle"],
+        "related_artifact_ids": ["artifact_example_001"],
+        "audit_handoff_id": "audit_handoff_example_001"
+      }
+    ],
+    "prompts": [
+      {
+        "id": "prompt_example_001",
+        "schema_version": "vault.v1",
+        "record_type": "VaultPrompt",
+        "source_platform": "chatgpt",
+        "source_account": "browser-local",
+        "source_ref": {
+          "raw_path": "raw/chat-intelligence-vault-source.json",
+          "conversation_id": "source-conversation-001",
+          "message_id": "source-message-001"
+        },
+        "created_at": "2026-06-03T09:04:00.000Z",
+        "tags": ["prompt"],
+        "confidence": 0.8,
+        "privacy_level": "local_private",
+        "title": "Example reusable prompt",
+        "prompt_text": "Example prompt text.",
+        "use_case": "repository implementation",
+        "related_project_ids": ["project_example_001"]
+      }
+    ],
+    "code_blocks": [
+      {
+        "id": "code_example_001",
+        "schema_version": "vault.v1",
+        "record_type": "VaultCodeBlock",
+        "source_platform": "chatgpt",
+        "source_account": "browser-local",
+        "source_ref": {
+          "raw_path": "raw/chat-intelligence-vault-source.json",
+          "conversation_id": "source-conversation-001",
+          "message_id": "source-message-001"
+        },
+        "created_at": "2026-06-03T09:05:00.000Z",
+        "tags": ["code", "javascript"],
+        "confidence": 0.95,
+        "privacy_level": "local_private",
+        "language": "javascript",
+        "filename": "example.js",
+        "purpose": "Example recovered code block",
+        "code": "console.log('local vault handoff');"
+      }
+    ],
+    "commands": [
+      {
+        "id": "command_example_001",
+        "schema_version": "vault.v1",
+        "record_type": "VaultCommand",
+        "source_platform": "chatgpt",
+        "source_account": "browser-local",
+        "source_ref": {
+          "raw_path": "raw/chat-intelligence-vault-source.json",
+          "conversation_id": "source-conversation-001",
+          "message_id": "source-message-001"
+        },
+        "created_at": "2026-06-03T09:06:00.000Z",
+        "tags": ["command", "npm"],
+        "confidence": 0.88,
+        "privacy_level": "local_private",
+        "command": "npm run build",
+        "shell": "zsh",
+        "intent": "Verify static app"
+      }
+    ],
+    "audit_handoffs": [
+      {
+        "id": "audit_handoff_example_001",
+        "schema_version": "vault.v1",
+        "record_type": "VaultAuditHandoff",
+        "source_platform": "chat-intelligence-vault",
+        "source_account": "browser-local",
+        "source_ref": {
+          "raw_path": "raw/chat-intelligence-vault-source.json"
+        },
+        "created_at": "2026-06-03T09:07:00.000Z",
+        "tags": ["audit-handoff", "local"],
+        "privacy_level": "local_private",
+        "project_id": "project_example_001",
+        "project": {
+          "name": "Example Project",
+          "description": "Example recovered project description."
+        },
+        "inputs": {
+          "goals": ["create parser-compatible local records"],
+          "constraints": ["local-first", "no cloud sync"],
+          "known_assets": ["prompts", "code blocks", "commands"]
+        },
+        "artifact_ids": ["artifact_example_001"],
+        "handoff_notes": "Prepared for future Vibe Auditor import."
+      }
+    ]
+  }
+}

@@ -76,6 +76,10 @@ Rules:
 
 `docs/architecture/VAULT_DATA_CONTRACT.md` is the shared operational grammar for the Intelligence Vault. Future Vault, Evidence, Auditor handoff, parser adapter, memory extractor, workflow, or audit-record work must inspect it before adding schemas or record formats.
 
+### Local Vault Handoff
+
+`docs/architecture/LOCAL_VAULT_HANDOFF.md` defines the deterministic local export/import bundle between Chat Intelligence Vault and Vault Ingestion Parser. Future continuity workflows should use parser-compatible `vault-export.zip` bundles and contract-compatible records instead of one-off JSON shapes.
+
 ### Vault Ingestion Parser
 
 Direction: Core internal ingestion infrastructure for the Intelligence Vault.

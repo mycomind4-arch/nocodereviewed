@@ -610,6 +610,10 @@
       const CIV_PROMPT_RE = /instruction set|system prompt|prompt|gpt builder|claude|codex|kimi|lovable|build spec|terminal commands|delegate/i;
       const CIV_COMMAND_RE = /^\s*(git|npm|pnpm|yarn|node|python|python3|pip|cd|ls|cat|mkdir|touch|cp|mv|rm|grep|find|curl|open|vercel|supabase|brew)\b/m;
       const CIV_STORY_RE = /chapter|scene|character|dialogue|plot|story|novel|screenplay|narrative|world|universe|arc|protagonist/i;
+      const CIV_CONTRACT_SCHEMA_VERSION = "vault.v1";
+      const CIV_EXPORT_VERSION = "local-handoff.v1";
+      const CIV_PARSER_COMPATIBILITY_VERSION = "vault-ingestion-parser.local-json.v1";
+      const CIV_RAW_SOURCE_PATH = "raw/chat-intelligence-vault-source.json";
 
       const civState = {
         vault: createEmptyVault(),
@@ -1183,7 +1187,7 @@
           stories: vault.stories.length,
           search: vault.messages.length,
           money: vault.money.length,
-          exports: 5,
+          exports: 6,
         };
         Object.entries(counts).forEach(([key, value]) => {
           const pill = byId(`civ-pill-${key}`);
@@ -1482,11 +1486,12 @@
                 <button class="civ-btn" type="button" data-action="export-prompts">Prompt Vault MD</button>
                 <button class="civ-btn" type="button" data-action="export-commands">Commands MD</button>
                 <button class="civ-btn" type="button" data-action="export-code-zip">Recovered Code ZIP</button>
+                <button class="civ-btn" type="button" data-action="export-vault-handoff">Vault Handoff ZIP</button>
               </div>
             </div>
             <div class="civ-card civ-span-6">
               <h2>Local Vault</h2>
-              <p class="civ-muted">Save the processed vault in browser storage or download the structured JSON. No cloud write happens in Phase 2.</p>
+              <p class="civ-muted">Save the processed vault in browser storage or download structured local data. No cloud write happens in Phase 5.</p>
               <div class="civ-controls">
                 <button class="civ-btn" type="button" data-action="save-local">Save Local</button>
                 <button class="civ-btn" type="button" data-action="load-local">Load Local</button>
@@ -1549,6 +1554,17 @@
         downloadTextFile("chat-intelligence-vault.json", JSON.stringify(civState.vault, null, 2), "application/json");
       }
 
+      function exportVaultHandoffBundle() {
+        const bundle = buildVaultHandoffBundle();
+        if (!bundle.manifest.record_counts.conversations && !bundle.manifest.record_counts.messages) {
+          setNotice("Upload an export before creating a Vault handoff bundle.", "error");
+          return;
+        }
+
+        saveBlob("vault-export.zip", createZipBlob(bundle.entries));
+        setNotice(`Vault handoff bundle generated locally with ${bundle.manifest.total_records} contract-compatible records.`);
+      }
+
       function downloadSingleCode(id) {
         const file = civState.vault.files.find(item => item.id === id);
         if (!file) return;
@@ -1569,6 +1585,396 @@
         entries.push({ name: "README.md", text: `${markdownHeader()}Recovered code files generated locally by Chat Intelligence Vault.\n` });
         const blob = createZipBlob(entries);
         saveBlob("recovered-codebase.zip", blob);
+      }
+
+      function buildVaultHandoffBundle() {
+        const generatedAt = new Date().toISOString();
+        const vault = civState.vault;
+        const sourcePlatform = normalizeSourcePlatform(vault.platform);
+        const conversationRecords = [];
+        const messageRecords = [];
+        const artifactRecords = [];
+        const projectRecords = [];
+        const promptRecords = [];
+        const codeBlockRecords = [];
+        const commandRecords = [];
+        const auditHandoffRecords = [];
+        const conversationIdByLocalId = new Map();
+
+        vault.conversations.forEach((conversation, conversationIndex) => {
+          const sourceConversationId = conversation.id || `conversation-${conversationIndex + 1}`;
+          const conversationId = stableId("conv", sourcePlatform, vault.source, sourceConversationId, conversation.title, conversationIndex);
+          conversationIdByLocalId.set(conversation.id, conversationId);
+          const messages = conversation.messages || [];
+          const messageIds = messages.map((message, messageIndex) =>
+            stableId("msg", sourcePlatform, vault.source, sourceConversationId, messageIndex, message.role, message.text)
+          );
+          const conversationCreatedAt = firstTimestamp(messages, generatedAt);
+
+          conversationRecords.push({
+            ...baseVaultRecord("VaultConversation", conversationId, sourcePlatform, {
+              raw_path: CIV_RAW_SOURCE_PATH,
+              conversation_id: sourceConversationId,
+            }, conversationCreatedAt, ["conversation", sourcePlatform]),
+            updated_at: conversationCreatedAt,
+            title: conversation.title || `Conversation ${conversationIndex + 1}`,
+            source_conversation_id: sourceConversationId,
+            messages: messageIds,
+            artifact_ids: [],
+          });
+
+          messages.forEach((message, messageIndex) => {
+            const messageId = messageIds[messageIndex];
+            messageRecords.push({
+              ...baseVaultRecord("VaultMessage", messageId, sourcePlatform, {
+                raw_path: CIV_RAW_SOURCE_PATH,
+                conversation_id: sourceConversationId,
+                message_id: `${sourceConversationId}:message-${messageIndex + 1}`,
+              }, timestampFromValue(message.time, generatedAt), ["message", sourcePlatform]),
+              conversation_id: conversationId,
+              role: normalizeRole(message.role),
+              content: String(message.text || ""),
+              artifact_ids: [],
+              references: extractUrls(String(message.text || "")),
+            });
+          });
+        });
+
+        vault.projects.forEach((project, index) => {
+          const projectId = stableId("project", sourcePlatform, vault.source, project.name, index);
+          const auditHandoffId = stableId("audit_handoff", projectId, project.name);
+          const relatedArtifactIds = relatedArtifactsForProject(artifactRecords, project.name);
+
+          projectRecords.push({
+            ...baseVaultRecord("VaultProject", projectId, sourcePlatform, {
+              raw_path: CIV_RAW_SOURCE_PATH,
+              conversation_id: sourceConversationForTitle(project.name),
+            }, generatedAt, ["recovered-project", sourcePlatform], projectConfidence(project.score)),
+            name: project.name,
+            description: project.summary || "Recovered local project candidate.",
+            status: "candidate",
+            problem: "",
+            audience: "",
+            features: project.next || [],
+            stack: [],
+            repo_refs: [],
+            related_artifact_ids: relatedArtifactIds,
+            audit_handoff_id: auditHandoffId,
+          });
+
+          auditHandoffRecords.push({
+            ...baseVaultRecord("VaultAuditHandoff", auditHandoffId, "chat-intelligence-vault", {
+              raw_path: CIV_RAW_SOURCE_PATH,
+            }, generatedAt, ["audit-handoff", "local"]),
+            project_id: projectId,
+            project: {
+              name: project.name,
+              description: project.summary || "Recovered local project candidate.",
+            },
+            inputs: {
+              goals: project.next || [],
+              constraints: ["local-first", "no cloud sync", "no fake audit results"],
+              known_assets: knownAssetsForProject(project),
+            },
+            artifact_ids: relatedArtifactIds,
+            prompt_ids: [],
+            code_ids: [],
+            command_ids: [],
+            handoff_notes: "Prepared locally for future Vibe Auditor import. No auditor scoring has been performed.",
+            audit_status: "not_started",
+          });
+        });
+
+        vault.prompts.forEach((prompt, index) => {
+          promptRecords.push({
+            ...baseVaultRecord("VaultPrompt", stableId("prompt", sourcePlatform, vault.source, prompt.convo, prompt.type, index, prompt.text), sourcePlatform, {
+              raw_path: CIV_RAW_SOURCE_PATH,
+              conversation_id: sourceConversationForTitle(prompt.convo),
+            }, generatedAt, ["prompt", sourcePlatform], 0.8),
+            title: `${prompt.type || "Prompt"} - ${prompt.convo || "Untitled"}`,
+            prompt_text: String(prompt.text || ""),
+            intended_model: "",
+            use_case: prompt.type || "General Prompt",
+            input_requirements: [],
+            output_expectations: [],
+            related_project_ids: relatedProjectsForTitle(projectRecords, prompt.convo),
+            related_artifact_ids: [],
+          });
+        });
+
+        vault.code.forEach((code, index) => {
+          codeBlockRecords.push({
+            ...baseVaultRecord("VaultCodeBlock", stableId("code", sourcePlatform, vault.source, code.convo, code.file, index, code.code), sourcePlatform, {
+              raw_path: CIV_RAW_SOURCE_PATH,
+              conversation_id: sourceConversationForTitle(code.convo),
+            }, generatedAt, ["code", code.lang || "text", sourcePlatform], 0.95),
+            language: code.lang || "text",
+            filename: code.file || `recovered/snippet-${index + 1}.txt`,
+            framework: "",
+            purpose: `Recovered from ${code.convo || "local export"}`,
+            code: String(code.code || ""),
+            related_project_ids: relatedProjectsForTitle(projectRecords, code.convo),
+            related_command_ids: [],
+          });
+        });
+
+        vault.commands.forEach((command, index) => {
+          commandRecords.push({
+            ...baseVaultRecord("VaultCommand", stableId("command", sourcePlatform, vault.source, command.convo, index, command.commands), sourcePlatform, {
+              raw_path: CIV_RAW_SOURCE_PATH,
+              conversation_id: sourceConversationForTitle(command.convo),
+            }, generatedAt, ["command", sourcePlatform], 0.88),
+            command: String(command.commands || ""),
+            cwd: "",
+            shell: "unknown",
+            intent: `Recovered command block from ${command.convo || "local export"}`,
+            risk_level: "review_required",
+            related_project_ids: relatedProjectsForTitle(projectRecords, command.convo),
+            related_code_ids: [],
+          });
+        });
+
+        vault.stories.forEach((story, index) => {
+          artifactRecords.push({
+            ...baseVaultRecord("VaultArtifact", stableId("artifact", sourcePlatform, vault.source, "story", story.convo, index, story.text), sourcePlatform, {
+              raw_path: CIV_RAW_SOURCE_PATH,
+              conversation_id: sourceConversationForTitle(story.convo),
+            }, generatedAt, ["detected", "story-ip", sourcePlatform], 0.58),
+            artifact_type: "story_ip",
+            title: `${story.genre || "Story"} IP Segment`,
+            content: String(story.text || ""),
+            related_record_ids: relatedProjectsForTitle(projectRecords, story.convo),
+          });
+        });
+
+        vault.money.forEach((money, index) => {
+          artifactRecords.push({
+            ...baseVaultRecord("VaultArtifact", stableId("artifact", sourcePlatform, vault.source, "monetization", money.name, index, money.path), sourcePlatform, {
+              raw_path: CIV_RAW_SOURCE_PATH,
+              conversation_id: sourceConversationForTitle(money.name),
+            }, generatedAt, ["detected", "monetization", sourcePlatform], projectConfidence(money.moneyScore)),
+            artifact_type: "monetization_note",
+            title: `${money.name || "Project"} monetization note`,
+            content: `${money.path || "Local monetization candidate"}\n\n${money.summary || ""}`.trim(),
+            related_record_ids: relatedProjectsForTitle(projectRecords, money.name),
+          });
+        });
+
+        linkArtifacts(conversationRecords, messageRecords, artifactRecords, promptRecords, codeBlockRecords, commandRecords, projectRecords);
+
+        const recordGroups = {
+          conversations: conversationRecords,
+          messages: messageRecords,
+          artifacts: artifactRecords,
+          projects: projectRecords,
+          prompts: promptRecords,
+          "code-blocks": codeBlockRecords,
+          commands: commandRecords,
+          "audit-handoffs": auditHandoffRecords,
+        };
+        const manifest = buildVaultHandoffManifest(recordGroups, generatedAt);
+        const entries = [{ name: "manifest.json", text: JSON.stringify(manifest, null, 2) }];
+
+        Object.entries(recordGroups).forEach(([folder, records]) => {
+          records.forEach(record => {
+            entries.push({ name: `${folder}/${record.id}.json`, text: JSON.stringify(record, null, 2) });
+          });
+        });
+        entries.push({ name: CIV_RAW_SOURCE_PATH, text: JSON.stringify(redactRawVaultForExport(vault), null, 2) });
+        entries.push({ name: "indexes/records.json", text: JSON.stringify(buildRecordIndex(recordGroups), null, 2) });
+        entries.push({ name: "indexes/tags.json", text: JSON.stringify(buildTagIndexForRecords(recordGroups), null, 2) });
+
+        return { manifest, entries };
+      }
+
+      function buildVaultHandoffManifest(recordGroups, generatedAt) {
+        const counts = {
+          conversations: recordGroups.conversations.length,
+          messages: recordGroups.messages.length,
+          artifacts: recordGroups.artifacts.length,
+          projects: recordGroups.projects.length,
+          prompts: recordGroups.prompts.length,
+          code_blocks: recordGroups["code-blocks"].length,
+          commands: recordGroups.commands.length,
+          audit_handoffs: recordGroups["audit-handoffs"].length,
+        };
+        const included = Object.values(recordGroups)
+          .flatMap(records => records.map(record => record.record_type))
+          .filter((type, index, all) => all.indexOf(type) === index);
+        return {
+          schema_version: CIV_CONTRACT_SCHEMA_VERSION,
+          export_version: CIV_EXPORT_VERSION,
+          generated_at: generatedAt,
+          source_application: "Chat Intelligence Vault",
+          source_platform: normalizeSourcePlatform(civState.vault.platform),
+          source_name: civState.vault.source || "browser-local-vault",
+          record_counts: counts,
+          total_records: Object.values(counts).reduce((sum, value) => sum + value, 0),
+          included_record_types: included,
+          parser_compatibility_version: CIV_PARSER_COMPATIBILITY_VERSION,
+          privacy_notice: "Your export was processed locally in this browser. Nothing was uploaded to NoCodeReviewed by this bundle.",
+        };
+      }
+
+      function baseVaultRecord(recordType, id, sourcePlatform, sourceRef, createdAt, tags, confidence) {
+        const record = {
+          id,
+          schema_version: CIV_CONTRACT_SCHEMA_VERSION,
+          record_type: recordType,
+          source_platform: sourcePlatform || "unknown",
+          source_account: "browser-local",
+          source_ref: sourceRef || { raw_path: CIV_RAW_SOURCE_PATH },
+          created_at: createdAt || new Date().toISOString(),
+          tags: cleanTags(tags),
+          privacy_level: "local_private",
+        };
+        if (typeof confidence === "number") record.confidence = Math.max(0, Math.min(1, confidence));
+        return record;
+      }
+
+      function stableId(prefix, ...parts) {
+        return `${prefix}_${stableHash(parts.map(part => String(part ?? "")).join("|"))}`;
+      }
+
+      function stableHash(value) {
+        let hash = 2166136261;
+        const text = String(value || "");
+        for (let index = 0; index < text.length; index += 1) {
+          hash ^= text.charCodeAt(index);
+          hash = Math.imul(hash, 16777619);
+        }
+        return (hash >>> 0).toString(36).padStart(7, "0");
+      }
+
+      function cleanTags(tags) {
+        return [...new Set((tags || [])
+          .map(tag => String(tag || "").toLowerCase().replace(/[^a-z0-9_-]+/g, "-").replace(/^-+|-+$/g, ""))
+          .filter(Boolean))];
+      }
+
+      function normalizeSourcePlatform(platform) {
+        const value = String(platform || "unknown").toLowerCase();
+        if (value.includes("chatgpt")) return "chatgpt";
+        if (value.includes("grok")) return "grok";
+        if (value.includes("generic")) return "generic";
+        return value.replace(/[^a-z0-9_-]+/g, "-") || "unknown";
+      }
+
+      function normalizeRole(role) {
+        const value = String(role || "unknown").toLowerCase();
+        return ["user", "assistant", "system", "tool"].includes(value) ? value : "unknown";
+      }
+
+      function timestampFromValue(value, fallback) {
+        if (typeof value === "number" && Number.isFinite(value) && value > 0) {
+          return new Date(value < 100000000000 ? value * 1000 : value).toISOString();
+        }
+        if (typeof value === "string" && value) {
+          const parsed = Date.parse(value);
+          if (Number.isFinite(parsed)) return new Date(parsed).toISOString();
+        }
+        return fallback;
+      }
+
+      function firstTimestamp(messages, fallback) {
+        const first = (messages || []).find(message => message.time);
+        return timestampFromValue(first?.time, fallback);
+      }
+
+      function sourceConversationForTitle(title) {
+        const match = civState.vault.conversations.find(conversation => String(title || "").toLowerCase().includes(String(conversation.title || "").toLowerCase()) || String(conversation.title || "").toLowerCase().includes(String(title || "").toLowerCase()));
+        return match?.id || "";
+      }
+
+      function relatedProjectsForTitle(projectRecords, title) {
+        const lowered = String(title || "").toLowerCase();
+        return projectRecords
+          .filter(project => lowered && (lowered.includes(project.name.toLowerCase()) || project.name.toLowerCase().includes(lowered)))
+          .map(project => project.id);
+      }
+
+      function relatedArtifactsForProject(artifactRecords, projectName) {
+        const lowered = String(projectName || "").toLowerCase();
+        return artifactRecords
+          .filter(artifact => lowered && String(artifact.content || artifact.title || "").toLowerCase().includes(lowered))
+          .map(artifact => artifact.id);
+      }
+
+      function knownAssetsForProject(project) {
+        const assets = [];
+        if (project.code) assets.push("code blocks");
+        if (project.prompts) assets.push("prompts");
+        if (project.commands) assets.push("commands");
+        if (project.stories) assets.push("story/ip");
+        return assets.length ? assets : ["project summary"];
+      }
+
+      function projectConfidence(score) {
+        if (typeof score !== "number") return 0.5;
+        return Math.max(0.1, Math.min(0.95, score / 100));
+      }
+
+      function extractUrls(content) {
+        return [...String(content || "").matchAll(/https?:\/\/[^\s)\]]+/g)].map(match => match[0]);
+      }
+
+      function linkArtifacts(conversations, messages, artifacts, prompts, codeBlocks, commands, projects) {
+        const artifactIds = artifacts.map(artifact => artifact.id);
+        conversations.forEach(conversation => {
+          conversation.artifact_ids = artifactIds.filter(id => artifacts.find(artifact => artifact.id === id && artifact.source_ref?.conversation_id === conversation.source_conversation_id));
+        });
+        messages.forEach(message => {
+          message.artifact_ids = artifactIds.filter(id => artifacts.find(artifact => artifact.id === id && artifact.source_ref?.message_id === message.source_ref?.message_id));
+        });
+        projects.forEach(project => {
+          project.related_artifact_ids = [
+            ...new Set([
+              ...project.related_artifact_ids,
+              ...prompts.filter(prompt => prompt.related_project_ids.includes(project.id)).map(prompt => prompt.id),
+              ...codeBlocks.filter(code => code.related_project_ids.includes(project.id)).map(code => code.id),
+              ...commands.filter(command => command.related_project_ids.includes(project.id)).map(command => command.id),
+            ]),
+          ];
+        });
+      }
+
+      function redactRawVaultForExport(vault) {
+        return {
+          source: vault.source,
+          platform: vault.platform,
+          imports: vault.imports,
+          counts: {
+            conversations: vault.conversations.length,
+            messages: vault.messages.length,
+            projects: vault.projects.length,
+            prompts: vault.prompts.length,
+            code: vault.code.length,
+            commands: vault.commands.length,
+            stories: vault.stories.length,
+            money: vault.money.length,
+          },
+          vault,
+        };
+      }
+
+      function buildRecordIndex(recordGroups) {
+        return Object.values(recordGroups).flatMap(records => records.map(record => ({
+          id: record.id,
+          record_type: record.record_type,
+          privacy_level: record.privacy_level,
+          source_platform: record.source_platform,
+          created_at: record.created_at,
+          tags: record.tags,
+          title: record.title || record.name || record.filename || record.command || record.project?.name || "",
+        })));
+      }
+
+      function buildTagIndexForRecords(recordGroups) {
+        const counts = new Map();
+        Object.values(recordGroups).flat().forEach(record => {
+          (record.tags || []).forEach(tag => counts.set(tag, (counts.get(tag) || 0) + 1));
+        });
+        return [...counts.entries()].map(([tag, count]) => ({ tag, count })).sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag));
       }
 
       function saveLocalVault() {
@@ -1821,6 +2227,7 @@
           "export-stories": exportStoriesMarkdown,
           "export-code-markdown": exportCodeMarkdown,
           "export-code-zip": exportCodeZip,
+          "export-vault-handoff": exportVaultHandoffBundle,
           "download-json": downloadVaultJson,
           "search": runSearch,
         };

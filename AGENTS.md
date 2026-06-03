@@ -15,6 +15,7 @@ Then check the relevant architecture docs:
 - `docs/architecture/MERGE_PLAN.md`
 - `docs/architecture/INTELLIGENCE_VAULT_ARCHITECTURE.md`
 - `docs/architecture/VAULT_DATA_CONTRACT.md`
+- `docs/architecture/LOCAL_VAULT_HANDOFF.md`
 - `docs/architecture/N8N_SUPABASE_CONTRACT.md`
 
 ## Mission
@@ -67,6 +68,14 @@ Inspect `docs/architecture/VAULT_DATA_CONTRACT.md` before building Vault, Eviden
 - Update the contract before adding new canonical record types.
 - Keep records local-first and privacy-gated by default.
 - Preserve raw source references when normalizing records.
+
+## Local Vault Handoff Requirement
+
+Inspect `docs/architecture/LOCAL_VAULT_HANDOFF.md` before changing Chat Intelligence Vault exports, parser import behavior, or local auditor handoff records.
+
+- Emit deterministic `vault-export.zip` bundles when moving local browser intelligence between tools.
+- Preserve `manifest.json`, raw source metadata, indexes, privacy levels, and `vault.v1` record fields.
+- Do not add cloud sync, Supabase writes, n8n execution, embeddings, agents, or fake auditor integrations to this handoff path.
 
 ## Product Direction
 

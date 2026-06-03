@@ -30,6 +30,14 @@ Purpose: Defines the canonical local-first record types shared by Chat Intellige
 
 Rule: Internal tools should consume and emit compatible records instead of inventing parallel schemas. Additive schema changes should update the contract first.
 
+### Local Vault Handoff
+
+Location: `docs/architecture/LOCAL_VAULT_HANDOFF.md`
+
+Purpose: Defines deterministic local `vault-export.zip` bundles for moving browser-local Chat Intelligence Vault records into parser-compatible local files.
+
+Rule: Internal tools should preserve the bundle manifest, raw source metadata, folder layout, privacy levels, and `vault.v1` record fields. Do not replace this with cloud sync or parallel handoff schemas.
+
 ### Vault Ingestion Parser
 
 Location: `tools/internal/vault-ingestion-parser/`
