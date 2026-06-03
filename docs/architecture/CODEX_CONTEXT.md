@@ -8,6 +8,7 @@ Before implementing infrastructure features, inspect:
 - `docs/architecture/SOURCE_OF_TRUTH_MAP.md`
 - `docs/architecture/MERGE_PLAN.md`
 - `docs/architecture/INTELLIGENCE_VAULT_ARCHITECTURE.md`
+- `docs/architecture/VAULT_DATA_CONTRACT.md`
 
 ## Project Mission
 
@@ -70,6 +71,10 @@ Rules:
 - Store normalized records separately from raw originals.
 - Prefer deterministic extraction before LLM enrichment.
 - Do not upload, sync, or persist cloud data until explicitly approved.
+
+### Vault Data Contract
+
+`docs/architecture/VAULT_DATA_CONTRACT.md` is the shared operational grammar for the Intelligence Vault. Future Vault, Evidence, Auditor handoff, parser adapter, memory extractor, workflow, or audit-record work must inspect it before adding schemas or record formats.
 
 ### Vault Ingestion Parser
 

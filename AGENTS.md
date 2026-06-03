@@ -14,6 +14,7 @@ Then check the relevant architecture docs:
 - `docs/architecture/SOURCE_OF_TRUTH_MAP.md`
 - `docs/architecture/MERGE_PLAN.md`
 - `docs/architecture/INTELLIGENCE_VAULT_ARCHITECTURE.md`
+- `docs/architecture/VAULT_DATA_CONTRACT.md`
 - `docs/architecture/N8N_SUPABASE_CONTRACT.md`
 
 ## Mission
@@ -57,6 +58,15 @@ Treat `tools/internal/vault-ingestion-parser/` as core Intelligence Vault infras
 - Keep deterministic-first architecture for known export formats.
 - Add schemas, adapter tests, and index expectations before depending on new parsed fields.
 - Do not add Supabase writes, n8n execution, embeddings, vector databases, autonomous agents, or external LLM calls inside the parser unless a later phase explicitly requires it.
+
+## Vault Data Contract Requirement
+
+Inspect `docs/architecture/VAULT_DATA_CONTRACT.md` before building Vault, Evidence, Auditor handoff, parser adapter, memory extractor, workflow, or audit-record features.
+
+- Do not invent parallel schemas for records already covered by the contract.
+- Update the contract before adding new canonical record types.
+- Keep records local-first and privacy-gated by default.
+- Preserve raw source references when normalizing records.
 
 ## Product Direction
 

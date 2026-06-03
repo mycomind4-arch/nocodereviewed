@@ -22,6 +22,14 @@ This registry keeps internal tool direction visible across Codex sessions. Some 
 
 ## Installed Internal Infrastructure
 
+### Shared Vault Data Contract
+
+Location: `docs/architecture/VAULT_DATA_CONTRACT.md`
+
+Purpose: Defines the canonical local-first record types shared by Chat Intelligence Vault, Vault Ingestion Parser, future Evidence System, future Vibe Auditor handoff, future Strategic Memory Extractor, and future Workflow Template Extractor.
+
+Rule: Internal tools should consume and emit compatible records instead of inventing parallel schemas. Additive schema changes should update the contract first.
+
 ### Vault Ingestion Parser
 
 Location: `tools/internal/vault-ingestion-parser/`
