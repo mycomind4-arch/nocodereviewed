@@ -1,0 +1,20 @@
+{
+  "id": "artifact-ftm1G-tsvJ",
+  "type": "code",
+  "source_conversation_id": "conv-906kc4NWYy",
+  "source_message_id": "msg-NPAV0DWcrz",
+  "title": "Detected code block",
+  "content": "console.log('vault');",
+  "language": "ts",
+  "tags": [
+    "detected",
+    "code-block"
+  ],
+  "confidence": 0.95,
+  "created_at": "2026-06-03T09:43:37.938Z",
+  "lineage": {
+    "source_platform": "chatgpt",
+    "source_account": "sample-account",
+    "raw_path": "/Users/macdizzle/Desktop/no code empire revised/tools/internal/vault-ingestion-parser/samples/raw/chatgpt/conversations.json"
+  }
+}

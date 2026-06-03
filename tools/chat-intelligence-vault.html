@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Intelligence Vault | NoCodeReviewed</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --civ-bg: #07090d;
+      --civ-panel: #10141d;
+      --civ-panel-2: #171d29;
+      --civ-panel-3: #202838;
+      --civ-line: rgba(255, 255, 255, 0.1);
+      --civ-line-strong: rgba(255, 255, 255, 0.18);
+      --civ-text: #eef3f8;
+      --civ-muted: #a1acbc;
+      --civ-faint: #687386;
+      --civ-accent: #e8541a;
+      --civ-accent-2: #ff9a32;
+      --civ-blue: #62a8ff;
+      --civ-green: #3dd77e;
+      --civ-red: #ff6370;
+      --civ-yellow: #f4c64d;
+      --civ-radius: 12px;
+      --civ-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --civ-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100%;
+      margin: 0;
+      background:
+        radial-gradient(circle at 15% 0%, rgba(232, 84, 26, 0.18), transparent 34%),
+        radial-gradient(circle at 85% 8%, rgba(98, 168, 255, 0.13), transparent 30%),
+        var(--civ-bg);
+      color: var(--civ-text);
+      font-family: var(--civ-font);
+      font-size: 14px;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .civ-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 286px minmax(0, 1fr);
+    }
+
+    .civ-sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 18px;
+      border-right: 1px solid var(--civ-line);
+      background: rgba(16, 20, 29, 0.9);
+      backdrop-filter: blur(18px);
+      overflow-y: auto;
+    }
+
+    .civ-brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .civ-mark {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--civ-accent), var(--civ-accent-2));
+      box-shadow: 0 16px 42px rgba(232, 84, 26, 0.25);
+    }
+
+    .civ-brand h1 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.05;
+      letter-spacing: -0.01em;
+    }
+
+    .civ-brand p {
+      margin: 4px 0 0;
+      color: var(--civ-muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .civ-privacy {
+      padding: 12px;
+      border: 1px solid rgba(61, 215, 126, 0.22);
+      border-radius: var(--civ-radius);
+      background: rgba(61, 215, 126, 0.08);
+      color: #c9f7dc;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .civ-upload {
+      position: relative;
+      display: block;
+      padding: 16px;
+      border: 1px dashed var(--civ-line-strong);
+      border-radius: var(--civ-radius);
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--civ-muted);
+      line-height: 1.4;
+      transition: border-color 0.15s, background 0.15s, transform 0.15s;
+    }
+
+    .civ-upload.is-over,
+    .civ-upload:hover {
+      border-color: rgba(232, 84, 26, 0.65);
+      background: rgba(232, 84, 26, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .civ-upload strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--civ-text);
+    }
+
+    .civ-upload input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .civ-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .civ-nav button,
+    .civ-btn {
+      border: 1px solid var(--civ-line-strong);
+      border-radius: 10px;
+      background: var(--civ-panel-2);
+      color: var(--civ-text);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, color 0.15s;
+    }
+
+    .civ-nav button {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      text-align: left;
+      color: var(--civ-muted);
+    }
+
+    .civ-nav button[aria-selected="true"],
+    .civ-nav button:hover,
+    .civ-btn:hover {
+      border-color: rgba(232, 84, 26, 0.55);
+      color: var(--civ-text);
+    }
+
+    .civ-pill {
+      min-width: 24px;
+      padding: 2px 7px;
+      border: 1px solid var(--civ-line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--civ-faint);
+      font-size: 11px;
+      text-align: center;
+    }
+
+    .civ-actions {
+      display: grid;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .civ-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 40px;
+      padding: 10px 12px;
+      text-decoration: none;
+    }
+
+    .civ-btn-primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--civ-accent), var(--civ-accent-2));
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .civ-btn-ghost {
+      background: transparent;
+    }
+
+    .civ-main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .civ-top {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--civ-line);
+      background: rgba(7, 9, 13, 0.72);
+      backdrop-filter: blur(16px);
+    }
+
+    .civ-title {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .civ-subtitle {
+      margin: 5px 0 0;
+      color: var(--civ-muted);
+      font-size: 12px;
+    }
+
+    .civ-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .civ-metric {
+      padding: 7px 10px;
+      border: 1px solid var(--civ-line);
+      border-radius: 999px;
+      background: var(--civ-panel);
+      color: var(--civ-muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .civ-metric b {
+      color: var(--civ-text);
+    }
+
+    .civ-alert {
+      display: none;
+      margin: 16px 22px 0;
+      padding: 12px 14px;
+      border: 1px solid rgba(244, 198, 77, 0.35);
+      border-radius: var(--civ-radius);
+      background: rgba(244, 198, 77, 0.08);
+      color: #ffe6a0;
+      line-height: 1.45;
+    }
+
+    .civ-alert.is-visible {
+      display: block;
+    }
+
+    .civ-alert[data-kind="error"] {
+      border-color: rgba(255, 99, 112, 0.35);
+      background: rgba(255, 99, 112, 0.1);
+      color: #ffd1d5;
+    }
+
+    .civ-panel {
+      display: none;
+      padding: 22px;
+      overflow: auto;
+    }
+
+    .civ-panel.is-active {
+      display: block;
+    }
+
+    .civ-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .civ-card {
+      padding: 16px;
+      border: 1px solid var(--civ-line);
+      border-radius: var(--civ-radius);
+      background: rgba(16, 20, 29, 0.88);
+    }
+
+    .civ-card h2,
+    .civ-card h3 {
+      margin: 0 0 10px;
+    }
+
+    .civ-card h2 {
+      font-size: 18px;
+      letter-spacing: -0.01em;
+    }
+
+    .civ-card h3 {
+      font-size: 14px;
+    }
+
+    .civ-card p {
+      line-height: 1.58;
+    }
+
+    .civ-span-3 { grid-column: span 3; }
+    .civ-span-4 { grid-column: span 4; }
+    .civ-span-6 { grid-column: span 6; }
+    .civ-span-8 { grid-column: span 8; }
+    .civ-span-12 { grid-column: span 12; }
+
+    .civ-muted {
+      color: var(--civ-muted);
+    }
+
+    .civ-small {
+      font-size: 12px;
+    }
+
+    .civ-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .civ-input {
+      flex: 1;
+      min-width: 220px;
+      min-height: 40px;
+      padding: 10px 12px;
+      border: 1px solid var(--civ-line-strong);
+      border-radius: 10px;
+      outline: 0;
+      background: var(--civ-panel-2);
+      color: var(--civ-text);
+    }
+
+    .civ-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .civ-item {
+      padding: 13px;
+      border: 1px solid var(--civ-line);
+      border-radius: 12px;
+      background: var(--civ-panel-2);
+    }
+
+    .civ-item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .civ-item-title {
+      font-weight: 760;
+    }
+
+    .civ-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 8px;
+    }
+
+    .civ-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 3px 8px;
+      border: 1px solid var(--civ-line-strong);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--civ-muted);
+      font-size: 11px;
+    }
+
+    .civ-score {
+      color: var(--civ-green);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .civ-warning-text {
+      color: var(--civ-yellow);
+    }
+
+    .civ-danger-text {
+      color: var(--civ-red);
+    }
+
+    .civ-story,
+    .civ-command-block,
+    .civ-code-block {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.58;
+    }
+
+    .civ-code-block,
+    .civ-command-block {
+      max-height: 380px;
+      overflow: auto;
+      padding: 12px;
+      border: 1px solid var(--civ-line-strong);
+      border-radius: 10px;
+      background: #080d14;
+      color: #d8e2f1;
+      font-family: var(--civ-mono);
+      font-size: 12px;
+    }
+
+    .civ-empty {
+      padding: 30px;
+      border: 1px dashed var(--civ-line-strong);
+      border-radius: var(--civ-radius);
+      color: var(--civ-faint);
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .civ-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .civ-table th,
+    .civ-table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--civ-line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .civ-table th {
+      color: var(--civ-muted);
+      font-size: 12px;
+    }
+
+    .civ-bar {
+      height: 9px;
+      overflow: hidden;
+      border-radius: 99px;
+      background: var(--civ-panel-3);
+    }
+
+    .civ-bar span {
+      display: block;
+      height: 100%;
+      background: linear-gradient(90deg, var(--civ-accent), var(--civ-green));
+    }
+
+    .civ-footer-note {
+      margin-top: 16px;
+      color: var(--civ-faint);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 980px) {
+      .civ-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .civ-sidebar {
+        position: relative;
+        height: auto;
+      }
+
+      .civ-top {
+        position: relative;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .civ-metrics {
+        justify-content: flex-start;
+      }
+
+      .civ-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .civ-span-3,
+      .civ-span-4,
+      .civ-span-6,
+      .civ-span-8,
+      .civ-span-12 {
+        grid-column: span 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="civ-shell">
+    <aside class="civ-sidebar">
+      <a class="civ-brand" href="/">
+        <span class="civ-mark" aria-hidden="true"></span>
+        <div>
+          <h1>Chat Intelligence Vault</h1>
+          <p>Recover projects, prompts, code, commands, IP, and monetizable assets from AI exports.</p>
+        </div>
+      </a>
+
+      <div class="civ-privacy">
+        Your export is processed locally in this browser by default. Nothing is uploaded to NoCodeReviewed unless you explicitly connect a cloud feature later.
+      </div>
+
+      <label class="civ-upload" id="civ-upload-zone">
+        <strong>Upload export</strong>
+        <span id="civ-upload-status">ChatGPT JSON, Grok JSON, or ZIP containing JSON exports</span>
+        <input id="civ-file-input" type="file" accept=".json,.zip,application/json,application/zip">
+      </label>
+
+      <nav class="civ-nav" id="civ-nav" aria-label="Vault sections"></nav>
+
+      <div class="civ-actions">
+        <button class="civ-btn" type="button" data-action="save-local">Save Vault Locally</button>
+        <button class="civ-btn" type="button" data-action="load-local">Load Saved Vault</button>
+        <button class="civ-btn civ-btn-ghost" type="button" data-action="send-auditor">Send to Vibe Auditor</button>
+        <a class="civ-btn civ-btn-ghost" href="/tools/vibe-auditor.html">Open Vibe Auditor</a>
+        <a class="civ-btn civ-btn-ghost" href="/">Back to NoCodeReviewed</a>
+      </div>
+    </aside>
+
+    <main class="civ-main">
+      <header class="civ-top">
+        <div>
+          <h2 class="civ-title" id="civ-main-title">Upload an export to begin</h2>
+          <p class="civ-subtitle" id="civ-main-subtitle">Everything runs in your browser. No API calls, no Supabase writes, no n8n automation.</p>
+        </div>
+        <div class="civ-metrics" id="civ-metrics" aria-label="Vault metrics"></div>
+      </header>
+
+      <div class="civ-alert" id="civ-alert" role="status" aria-live="polite"></div>
+
+      <section id="civ-panel-dashboard" class="civ-panel is-active" aria-labelledby="civ-tab-dashboard"></section>
+      <section id="civ-panel-projects" class="civ-panel" aria-labelledby="civ-tab-projects"></section>
+      <section id="civ-panel-code" class="civ-panel" aria-labelledby="civ-tab-code"></section>
+      <section id="civ-panel-prompts" class="civ-panel" aria-labelledby="civ-tab-prompts"></section>
+      <section id="civ-panel-commands" class="civ-panel" aria-labelledby="civ-tab-commands"></section>
+      <section id="civ-panel-stories" class="civ-panel" aria-labelledby="civ-tab-stories"></section>
+      <section id="civ-panel-search" class="civ-panel" aria-labelledby="civ-tab-search"></section>
+      <section id="civ-panel-money" class="civ-panel" aria-labelledby="civ-tab-money"></section>
+      <section id="civ-panel-exports" class="civ-panel" aria-labelledby="civ-tab-exports"></section>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const CIV_STORAGE_KEY = "nocodereviewed-chat-intelligence-vault-v1";
+      const CIV_TABS = [
+        ["dashboard", "Dashboard"],
+        ["projects", "Projects"],
+        ["code", "Codebase"],
+        ["prompts", "Prompt Vault"],
+        ["commands", "Commands"],
+        ["stories", "Stories/IP"],
+        ["search", "Search"],
+        ["money", "Monetization"],
+        ["exports", "Exports"],
+      ];
+
+      const CIV_STOP_WORDS = new Set("the and for you that with this have are was not but from your can just into like make what when where how all our out has been will would should could about there their they them then than its it use using used".split(" "));
+      const CIV_PROJECT_SEEDS = [
+        "NoCodeReviewed", "Vibe Auditor", "Chat Intelligence Vault", "Chat Export Extractor",
+        "Grok Export Parser", "Vibe Code Authority", "Prompt Forge", "Trellis", "Supabase",
+        "Lovable", "Replit", "Bolt", "Kimi", "Claude", "Codex", "Gemini", "Runway",
+        "Humstatic", "Soundscapes", "Headstone", "Asset Factory", "Autonomous Asset Creation",
+        "No Code Empire",
+      ];
+      const CIV_MONEY_RE = /monetiz|revenue|price|pricing|affiliate|lead|checkout|stripe|gumroad|subscription|monthly|saas|sell|sales|profit|offer|paid|pro plan|customer/i;
+      const CIV_PROMPT_RE = /instruction set|system prompt|prompt|gpt builder|claude|codex|kimi|lovable|build spec|terminal commands|delegate/i;
+      const CIV_COMMAND_RE = /^\s*(git|npm|pnpm|yarn|node|python|python3|pip|cd|ls|cat|mkdir|touch|cp|mv|rm|grep|find|curl|open|vercel|supabase|brew)\b/m;
+      const CIV_STORY_RE = /chapter|scene|character|dialogue|plot|story|novel|screenplay|narrative|world|universe|arc|protagonist/i;
+
+      const civState = {
+        vault: createEmptyVault(),
+        activeTab: "dashboard",
+      };
+
+      function createEmptyVault() {
+        return {
+          source: "",
+          platform: "unknown",
+          conversations: [],
+          messages: [],
+          code: [],
+          stories: [],
+          prompts: [],
+          commands: [],
+          projects: [],
+          files: [],
+          topics: {},
+          money: [],
+          imports: [],
+        };
+      }
+
+      function byId(id) {
+        return document.getElementById(id);
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "\"": "&quot;",
+          "'": "&#39;",
+        })[char]);
+      }
+
+      function escapeAttr(value) {
+        return escapeHtml(value).replace(/`/g, "&#96;");
+      }
+
+      function setNotice(message, kind = "info") {
+        const alert = byId("civ-alert");
+        alert.dataset.kind = kind;
+        alert.textContent = message;
+        alert.classList.add("is-visible");
+        if (kind !== "error") {
+          window.clearTimeout(setNotice.timer);
+          setNotice.timer = window.setTimeout(() => alert.classList.remove("is-visible"), 6000);
+        }
+      }
+
+      function clearNotice() {
+        const alert = byId("civ-alert");
+        alert.classList.remove("is-visible");
+        alert.textContent = "";
+      }
+
+      function uniqueWords(value) {
+        return [...new Set(String(value || "").toLowerCase().match(/[a-z0-9][a-z0-9-]{2,}/g) || [])]
+          .filter(word => !CIV_STOP_WORDS.has(word));
+      }
+
+      function truncate(value, length) {
+        const text = String(value || "");
+        return text.length > length ? `${text.slice(0, length)}...` : text;
+      }
+
+      function renderNav() {
+        byId("civ-nav").innerHTML = CIV_TABS.map(([id, label]) => `
+          <button id="civ-tab-${id}" type="button" data-tab="${id}" aria-selected="${id === civState.activeTab ? "true" : "false"}">
+            <span>${escapeHtml(label)}</span>
+            <span class="civ-pill" id="civ-pill-${id}">0</span>
+          </button>
+        `).join("");
+      }
+
+      function activateTab(tabId) {
+        civState.activeTab = tabId;
+        document.querySelectorAll(".civ-panel").forEach(panel => panel.classList.remove("is-active"));
+        byId(`civ-panel-${tabId}`)?.classList.add("is-active");
+        document.querySelectorAll(".civ-nav button").forEach(button => {
+          button.setAttribute("aria-selected", String(button.dataset.tab === tabId));
+        });
+      }
+
+      async function handleFile(file) {
+        clearNotice();
+        byId("civ-upload-status").textContent = "Processing locally...";
+
+        try {
+          const parsedVaults = file.name.toLowerCase().endsWith(".zip")
+            ? await parseZipExport(file)
+            : [parseExportJson(JSON.parse(await file.text()), file.name)];
+
+          const usableVaults = parsedVaults.filter(vault => vault.conversations.length || vault.messages.length);
+          if (!usableVaults.length) {
+            throw new Error("No supported conversations were found in this file.");
+          }
+
+          civState.vault = mergeVaults(usableVaults, file.name);
+          analyzeVault();
+          renderAll();
+          setNotice(`Imported ${usableVaults.length} export file${usableVaults.length === 1 ? "" : "s"} locally from ${file.name}.`);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          setNotice(`Import failed: ${message}`, "error");
+        } finally {
+          byId("civ-upload-status").textContent = "ChatGPT JSON, Grok JSON, or ZIP containing JSON exports";
+        }
+      }
+
+      async function parseZipExport(file) {
+        let entries;
+        try {
+          entries = await readZipEntries(await file.arrayBuffer());
+        } catch (error) {
+          throw new Error(`Malformed or unsupported ZIP. ${error instanceof Error ? error.message : ""}`.trim());
+        }
+
+        const jsonEntries = entries
+          .filter(entry => /\.json$/i.test(entry.name))
+          .sort((a, b) => scoreJsonName(b.name) - scoreJsonName(a.name));
+
+        if (!jsonEntries.length) {
+          throw new Error("No JSON files were found inside the ZIP.");
+        }
+
+        const vaults = [];
+        const failures = [];
+        for (const entry of jsonEntries) {
+          try {
+            const text = new TextDecoder().decode(entry.bytes);
+            vaults.push(parseExportJson(JSON.parse(text), `${file.name}/${entry.name}`));
+          } catch (error) {
+            failures.push(`${entry.name}: ${error instanceof Error ? error.message : error}`);
+          }
+        }
+
+        if (!vaults.length) {
+          throw new Error(`JSON files were present, but none could be parsed. ${failures.slice(0, 2).join(" ")}`);
+        }
+
+        return vaults;
+      }
+
+      function scoreJsonName(name) {
+        const lowered = name.toLowerCase();
+        let score = 0;
+        if (lowered.includes("conversation")) score += 6;
+        if (lowered.includes("grok")) score += 5;
+        if (lowered.includes("chat")) score += 3;
+        if (lowered.includes("backend")) score += 2;
+        if (lowered.includes("billing")) score -= 4;
+        if (lowered.includes("auth")) score -= 4;
+        return score;
+      }
+
+      function parseExportJson(data, sourceName) {
+        const vault = createEmptyVault();
+        vault.source = sourceName;
+        vault.imports.push(sourceName);
+
+        if (Array.isArray(data)) {
+          vault.platform = "chatgpt";
+          data.forEach((conversation, index) => addChatGptConversation(vault, conversation, index));
+        } else if (data && Array.isArray(data.conversations)) {
+          vault.platform = "grok";
+          data.conversations.forEach((conversation, index) => addGrokConversation(vault, conversation, index));
+        } else if (data && data.mapping) {
+          vault.platform = "chatgpt";
+          addChatGptConversation(vault, data, 0);
+        } else {
+          vault.platform = "generic";
+          walkGenericExport(vault, data);
+        }
+
+        vault.messages = vault.conversations.flatMap(conversation =>
+          conversation.messages.map(message => ({
+            ...message,
+            convo: conversation.title,
+            convoId: conversation.id,
+          }))
+        );
+        return vault;
+      }
+
+      function addChatGptConversation(vault, conversation, index) {
+        const title = conversation?.title || `Conversation ${index + 1}`;
+        const messages = [];
+        const mapping = conversation?.mapping || {};
+
+        Object.values(mapping).forEach(node => {
+          const message = node?.message;
+          if (!message || !message.content) return;
+
+          let text = "";
+          const parts = message.content.parts;
+          if (Array.isArray(parts)) {
+            text = parts.map(part => typeof part === "string" ? part : JSON.stringify(part)).join("\n");
+          } else if (typeof message.content.text === "string") {
+            text = message.content.text;
+          }
+
+          if (text.trim()) {
+            messages.push({
+              role: message.author?.role || "unknown",
+              time: message.create_time || 0,
+              text,
+            });
+          }
+        });
+
+        messages.sort((a, b) => (a.time || 0) - (b.time || 0));
+        if (messages.length) {
+          vault.conversations.push({ id: `c${vault.conversations.length}`, title, messages });
+        }
+      }
+
+      function addGrokConversation(vault, conversation, index) {
+        const title = conversation?.conversation?.title || conversation?.title || `Grok Conversation ${index + 1}`;
+        const messages = [];
+        const responses = conversation?.responses || conversation?.messages || [];
+
+        responses.forEach(response => {
+          const item = response?.response || response;
+          const text = item?.message || item?.text || item?.content || "";
+          if (String(text).trim()) {
+            messages.push({
+              role: item?.sender || item?.role || "unknown",
+              time: item?.createTime || item?.createdAt || 0,
+              text: String(text),
+            });
+          }
+        });
+
+        if (messages.length) {
+          vault.conversations.push({ id: `c${vault.conversations.length}`, title, messages });
+        }
+      }
+
+      function walkGenericExport(vault, data) {
+        const candidateArrays = [];
+        (function recurse(value) {
+          if (!value || typeof value !== "object") return;
+          if (Array.isArray(value)) {
+            if (value.some(item => item && typeof item === "object" && (item.message || item.text || item.content))) {
+              candidateArrays.push(value);
+            }
+            value.forEach(recurse);
+            return;
+          }
+          Object.values(value).forEach(recurse);
+        })(data);
+
+        candidateArrays.slice(0, 200).forEach((items, index) => {
+          const messages = items.map(item => ({
+            role: item.role || item.sender || "unknown",
+            time: item.time || item.created_at || item.createdAt || 0,
+            text: String(item.message || item.text || item.content || ""),
+          })).filter(message => message.text.trim());
+
+          if (messages.length) {
+            vault.conversations.push({ id: `c${vault.conversations.length}`, title: `Generic Thread ${index + 1}`, messages });
+          }
+        });
+      }
+
+      function mergeVaults(vaults, sourceName) {
+        const merged = createEmptyVault();
+        merged.source = sourceName;
+        merged.platform = [...new Set(vaults.map(vault => vault.platform))].join("+") || "unknown";
+        merged.imports = vaults.flatMap(vault => vault.imports);
+
+        vaults.forEach(vault => {
+          vault.conversations.forEach(conversation => {
+            merged.conversations.push({
+              id: `c${merged.conversations.length}`,
+              title: conversation.title,
+              messages: conversation.messages,
+            });
+          });
+        });
+
+        merged.messages = merged.conversations.flatMap(conversation =>
+          conversation.messages.map(message => ({
+            ...message,
+            convo: conversation.title,
+            convoId: conversation.id,
+          }))
+        );
+        return merged;
+      }
+
+      function analyzeVault() {
+        const vault = civState.vault;
+        vault.code = [];
+        vault.stories = [];
+        vault.prompts = [];
+        vault.commands = [];
+        vault.projects = [];
+        vault.files = [];
+        vault.topics = {};
+        vault.money = [];
+
+        vault.conversations.forEach(conversation => {
+          const fullText = conversation.messages.map(message => message.text).join("\n\n");
+          extractCode(conversation);
+          extractPrompts(conversation);
+          extractStories(conversation);
+          extractCommands(conversation);
+          uniqueWords(`${conversation.title} ${fullText}`).forEach(word => {
+            vault.topics[word] = (vault.topics[word] || 0) + 1;
+          });
+        });
+
+        detectProjects();
+        rebuildFiles();
+        scoreMoney();
+      }
+
+      function extractCode(conversation) {
+        conversation.messages.forEach(message => {
+          const codeBlockRe = /```([a-zA-Z0-9+#._-]*)?\n?([\s\S]*?)```/g;
+          let match;
+          while ((match = codeBlockRe.exec(message.text))) {
+            const lang = (match[1] || "").trim().toLowerCase();
+            const code = match[2].trim();
+            if (code.length > 5) {
+              civState.vault.code.push({
+                id: `code-${civState.vault.code.length}`,
+                convo: conversation.title,
+                role: message.role,
+                lang: lang || inferLanguage(code),
+                code,
+                file: guessFileName(message.text, lang, code, civState.vault.code.length),
+              });
+            }
+          }
+        });
+      }
+
+      function inferLanguage(code) {
+        if (/<html|<!doctype/i.test(code)) return "html";
+        if (/function |const |let |document\.|=>/.test(code)) return "javascript";
+        if (/def |import |print\(|from /.test(code)) return "python";
+        if (/SELECT |CREATE TABLE/i.test(code)) return "sql";
+        if (/^\s*[{[]/.test(code)) return "json";
+        if (/^[.#]?[a-z0-9_-]+\s*\{|\:root/.test(code)) return "css";
+        if (/^#\s|^- /.test(code)) return "markdown";
+        return "text";
+      }
+
+      function guessFileName(context, lang, code, index) {
+        const fromContext = context.match(/(?:file|path|save as|create|update|replace)\s+[`"']?([\w./-]+\.[a-z0-9]+)[`"']?/i);
+        const fromCode = code.match(/(?:filename|file):\s*([\w./-]+\.[a-z0-9]+)/i);
+        if (fromContext) return normalizeFileName(fromContext[1]);
+        if (fromCode) return normalizeFileName(fromCode[1]);
+        const ext = {
+          javascript: "js",
+          js: "js",
+          typescript: "ts",
+          ts: "ts",
+          python: "py",
+          html: "html",
+          css: "css",
+          json: "json",
+          sql: "sql",
+          markdown: "md",
+          md: "md",
+        }[lang] || "txt";
+        return `recovered/snippet-${index + 1}.${ext}`;
+      }
+
+      function normalizeFileName(fileName) {
+        return String(fileName || "")
+          .replace(/^\/+/, "")
+          .replace(/\.\.+/g, ".")
+          .replace(/[^\w./-]+/g, "-")
+          .slice(0, 180) || "recovered/snippet.txt";
+      }
+
+      function extractPrompts(conversation) {
+        conversation.messages.forEach(message => {
+          if (CIV_PROMPT_RE.test(message.text) && message.text.length > 160) {
+            civState.vault.prompts.push({
+              convo: conversation.title,
+              role: message.role,
+              type: promptType(message.text),
+              text: message.text.slice(0, 12000),
+            });
+          }
+        });
+      }
+
+      function promptType(text) {
+        if (/image|thumbnail|logo|hero/i.test(text)) return "Image Prompt";
+        if (/codex|terminal|commands/i.test(text)) return "Terminal/Codex";
+        if (/gpt builder|instruction set|system prompt/i.test(text)) return "GPT Instructions";
+        if (/seo|content|article/i.test(text)) return "SEO/Content";
+        return "General Prompt";
+      }
+
+      function extractStories(conversation) {
+        conversation.messages.forEach(message => {
+          const noCode = message.text.replace(/```[\s\S]*?```/g, "");
+          if (noCode.length > 700 && (CIV_STORY_RE.test(noCode) || /["]/.test(noCode))) {
+            civState.vault.stories.push({
+              convo: conversation.title,
+              role: message.role,
+              genre: genreFor(noCode),
+              text: noCode.slice(0, 20000),
+            });
+          }
+        });
+      }
+
+      function genreFor(text) {
+        if (/cyberpunk|neon|ai|robot/i.test(text)) return "Sci-Fi";
+        if (/dragon|magic|wizard|enchanted/i.test(text)) return "Fantasy";
+        if (/horror|blood|dark|monster/i.test(text)) return "Horror";
+        if (/business|startup|money/i.test(text)) return "Business Narrative";
+        return "General";
+      }
+
+      function extractCommands(conversation) {
+        conversation.messages.forEach(message => {
+          const commands = message.text.split("\n").filter(line => CIV_COMMAND_RE.test(line));
+          if (commands.length) {
+            civState.vault.commands.push({
+              id: `cmd-${civState.vault.commands.length}`,
+              convo: conversation.title,
+              role: message.role,
+              commands: commands.join("\n"),
+            });
+          }
+        });
+      }
+
+      function detectProjects() {
+        const projectMap = {};
+        civState.vault.conversations.forEach(conversation => {
+          const fullText = `${conversation.title} ${conversation.messages.map(message => message.text).join(" ")}`.slice(0, 80000);
+          CIV_PROJECT_SEEDS.forEach(seed => {
+            if (new RegExp(seed.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i").test(fullText)) {
+              ensureProject(projectMap, seed, fullText).conversations += 1;
+            }
+          });
+
+          if (/(?:build|create|make|develop).{0,80}(?:app|tool|site|platform|auditor|engine)/i.test(fullText)) {
+            const name = conversation.title.replace(/[:|-].*/, "").slice(0, 60) || "Untitled Project";
+            ensureProject(projectMap, name, fullText).conversations += 1;
+          }
+        });
+
+        Object.values(projectMap).forEach(project => {
+          const projectKey = project.name.toLowerCase();
+          project.code = civState.vault.code.filter(item => relatedToProject(projectKey, item.convo)).length;
+          project.prompts = civState.vault.prompts.filter(item => relatedToProject(projectKey, item.convo)).length;
+          project.stories = civState.vault.stories.filter(item => relatedToProject(projectKey, item.convo)).length;
+          project.commands = civState.vault.commands.filter(item => relatedToProject(projectKey, item.convo)).length;
+          project.score = Math.min(99, 25 + project.conversations * 8 + project.code * 10 + project.prompts * 6 + project.commands * 5 + (CIV_MONEY_RE.test(project.summary) ? 20 : 0));
+          project.next = projectNextSteps(project);
+        });
+
+        civState.vault.projects = Object.values(projectMap).sort((a, b) => b.score - a.score);
+      }
+
+      function ensureProject(projectMap, name, text) {
+        if (!projectMap[name]) {
+          projectMap[name] = {
+            name,
+            conversations: 0,
+            code: 0,
+            prompts: 0,
+            stories: 0,
+            commands: 0,
+            summary: summarizeText(text),
+            next: [],
+            score: 0,
+          };
+        } else if (!projectMap[name].summary) {
+          projectMap[name].summary = summarizeText(text);
+        }
+        return projectMap[name];
+      }
+
+      function relatedToProject(projectKey, conversationTitle) {
+        const convoKey = String(conversationTitle || "").toLowerCase();
+        return convoKey.includes(projectKey) || projectKey.includes(convoKey);
+      }
+
+      function summarizeText(text) {
+        const sentences = text.replace(/\s+/g, " ").split(/(?<=[.!?])\s+/).filter(sentence => sentence.length > 35);
+        return (sentences.slice(0, 2).join(" ") || text.slice(0, 220)).slice(0, 360);
+      }
+
+      function projectNextSteps(project) {
+        const next = [];
+        if (!project.code) next.push("Recover or generate the actual source files.");
+        if (!project.prompts) next.push("Create a build/delegation prompt for Codex, Claude, or Kimi.");
+        if (!project.commands) next.push("Capture repeatable terminal commands for setup, build, and deployment.");
+        if (project.score > 60) next.push("Package as a product page with CTA, lead capture, and implementation offer.");
+        next.push("Export a project brief and hand it to your coding agent.");
+        return next;
+      }
+
+      function rebuildFiles() {
+        const latestByFile = {};
+        civState.vault.code.forEach(item => {
+          latestByFile[item.file] = item;
+        });
+        civState.vault.files = Object.values(latestByFile).sort((a, b) => a.file.localeCompare(b.file));
+      }
+
+      function scoreMoney() {
+        civState.vault.money = civState.vault.projects.map(project => {
+          const score = project.score + (CIV_MONEY_RE.test(project.summary) ? 15 : 0);
+          let path = "Lead magnet + service upsell";
+          if (/auditor|vault|tool|platform|review|nocode/i.test(project.name)) path = "SaaS/pro tool + affiliate backend";
+          if (/soundscape|story|prompt/i.test(project.name)) path = "Digital product + content funnel";
+          return { ...project, moneyScore: Math.min(100, score), path };
+        }).sort((a, b) => b.moneyScore - a.moneyScore);
+      }
+
+      function renderAll() {
+        const vault = civState.vault;
+        byId("civ-main-title").textContent = vault.source ? "Chat Intelligence Vault" : "Upload an export to begin";
+        byId("civ-main-subtitle").textContent = vault.source
+          ? `${vault.source} | ${vault.platform} | ${vault.messages.length} messages analyzed locally`
+          : "Everything runs in your browser. No API calls, no Supabase writes, no n8n automation.";
+        renderMetrics();
+        renderDashboard();
+        renderProjects();
+        renderCodebase();
+        renderPrompts();
+        renderCommands();
+        renderStories();
+        renderSearch();
+        renderMoney();
+        renderExports();
+        updatePills();
+      }
+
+      function renderMetrics() {
+        const vault = civState.vault;
+        const langs = new Set(vault.code.map(item => item.lang));
+        const metrics = [
+          ["Convos", vault.conversations.length],
+          ["Messages", vault.messages.length],
+          ["Projects", vault.projects.length],
+          ["Code", vault.code.length],
+          ["Prompts", vault.prompts.length],
+          ["Commands", vault.commands.length],
+          ["Stories", vault.stories.length],
+          ["Files", vault.files.length],
+          ["Langs", langs.size],
+        ];
+        byId("civ-metrics").innerHTML = metrics.map(([label, value]) => `<span class="civ-metric"><b>${value}</b> ${label}</span>`).join("");
+      }
+
+      function updatePills() {
+        const vault = civState.vault;
+        const counts = {
+          dashboard: vault.conversations.length,
+          projects: vault.projects.length,
+          code: vault.files.length,
+          prompts: vault.prompts.length,
+          commands: vault.commands.length,
+          stories: vault.stories.length,
+          search: vault.messages.length,
+          money: vault.money.length,
+          exports: 5,
+        };
+        Object.entries(counts).forEach(([key, value]) => {
+          const pill = byId(`civ-pill-${key}`);
+          if (pill) pill.textContent = value;
+        });
+      }
+
+      function renderDashboard() {
+        const vault = civState.vault;
+        const topics = Object.entries(vault.topics)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 24)
+          .map(([topic, count]) => `<span class="civ-tag">${escapeHtml(topic)} ${count}</span>`)
+          .join("");
+
+        byId("civ-panel-dashboard").innerHTML = `
+          <div class="civ-grid">
+            <div class="civ-card civ-span-8">
+              <h2>Vault Overview</h2>
+              <p class="civ-muted">This tool turns ChatGPT and Grok exports into searchable local assets: projects, code blocks, prompts, terminal commands, story/IP fragments, and monetization opportunities.</p>
+              <div class="civ-controls">
+                <button class="civ-btn civ-btn-primary" type="button" data-tab-jump="projects">Review Projects</button>
+                <button class="civ-btn" type="button" data-tab-jump="code">Recover Code</button>
+                <button class="civ-btn" type="button" data-action="export-markdown">Export Master Brief</button>
+                <button class="civ-btn" type="button" data-action="send-auditor">Send to Vibe Auditor</button>
+              </div>
+              <p class="civ-footer-note">Current status: local-only. Phase 3 should connect recovered project intelligence to the Vibe Auditor without fabricating audit results.</p>
+            </div>
+            <div class="civ-card civ-span-4">
+              <h3>Top Topics</h3>
+              <div class="civ-tags">${topics || ""}</div>
+              ${topics ? "" : emptyState("No topics yet. Upload an export to populate this panel.")}
+            </div>
+            <div class="civ-card civ-span-12">
+              <h3>Highest Value Assets</h3>
+              ${assetRows()}
+            </div>
+          </div>
+        `;
+      }
+
+      function assetRows() {
+        const vault = civState.vault;
+        const rows = [
+          ...vault.money.slice(0, 5).map(item => ["Project", item.name, item.moneyScore]),
+          ...vault.prompts.slice(0, 3).map(item => ["Prompt", item.type, 60]),
+          ...vault.commands.slice(0, 3).map(item => ["Command Set", item.convo, 58]),
+          ...vault.files.slice(0, 3).map(item => ["File", item.file, 55]),
+        ];
+
+        if (!rows.length) return emptyState("Upload an export to see recovered assets.");
+        return `
+          <table class="civ-table">
+            <thead><tr><th>Type</th><th>Asset</th><th>Local Score</th></tr></thead>
+            <tbody>${rows.map(row => `<tr><td>${escapeHtml(row[0])}</td><td>${escapeHtml(row[1])}</td><td class="civ-score">${row[2]}</td></tr>`).join("")}</tbody>
+          </table>
+        `;
+      }
+
+      function renderProjects() {
+        byId("civ-panel-projects").innerHTML = `
+          <div class="civ-controls">
+            <input class="civ-input" id="civ-project-filter" placeholder="Filter projects...">
+            <button class="civ-btn" type="button" data-action="export-projects">Export Project Briefs</button>
+          </div>
+          <div class="civ-list" id="civ-project-list"></div>
+        `;
+        byId("civ-project-filter").addEventListener("input", renderProjectList);
+        renderProjectList();
+      }
+
+      function renderProjectList() {
+        const filter = (byId("civ-project-filter")?.value || "").toLowerCase();
+        const projects = civState.vault.projects.filter(project => !filter || JSON.stringify(project).toLowerCase().includes(filter));
+        byId("civ-project-list").innerHTML = projects.length ? projects.map(project => `
+          <article class="civ-item">
+            <div class="civ-item-head">
+              <div>
+                <div class="civ-item-title">${escapeHtml(project.name)}</div>
+                <div class="civ-muted civ-small">${escapeHtml(project.summary)}</div>
+              </div>
+              <div class="civ-score">${project.score}/100</div>
+            </div>
+            <div class="civ-tags">
+              <span class="civ-tag">${project.conversations} convos</span>
+              <span class="civ-tag">${project.code} code</span>
+              <span class="civ-tag">${project.prompts} prompts</span>
+              <span class="civ-tag">${project.commands} commands</span>
+            </div>
+            <h3>Next best steps</h3>
+            <ol>${project.next.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ol>
+          </article>
+        `).join("") : emptyState("No projects detected yet. Try an export with project planning or build conversations.");
+      }
+
+      function renderCodebase() {
+        byId("civ-panel-code").innerHTML = `
+          <div class="civ-controls">
+            <input class="civ-input" id="civ-code-filter" placeholder="Search files, code, or language...">
+            <button class="civ-btn" type="button" data-action="export-code-zip">Download Rebuilt ZIP</button>
+            <button class="civ-btn" type="button" data-action="export-code-markdown">Export Code Markdown</button>
+          </div>
+          <div class="civ-list" id="civ-file-list"></div>
+        `;
+        byId("civ-code-filter").addEventListener("input", renderFiles);
+        renderFiles();
+      }
+
+      function renderFiles() {
+        const filter = (byId("civ-code-filter")?.value || "").toLowerCase();
+        const files = civState.vault.files.filter(file => !filter || `${file.file} ${file.lang} ${file.code}`.toLowerCase().includes(filter));
+        byId("civ-file-list").innerHTML = files.length ? files.map(file => `
+          <article class="civ-item">
+            <div class="civ-item-head">
+              <div>
+                <div class="civ-item-title">${escapeHtml(file.file)}</div>
+                <div class="civ-muted civ-small">${escapeHtml(file.convo)} | ${escapeHtml(file.lang)}</div>
+              </div>
+              <button class="civ-btn" type="button" data-download-code="${escapeAttr(file.id)}">Download</button>
+            </div>
+            <pre class="civ-code-block"><code>${escapeHtml(file.code)}</code></pre>
+          </article>
+        `).join("") : emptyState("No code blocks found yet. Code must appear inside fenced Markdown blocks.");
+      }
+
+      function renderPrompts() {
+        byId("civ-panel-prompts").innerHTML = `
+          <div class="civ-controls">
+            <input class="civ-input" id="civ-prompt-filter" placeholder="Search prompts...">
+            <button class="civ-btn" type="button" data-action="export-prompts">Export Prompt Vault</button>
+          </div>
+          <div class="civ-list" id="civ-prompt-list"></div>
+        `;
+        byId("civ-prompt-filter").addEventListener("input", renderPromptList);
+        renderPromptList();
+      }
+
+      function renderPromptList() {
+        const filter = (byId("civ-prompt-filter")?.value || "").toLowerCase();
+        const prompts = civState.vault.prompts.filter(prompt => !filter || `${prompt.type} ${prompt.convo} ${prompt.text}`.toLowerCase().includes(filter));
+        byId("civ-prompt-list").innerHTML = prompts.length ? prompts.map(prompt => `
+          <article class="civ-item">
+            <div class="civ-item-head">
+              <div>
+                <div class="civ-item-title">${escapeHtml(prompt.type)}</div>
+                <div class="civ-muted civ-small">${escapeHtml(prompt.convo)} | ${escapeHtml(prompt.role)}</div>
+              </div>
+            </div>
+            <div class="civ-story">${escapeHtml(truncate(prompt.text, 1800))}</div>
+          </article>
+        `).join("") : emptyState("No reusable prompts detected yet.");
+      }
+
+      function renderCommands() {
+        byId("civ-panel-commands").innerHTML = `
+          <div class="civ-controls">
+            <input class="civ-input" id="civ-command-filter" placeholder="Search terminal commands...">
+            <button class="civ-btn" type="button" data-action="export-commands">Export Commands Markdown</button>
+          </div>
+          <div class="civ-list" id="civ-command-list"></div>
+        `;
+        byId("civ-command-filter").addEventListener("input", renderCommandList);
+        renderCommandList();
+      }
+
+      function renderCommandList() {
+        const filter = (byId("civ-command-filter")?.value || "").toLowerCase();
+        const commands = civState.vault.commands.filter(command => !filter || `${command.convo} ${command.commands}`.toLowerCase().includes(filter));
+        byId("civ-command-list").innerHTML = commands.length ? commands.map(command => `
+          <article class="civ-item">
+            <div class="civ-item-head">
+              <div>
+                <div class="civ-item-title">${escapeHtml(command.convo)}</div>
+                <div class="civ-muted civ-small">${escapeHtml(command.role)}</div>
+              </div>
+            </div>
+            <pre class="civ-command-block">${escapeHtml(command.commands)}</pre>
+          </article>
+        `).join("") : emptyState("No terminal commands detected yet.");
+      }
+
+      function renderStories() {
+        byId("civ-panel-stories").innerHTML = `
+          <div class="civ-controls">
+            <input class="civ-input" id="civ-story-filter" placeholder="Search stories or IP...">
+            <button class="civ-btn" type="button" data-action="export-stories">Export Stories/IP</button>
+          </div>
+          <div class="civ-list" id="civ-story-list"></div>
+        `;
+        byId("civ-story-filter").addEventListener("input", renderStoryList);
+        renderStoryList();
+      }
+
+      function renderStoryList() {
+        const filter = (byId("civ-story-filter")?.value || "").toLowerCase();
+        const stories = civState.vault.stories.filter(story => !filter || `${story.genre} ${story.convo} ${story.text}`.toLowerCase().includes(filter));
+        byId("civ-story-list").innerHTML = stories.length ? stories.map(story => `
+          <article class="civ-item">
+            <div class="civ-item-head">
+              <div>
+                <div class="civ-item-title">${escapeHtml(story.genre)} IP Segment</div>
+                <div class="civ-muted civ-small">${escapeHtml(story.convo)} | ${escapeHtml(story.role)}</div>
+              </div>
+            </div>
+            <div class="civ-story">${escapeHtml(truncate(story.text, 2200))}</div>
+          </article>
+        `).join("") : emptyState("No story or IP segments detected yet.");
+      }
+
+      function renderSearch() {
+        byId("civ-panel-search").innerHTML = `
+          <div class="civ-card">
+            <h2>Search Your AI History</h2>
+            <p class="civ-muted">Search across messages, projects, prompts, code, commands, and story assets extracted from the local vault.</p>
+            <div class="civ-controls">
+              <input class="civ-input" id="civ-search-box" placeholder="Example: find the revenue plan for Vibe Auditor">
+              <button class="civ-btn civ-btn-primary" type="button" data-action="search">Search</button>
+            </div>
+            <div id="civ-search-results" class="civ-list"></div>
+          </div>
+        `;
+        byId("civ-search-box").addEventListener("keydown", event => {
+          if (event.key === "Enter") runSearch();
+        });
+      }
+
+      function runSearch() {
+        const query = byId("civ-search-box").value;
+        const queryWords = uniqueWords(query);
+        if (!queryWords.length) {
+          byId("civ-search-results").innerHTML = emptyState("Enter a search phrase first.");
+          return;
+        }
+
+        const vault = civState.vault;
+        const assets = [
+          ...vault.messages.map(message => ({ type: "Message", title: message.convo, text: message.text })),
+          ...vault.projects.map(project => ({ type: "Project", title: project.name, text: `${project.summary} ${project.next.join(" ")}` })),
+          ...vault.prompts.map(prompt => ({ type: "Prompt", title: `${prompt.type} | ${prompt.convo}`, text: prompt.text })),
+          ...vault.commands.map(command => ({ type: "Commands", title: command.convo, text: command.commands })),
+          ...vault.code.map(code => ({ type: "Code", title: code.file, text: code.code })),
+          ...vault.stories.map(story => ({ type: "Story/IP", title: `${story.genre} | ${story.convo}`, text: story.text })),
+        ];
+
+        const results = assets.map(asset => {
+          const assetWords = uniqueWords(`${asset.title} ${asset.text}`);
+          const lowered = `${asset.title} ${asset.text}`.toLowerCase();
+          const score = queryWords.reduce((total, word) => total + (assetWords.includes(word) ? 3 : 0) + (lowered.includes(word) ? 1 : 0), 0);
+          return { ...asset, score };
+        }).filter(result => result.score > 0).sort((a, b) => b.score - a.score).slice(0, 30);
+
+        byId("civ-search-results").innerHTML = results.length ? results.map(result => `
+          <article class="civ-item">
+            <div class="civ-item-head">
+              <div>
+                <div class="civ-item-title">${escapeHtml(result.type)} | ${escapeHtml(result.title)}</div>
+                <div class="civ-muted civ-small">Relevance ${result.score}</div>
+              </div>
+            </div>
+            <div class="civ-story">${escapeHtml(truncate(result.text, 1200))}</div>
+          </article>
+        `).join("") : emptyState("No matches. Try broader terms.");
+      }
+
+      function renderMoney() {
+        byId("civ-panel-money").innerHTML = `<div class="civ-list">${
+          civState.vault.money.length
+            ? civState.vault.money.map(item => `
+              <article class="civ-item">
+                <div class="civ-item-head">
+                  <div>
+                    <div class="civ-item-title">${escapeHtml(item.name)}</div>
+                    <div class="civ-muted civ-small">${escapeHtml(item.path)}</div>
+                  </div>
+                  <div class="civ-score">${item.moneyScore}/100</div>
+                </div>
+                <div class="civ-bar"><span style="width:${item.moneyScore}%"></span></div>
+                <p class="civ-muted">${escapeHtml(item.summary)}</p>
+                <h3>Fastest money move</h3>
+                <p>${escapeHtml(item.path)}. Create a landing page, capture emails, offer an audit/report/service tier, and convert the best extracted assets into content.</p>
+              </article>
+            `).join("")
+            : emptyState("No monetizable projects detected yet.")
+        }</div>`;
+      }
+
+      function renderExports() {
+        byId("civ-panel-exports").innerHTML = `
+          <div class="civ-grid">
+            <div class="civ-card civ-span-6">
+              <h2>Export Everything</h2>
+              <p class="civ-muted">Create local handoff files for Codex, Claude, Kimi, GitHub, or your website.</p>
+              <div class="civ-controls">
+                <button class="civ-btn civ-btn-primary" type="button" data-action="export-markdown">Master Brief MD</button>
+                <button class="civ-btn" type="button" data-action="export-projects">Project Briefs MD</button>
+                <button class="civ-btn" type="button" data-action="export-prompts">Prompt Vault MD</button>
+                <button class="civ-btn" type="button" data-action="export-commands">Commands MD</button>
+                <button class="civ-btn" type="button" data-action="export-code-zip">Recovered Code ZIP</button>
+              </div>
+            </div>
+            <div class="civ-card civ-span-6">
+              <h2>Local Vault</h2>
+              <p class="civ-muted">Save the processed vault in browser storage or download the structured JSON. No cloud write happens in Phase 2.</p>
+              <div class="civ-controls">
+                <button class="civ-btn" type="button" data-action="save-local">Save Local</button>
+                <button class="civ-btn" type="button" data-action="load-local">Load Local</button>
+                <button class="civ-btn" type="button" data-action="download-json">Download JSON</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function emptyState(message) {
+        return `<div class="civ-empty">${escapeHtml(message)}</div>`;
+      }
+
+      function markdownHeader() {
+        const vault = civState.vault;
+        return `# Chat Intelligence Vault Export\n\nSource: ${vault.source || "No source loaded"}\nPlatform: ${vault.platform}\nConversations: ${vault.conversations.length}\nMessages: ${vault.messages.length}\n\n`;
+      }
+
+      function exportEverythingMarkdown() {
+        const vault = civState.vault;
+        const markdown = markdownHeader()
+          + "## Projects\n\n"
+          + vault.projects.map(project => `### ${project.name}\nScore: ${project.score}/100\n\n${project.summary}\n\nNext:\n${project.next.map(item => `- ${item}`).join("\n")}\n`).join("\n")
+          + "\n## Prompts\n\n"
+          + vault.prompts.map(prompt => `### ${prompt.type} - ${prompt.convo}\n\n${prompt.text}\n`).join("\n")
+          + "\n## Commands\n\n"
+          + vault.commands.map(command => `### ${command.convo}\n\n\`\`\`bash\n${command.commands}\n\`\`\`\n`).join("\n")
+          + "\n## Recovered Files\n\n"
+          + vault.files.map(file => `### ${file.file}\n\n\`\`\`${file.lang}\n${file.code}\n\`\`\`\n`).join("\n");
+        downloadTextFile("chat-intelligence-vault.md", markdown, "text/markdown");
+      }
+
+      function exportProjectsMarkdown() {
+        const markdown = markdownHeader() + civState.vault.projects.map(project => `## ${project.name}\nScore: ${project.score}/100\n\n${project.summary}\n\n${project.next.map(item => `- ${item}`).join("\n")}\n`).join("\n");
+        downloadTextFile("project-briefs.md", markdown, "text/markdown");
+      }
+
+      function exportPromptsMarkdown() {
+        const markdown = civState.vault.prompts.map(prompt => `## ${prompt.type} - ${prompt.convo}\n\n${prompt.text}\n`).join("\n");
+        downloadTextFile("prompt-vault.md", markdown || "# Prompt Vault\n\nNo prompts found.\n", "text/markdown");
+      }
+
+      function exportCommandsMarkdown() {
+        const markdown = civState.vault.commands.map(command => `## ${command.convo}\n\n\`\`\`bash\n${command.commands}\n\`\`\`\n`).join("\n");
+        downloadTextFile("terminal-commands.md", markdown || "# Terminal Commands\n\nNo commands found.\n", "text/markdown");
+      }
+
+      function exportStoriesMarkdown() {
+        const markdown = civState.vault.stories.map(story => `## ${story.genre} - ${story.convo}\n\n${story.text}\n`).join("\n");
+        downloadTextFile("stories-ip.md", markdown || "# Stories/IP\n\nNo story or IP segments found.\n", "text/markdown");
+      }
+
+      function exportCodeMarkdown() {
+        const markdown = civState.vault.files.map(file => `## ${file.file}\n\n\`\`\`${file.lang}\n${file.code}\n\`\`\`\n`).join("\n");
+        downloadTextFile("recovered-code.md", markdown || "# Recovered Code\n\nNo code files found.\n", "text/markdown");
+      }
+
+      function downloadVaultJson() {
+        downloadTextFile("chat-intelligence-vault.json", JSON.stringify(civState.vault, null, 2), "application/json");
+      }
+
+      function downloadSingleCode(id) {
+        const file = civState.vault.files.find(item => item.id === id);
+        if (!file) return;
+        downloadTextFile(file.file.split("/").pop() || "recovered-code.txt", file.code, "text/plain");
+      }
+
+      async function exportCodeZip() {
+        const files = civState.vault.files;
+        if (!files.length) {
+          setNotice("No recovered code files are available to export yet.", "error");
+          return;
+        }
+
+        const entries = files.map(file => ({
+          name: normalizeFileName(file.file),
+          text: file.code,
+        }));
+        entries.push({ name: "README.md", text: `${markdownHeader()}Recovered code files generated locally by Chat Intelligence Vault.\n` });
+        const blob = createZipBlob(entries);
+        saveBlob("recovered-codebase.zip", blob);
+      }
+
+      function saveLocalVault() {
+        localStorage.setItem(CIV_STORAGE_KEY, JSON.stringify(civState.vault));
+        setNotice("Vault saved locally in this browser.");
+      }
+
+      function loadLocalVault() {
+        const saved = localStorage.getItem(CIV_STORAGE_KEY);
+        if (!saved) {
+          setNotice("No saved vault was found in this browser.", "error");
+          return;
+        }
+        try {
+          civState.vault = JSON.parse(saved);
+          analyzeVault();
+          renderAll();
+          setNotice("Saved vault loaded from this browser.");
+        } catch (error) {
+          setNotice(`Saved vault could not be loaded: ${error instanceof Error ? error.message : error}`, "error");
+        }
+      }
+
+      function showVibeAuditorPlaceholder() {
+        setNotice("Coming next: connect recovered project intelligence to the Vibe Auditor.");
+      }
+
+      function downloadTextFile(name, text, type) {
+        saveBlob(name, new Blob([text], { type }));
+      }
+
+      function saveBlob(name, blob) {
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = name;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+      }
+
+      async function readZipEntries(arrayBuffer) {
+        const view = new DataView(arrayBuffer);
+        const eocdOffset = findEndOfCentralDirectory(view);
+        if (eocdOffset < 0) throw new Error("End of central directory not found.");
+
+        const totalEntries = view.getUint16(eocdOffset + 10, true);
+        const centralOffset = view.getUint32(eocdOffset + 16, true);
+        let offset = centralOffset;
+        const entries = [];
+
+        for (let i = 0; i < totalEntries; i += 1) {
+          if (view.getUint32(offset, true) !== 0x02014b50) throw new Error("Central directory is invalid.");
+          const method = view.getUint16(offset + 10, true);
+          const compressedSize = view.getUint32(offset + 20, true);
+          const nameLength = view.getUint16(offset + 28, true);
+          const extraLength = view.getUint16(offset + 30, true);
+          const commentLength = view.getUint16(offset + 32, true);
+          const localOffset = view.getUint32(offset + 42, true);
+          const nameBytes = new Uint8Array(arrayBuffer, offset + 46, nameLength);
+          const name = new TextDecoder().decode(nameBytes);
+
+          if (!name.endsWith("/")) {
+            const localNameLength = view.getUint16(localOffset + 26, true);
+            const localExtraLength = view.getUint16(localOffset + 28, true);
+            const dataOffset = localOffset + 30 + localNameLength + localExtraLength;
+            const compressed = new Uint8Array(arrayBuffer, dataOffset, compressedSize);
+            const bytes = method === 0 ? compressed : await inflateZipData(method, compressed);
+            entries.push({ name, bytes });
+          }
+
+          offset += 46 + nameLength + extraLength + commentLength;
+        }
+
+        return entries;
+      }
+
+      function findEndOfCentralDirectory(view) {
+        const minimum = Math.max(0, view.byteLength - 65557);
+        for (let offset = view.byteLength - 22; offset >= minimum; offset -= 1) {
+          if (view.getUint32(offset, true) === 0x06054b50) return offset;
+        }
+        return -1;
+      }
+
+      async function inflateZipData(method, compressed) {
+        if (method !== 8) {
+          throw new Error(`ZIP compression method ${method} is not supported.`);
+        }
+        if (typeof DecompressionStream === "undefined") {
+          throw new Error("This browser cannot decompress deflated ZIP files locally.");
+        }
+        const stream = new Blob([compressed]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+        return new Uint8Array(await new Response(stream).arrayBuffer());
+      }
+
+      function createZipBlob(entries) {
+        const encoder = new TextEncoder();
+        const fileRecords = [];
+        const centralRecords = [];
+        let offset = 0;
+
+        entries.forEach(entry => {
+          const name = normalizeFileName(entry.name);
+          const nameBytes = encoder.encode(name);
+          const data = encoder.encode(entry.text);
+          const crc = crc32(data);
+          const local = new Uint8Array(30 + nameBytes.length + data.length);
+          const localView = new DataView(local.buffer);
+          writeUint32(localView, 0, 0x04034b50);
+          writeUint16(localView, 4, 20);
+          writeUint16(localView, 6, 0);
+          writeUint16(localView, 8, 0);
+          writeUint16(localView, 10, 0);
+          writeUint16(localView, 12, 0);
+          writeUint32(localView, 14, crc);
+          writeUint32(localView, 18, data.length);
+          writeUint32(localView, 22, data.length);
+          writeUint16(localView, 26, nameBytes.length);
+          writeUint16(localView, 28, 0);
+          local.set(nameBytes, 30);
+          local.set(data, 30 + nameBytes.length);
+          fileRecords.push(local);
+
+          const central = new Uint8Array(46 + nameBytes.length);
+          const centralView = new DataView(central.buffer);
+          writeUint32(centralView, 0, 0x02014b50);
+          writeUint16(centralView, 4, 20);
+          writeUint16(centralView, 6, 20);
+          writeUint16(centralView, 8, 0);
+          writeUint16(centralView, 10, 0);
+          writeUint16(centralView, 12, 0);
+          writeUint16(centralView, 14, 0);
+          writeUint32(centralView, 16, crc);
+          writeUint32(centralView, 20, data.length);
+          writeUint32(centralView, 24, data.length);
+          writeUint16(centralView, 28, nameBytes.length);
+          writeUint16(centralView, 30, 0);
+          writeUint16(centralView, 32, 0);
+          writeUint16(centralView, 34, 0);
+          writeUint16(centralView, 36, 0);
+          writeUint32(centralView, 38, 0);
+          writeUint32(centralView, 42, offset);
+          central.set(nameBytes, 46);
+          centralRecords.push(central);
+          offset += local.length;
+        });
+
+        const centralSize = centralRecords.reduce((sum, record) => sum + record.length, 0);
+        const end = new Uint8Array(22);
+        const endView = new DataView(end.buffer);
+        writeUint32(endView, 0, 0x06054b50);
+        writeUint16(endView, 4, 0);
+        writeUint16(endView, 6, 0);
+        writeUint16(endView, 8, entries.length);
+        writeUint16(endView, 10, entries.length);
+        writeUint32(endView, 12, centralSize);
+        writeUint32(endView, 16, offset);
+        writeUint16(endView, 20, 0);
+
+        return new Blob([...fileRecords, ...centralRecords, end], { type: "application/zip" });
+      }
+
+      function writeUint16(view, offset, value) {
+        view.setUint16(offset, value, true);
+      }
+
+      function writeUint32(view, offset, value) {
+        view.setUint32(offset, value >>> 0, true);
+      }
+
+      function crc32(bytes) {
+        let crc = -1;
+        for (let i = 0; i < bytes.length; i += 1) {
+          crc = (crc >>> 8) ^ CRC_TABLE[(crc ^ bytes[i]) & 0xff];
+        }
+        return (crc ^ -1) >>> 0;
+      }
+
+      const CRC_TABLE = (() => {
+        const table = new Uint32Array(256);
+        for (let i = 0; i < 256; i += 1) {
+          let value = i;
+          for (let j = 0; j < 8; j += 1) {
+            value = value & 1 ? 0xedb88320 ^ (value >>> 1) : value >>> 1;
+          }
+          table[i] = value >>> 0;
+        }
+        return table;
+      })();
+
+      function bindEvents() {
+        const fileInput = byId("civ-file-input");
+        const uploadZone = byId("civ-upload-zone");
+
+        fileInput.addEventListener("change", event => {
+          const file = event.target.files?.[0];
+          if (file) handleFile(file);
+          event.target.value = "";
+        });
+
+        uploadZone.addEventListener("dragover", event => {
+          event.preventDefault();
+          uploadZone.classList.add("is-over");
+        });
+
+        uploadZone.addEventListener("dragleave", () => uploadZone.classList.remove("is-over"));
+
+        uploadZone.addEventListener("drop", event => {
+          event.preventDefault();
+          uploadZone.classList.remove("is-over");
+          const file = event.dataTransfer?.files?.[0];
+          if (file) handleFile(file);
+        });
+
+        document.addEventListener("click", event => {
+          const tabButton = event.target.closest("[data-tab]");
+          if (tabButton) {
+            activateTab(tabButton.dataset.tab);
+            return;
+          }
+
+          const tabJump = event.target.closest("[data-tab-jump]");
+          if (tabJump) {
+            activateTab(tabJump.dataset.tabJump);
+            return;
+          }
+
+          const codeDownload = event.target.closest("[data-download-code]");
+          if (codeDownload) {
+            downloadSingleCode(codeDownload.dataset.downloadCode);
+            return;
+          }
+
+          const action = event.target.closest("[data-action]")?.dataset.action;
+          if (!action) return;
+          runAction(action);
+        });
+      }
+
+      function runAction(action) {
+        const actions = {
+          "save-local": saveLocalVault,
+          "load-local": loadLocalVault,
+          "send-auditor": showVibeAuditorPlaceholder,
+          "export-markdown": exportEverythingMarkdown,
+          "export-projects": exportProjectsMarkdown,
+          "export-prompts": exportPromptsMarkdown,
+          "export-commands": exportCommandsMarkdown,
+          "export-stories": exportStoriesMarkdown,
+          "export-code-markdown": exportCodeMarkdown,
+          "export-code-zip": exportCodeZip,
+          "download-json": downloadVaultJson,
+          "search": runSearch,
+        };
+        actions[action]?.();
+      }
+
+      renderNav();
+      bindEvents();
+      renderAll();
+    })();
+  </script>
+</body>
+</html>

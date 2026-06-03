@@ -1,0 +1,19 @@
+{
+  "id": "artifact-sXPQws-wfT",
+  "type": "decision",
+  "source_conversation_id": "conv-906kc4NWYy",
+  "source_message_id": "msg-NPAV0DWcrz",
+  "title": "Detected decision",
+  "content": "Decision: preserve raw files first. Architecture should use parser adapters.\n```ts\nconsole.log('vault');\n```",
+  "tags": [
+    "detected",
+    "decision"
+  ],
+  "confidence": 0.62,
+  "created_at": "2026-06-03T09:43:37.938Z",
+  "lineage": {
+    "source_platform": "chatgpt",
+    "source_account": "sample-account",
+    "raw_path": "/Users/macdizzle/Desktop/no code empire revised/tools/internal/vault-ingestion-parser/samples/raw/chatgpt/conversations.json"
+  }
+}

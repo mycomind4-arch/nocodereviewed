@@ -1,0 +1,13 @@
+[
+  {
+    "id": "sample-conv-1",
+    "title": "Intelligence Vault Planning",
+    "create_time": 1780500000,
+    "update_time": 1780500600,
+    "mapping": {
+      "root": {"id": "root", "children": ["m1"]},
+      "m1": {"id": "m1", "message": {"author": {"role": "user"}, "create_time": 1780500001, "content": {"parts": ["Build a local-first vault ingestion workflow. Include Codex implementation instructions and preserve raw exports."]}}, "children": ["m2"]},
+      "m2": {"id": "m2", "message": {"author": {"role": "assistant"}, "create_time": 1780500002, "content": {"parts": ["Decision: preserve raw files first. Architecture should use parser adapters.\n```ts\nconsole.log('vault');\n```"]}}, "children": []}
+    }
+  }
+]

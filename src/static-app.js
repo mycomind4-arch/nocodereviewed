@@ -3292,7 +3292,7 @@ function reviewsPanel() {
     return categoryMatch && searchMatch;
   });
   return `
-    <section class="panel review-detail-page review-detail-page--${tool.slug}">
+    <section class="panel review-directory-page">
       <div class="panel-heading">
         <div><p class="eyebrow">Tool directory</p><h2>Browse no-code and AI builder reviews</h2></div>
         <label class="searchbox">${icon("search")}<input id="tool-search" value="${query}" placeholder="Search Lovable, Bolt, Replit, v0, Cursor..."></label>
@@ -7469,6 +7469,11 @@ function render() {
           <article>
             <strong>Fresh evidence</strong>
             <span>Scores expire when pricing, features, limits, or product behavior changes.</span>
+          </article>
+          <article>
+            <strong>Chat Intelligence Vault</strong>
+            <span>Upload ChatGPT or Grok exports to recover projects, prompts, code, commands, business ideas, and monetizable assets from your AI history.</span>
+            <a href="/tools/chat-intelligence-vault.html">Open Vault</a>
           </article>
         </div>
       </section>

@@ -1,0 +1,152 @@
+[
+  {
+    "id": "artifact-lZ8gw1kIhc",
+    "type": "codex_instruction",
+    "title": "Detected codex instruction",
+    "tags": [
+      "detected",
+      "codex_instruction"
+    ],
+    "confidence": 0.72,
+    "source_conversation_id": "conv-906kc4NWYy",
+    "source_message_id": "msg-X0X0P3Bgw6",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.937Z"
+  },
+  {
+    "id": "artifact-F6FA96om-G",
+    "type": "architecture",
+    "title": "Detected architecture",
+    "tags": [
+      "detected",
+      "architecture"
+    ],
+    "confidence": 0.66,
+    "source_conversation_id": "conv-906kc4NWYy",
+    "source_message_id": "msg-X0X0P3Bgw6",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.937Z"
+  },
+  {
+    "id": "artifact-4PtH5-PGOz",
+    "type": "workflow",
+    "title": "Detected workflow",
+    "tags": [
+      "detected",
+      "workflow"
+    ],
+    "confidence": 0.6,
+    "source_conversation_id": "conv-906kc4NWYy",
+    "source_message_id": "msg-X0X0P3Bgw6",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.937Z"
+  },
+  {
+    "id": "artifact-C3KNI52g4V",
+    "type": "todo",
+    "title": "Detected todo",
+    "tags": [
+      "detected",
+      "todo"
+    ],
+    "confidence": 0.54,
+    "source_conversation_id": "conv-906kc4NWYy",
+    "source_message_id": "msg-X0X0P3Bgw6",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.937Z"
+  },
+  {
+    "id": "artifact-ftm1G-tsvJ",
+    "type": "code",
+    "title": "Detected code block",
+    "tags": [
+      "detected",
+      "code-block"
+    ],
+    "confidence": 0.95,
+    "source_conversation_id": "conv-906kc4NWYy",
+    "source_message_id": "msg-NPAV0DWcrz",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.938Z"
+  },
+  {
+    "id": "artifact-WGRDMu8Y3a",
+    "type": "architecture",
+    "title": "Detected architecture",
+    "tags": [
+      "detected",
+      "architecture"
+    ],
+    "confidence": 0.66,
+    "source_conversation_id": "conv-906kc4NWYy",
+    "source_message_id": "msg-NPAV0DWcrz",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.938Z"
+  },
+  {
+    "id": "artifact-sXPQws-wfT",
+    "type": "decision",
+    "title": "Detected decision",
+    "tags": [
+      "detected",
+      "decision"
+    ],
+    "confidence": 0.62,
+    "source_conversation_id": "conv-906kc4NWYy",
+    "source_message_id": "msg-NPAV0DWcrz",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.938Z"
+  },
+  {
+    "id": "artifact-m7AIC0-ZgF",
+    "type": "decision",
+    "title": "Detected decision",
+    "tags": [
+      "detected",
+      "decision"
+    ],
+    "confidence": 0.62,
+    "source_document_id": "doc-pBE401GU-h",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.935Z"
+  },
+  {
+    "id": "artifact-VgOILU2N_2",
+    "type": "workflow",
+    "title": "Detected workflow",
+    "tags": [
+      "detected",
+      "workflow"
+    ],
+    "confidence": 0.6,
+    "source_document_id": "doc-pBE401GU-h",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.935Z"
+  },
+  {
+    "id": "artifact-649KjK4KZZ",
+    "type": "todo",
+    "title": "Detected todo",
+    "tags": [
+      "detected",
+      "todo"
+    ],
+    "confidence": 0.54,
+    "source_document_id": "doc-pBE401GU-h",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.935Z"
+  },
+  {
+    "id": "artifact-WwXYhV8DPC",
+    "type": "evidence_claim",
+    "title": "Detected evidence claim",
+    "tags": [
+      "detected",
+      "evidence_claim"
+    ],
+    "confidence": 0.64,
+    "source_document_id": "doc-pBE401GU-h",
+    "source_platform": "chatgpt",
+    "created_at": "2026-06-03T09:43:37.935Z"
+  }
+]

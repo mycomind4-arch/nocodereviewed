@@ -1,0 +1,168 @@
+{
+  "id": "conv-906kc4NWYy",
+  "source": "chatgpt",
+  "source_account": "sample-account",
+  "source_conversation_id": "sample-conv-1",
+  "title": "Intelligence Vault Planning",
+  "created_at": "2026-06-03T15:20:00.000Z",
+  "updated_at": "2026-06-03T15:30:00.000Z",
+  "imported_at": "2026-06-03T09:43:37.938Z",
+  "tags": [
+    "chatgpt"
+  ],
+  "raw_path": "/Users/macdizzle/Desktop/no code empire revised/tools/internal/vault-ingestion-parser/samples/raw/chatgpt/conversations.json",
+  "messages": [
+    {
+      "id": "msg-X0X0P3Bgw6",
+      "timestamp": "2026-06-03T15:20:01.000Z",
+      "role": "user",
+      "content": "Build a local-first vault ingestion workflow. Include Codex implementation instructions and preserve raw exports.",
+      "artifacts": [
+        {
+          "id": "artifact-lZ8gw1kIhc",
+          "type": "codex_instruction",
+          "source_conversation_id": "conv-906kc4NWYy",
+          "source_message_id": "msg-X0X0P3Bgw6",
+          "title": "Detected codex instruction",
+          "content": "Build a local-first vault ingestion workflow. Include Codex implementation instructions and preserve raw exports.",
+          "tags": [
+            "detected",
+            "codex_instruction"
+          ],
+          "confidence": 0.72,
+          "created_at": "2026-06-03T09:43:37.937Z",
+          "lineage": {
+            "source_platform": "chatgpt",
+            "source_account": "sample-account",
+            "raw_path": "/Users/macdizzle/Desktop/no code empire revised/tools/internal/vault-ingestion-parser/samples/raw/chatgpt/conversations.json"
+          }
+        },
+        {
+          "id": "artifact-F6FA96om-G",
+          "type": "architecture",
+          "source_conversation_id": "conv-906kc4NWYy",
+          "source_message_id": "msg-X0X0P3Bgw6",
+          "title": "Detected architecture",
+          "content": "Build a local-first vault ingestion workflow. Include Codex implementation instructions and preserve raw exports.",
+          "tags": [
+            "detected",
+            "architecture"
+          ],
+          "confidence": 0.66,
+          "created_at": "2026-06-03T09:43:37.937Z",
+          "lineage": {
+            "source_platform": "chatgpt",
+            "source_account": "sample-account",
+            "raw_path": "/Users/macdizzle/Desktop/no code empire revised/tools/internal/vault-ingestion-parser/samples/raw/chatgpt/conversations.json"
+          }
+        },
+        {
+          "id": "artifact-4PtH5-PGOz",
+          "type": "workflow",
+          "source_conversation_id": "conv-906kc4NWYy",
+          "source_message_id": "msg-X0X0P3Bgw6",
+          "title": "Detected workflow",
+          "content": "Build a local-first vault ingestion workflow. Include Codex implementation instructions and preserve raw exports.",
+          "tags": [
+            "detected",
+            "workflow"
+          ],
+          "confidence": 0.6,
+          "created_at": "2026-06-03T09:43:37.937Z",
+          "lineage": {
+            "source_platform": "chatgpt",
+            "source_account": "sample-account",
+            "raw_path": "/Users/macdizzle/Desktop/no code empire revised/tools/internal/vault-ingestion-parser/samples/raw/chatgpt/conversations.json"
+          }
+        },
+        {
+          "id": "artifact-C3KNI52g4V",
+          "type": "todo",
+          "source_conversation_id": "conv-906kc4NWYy",
+          "source_message_id": "msg-X0X0P3Bgw6",
+          "title": "Detected todo",
+          "content": "Build a local-first vault ingestion workflow. Include Codex implementation instructions and preserve raw exports.",
+          "tags": [
+            "detected",
+            "todo"
+          ],
+          "confidence": 0.54,
+          "created_at": "2026-06-03T09:43:37.937Z",
+          "lineage": {
+            "source_platform": "chatgpt",
+            "source_account": "sample-account",
+            "raw_path": "/Users/macdizzle/Desktop/no code empire revised/tools/internal/vault-ingestion-parser/samples/raw/chatgpt/conversations.json"
+          }
+        }
+      ],
+      "references": []
+    },
+    {
+      "id": "msg-NPAV0DWcrz",
+      "timestamp": "2026-06-03T15:20:02.000Z",
+      "role": "assistant",
+      "content": "Decision: preserve raw files first. Architecture should use parser adapters.\n```ts\nconsole.log('vault');\n```",
+      "artifacts": [
+        {
+          "id": "artifact-ftm1G-tsvJ",
+          "type": "code",
+          "source_conversation_id": "conv-906kc4NWYy",
+          "source_message_id": "msg-NPAV0DWcrz",
+          "title": "Detected code block",
+          "content": "console.log('vault');",
+          "language": "ts",
+          "tags": [
+            "detected",
+            "code-block"
+          ],
+          "confidence": 0.95,
+          "created_at": "2026-06-03T09:43:37.938Z",
+          "lineage": {
+            "source_platform": "chatgpt",
+            "source_account": "sample-account",
+            "raw_path": "/Users/macdizzle/Desktop/no code empire revised/tools/internal/vault-ingestion-parser/samples/raw/chatgpt/conversations.json"
+          }
+        },
+        {
+          "id": "artifact-WGRDMu8Y3a",
+          "type": "architecture",
+          "source_conversation_id": "conv-906kc4NWYy",
+          "source_message_id": "msg-NPAV0DWcrz",
+          "title": "Detected architecture",
+          "content": "Decision: preserve raw files first. Architecture should use parser adapters.\n```ts\nconsole.log('vault');\n```",
+          "tags": [
+            "detected",
+            "architecture"
+          ],
+          "confidence": 0.66,
+          "created_at": "2026-06-03T09:43:37.938Z",
+          "lineage": {
+            "source_platform": "chatgpt",
+            "source_account": "sample-account",
+            "raw_path": "/Users/macdizzle/Desktop/no code empire revised/tools/internal/vault-ingestion-parser/samples/raw/chatgpt/conversations.json"
+          }
+        },
+        {
+          "id": "artifact-sXPQws-wfT",
+          "type": "decision",
+          "source_conversation_id": "conv-906kc4NWYy",
+          "source_message_id": "msg-NPAV0DWcrz",
+          "title": "Detected decision",
+          "content": "Decision: preserve raw files first. Architecture should use parser adapters.\n```ts\nconsole.log('vault');\n```",
+          "tags": [
+            "detected",
+            "decision"
+          ],
+          "confidence": 0.62,
+          "created_at": "2026-06-03T09:43:37.938Z",
+          "lineage": {
+            "source_platform": "chatgpt",
+            "source_account": "sample-account",
+            "raw_path": "/Users/macdizzle/Desktop/no code empire revised/tools/internal/vault-ingestion-parser/samples/raw/chatgpt/conversations.json"
+          }
+        }
+      ],
+      "references": []
+    }
+  ]
+}

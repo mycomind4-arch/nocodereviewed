@@ -1,0 +1,42 @@
+[
+  {
+    "tag": "detected",
+    "count": 11
+  },
+  {
+    "tag": "chatgpt",
+    "count": 2
+  },
+  {
+    "tag": "architecture",
+    "count": 2
+  },
+  {
+    "tag": "workflow",
+    "count": 2
+  },
+  {
+    "tag": "todo",
+    "count": 2
+  },
+  {
+    "tag": "decision",
+    "count": 2
+  },
+  {
+    "tag": "document",
+    "count": 1
+  },
+  {
+    "tag": "codex_instruction",
+    "count": 1
+  },
+  {
+    "tag": "code-block",
+    "count": 1
+  },
+  {
+    "tag": "evidence_claim",
+    "count": 1
+  }
+]
