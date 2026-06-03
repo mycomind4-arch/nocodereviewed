@@ -10095,3 +10095,151 @@ body {
   background: rgba(10, 14, 26, 0.6);
   border: 1px solid rgba(30, 39, 68, 0.6);
 }
+
+/* === PHASE M1: Unique Brand-Inspired Microsite Funnels + Separate Review Pages === */
+/* Reusable + per-tool themed. Funnels are visually distinct (inspired by brand but clearly NoCodeReviewed). Reviews are neutral evidence-first. */
+
+.tool-funnel-page,
+.tool-review-page {
+  min-height: 100vh;
+  font-family: var(--font-sans, Inter, system-ui, sans-serif);
+}
+
+.tool-funnel-hero {
+  padding: 60px 20px 40px;
+  text-align: center;
+  position: relative;
+}
+
+.tool-funnel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.tool-funnel-card {
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--tool-border, #1e2744);
+  background: var(--tool-card, #0b0f1a);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+
+.tool-funnel-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  margin: 8px;
+  transition: transform 0.1s;
+}
+
+.tool-funnel-cta:hover { transform: translateY(-1px); }
+
+.affiliate-disclosure {
+  font-size: 11px;
+  opacity: 0.7;
+  max-width: 600px;
+  margin: 8px auto;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  background: rgba(0,0,0,0.2);
+}
+
+.evidence-gap {
+  background: #fff3cd;
+  color: #856404;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  display: inline-block;
+}
+
+.tool-review-page {
+  background: #0a0c14;
+  color: #e5e7eb;
+}
+
+.tool-review-evidence {
+  background: #11151f;
+  border: 1px solid #1e2744;
+  padding: 16px;
+  border-radius: 8px;
+  margin: 12px 0;
+}
+
+.review-neutral-panel {
+  background: #0f1220;
+  border: 1px solid #1e2744;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+/* Per-tool themes - inspired by public brand but NoCodeReviewed branded */
+.tool-theme-lovable {
+  --tool-accent: #ff6b6b;
+  --tool-accent-2: #c026d3;
+  --tool-bg: #0f0a12;
+  --tool-glow: rgba(255, 107, 107, 0.15);
+  --tool-card: #1a1220;
+  --tool-border: #3a2a40;
+  --tool-text: #f5e8ff;
+}
+
+.tool-theme-lovable .tool-funnel-hero {
+  background: linear-gradient(180deg, #1a1220 0%, #0f0a12 100%);
+  border-bottom: 1px solid var(--tool-border);
+}
+
+.tool-theme-bolt {
+  --tool-accent: #3b82f6;
+  --tool-accent-2: #a78bfa;
+  --tool-bg: #05070f;
+  --tool-glow: rgba(59, 130, 246, 0.2);
+  --tool-card: #0b0f1a;
+  --tool-border: #1e2744;
+  --tool-text: #e0f2fe;
+}
+
+.tool-theme-bolt .tool-funnel-hero {
+  background: linear-gradient(180deg, #0b1220 0%, #05070f 100%);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.tool-theme-replit {
+  --tool-accent: #f97316;
+  --tool-accent-2: #22c55e;
+  --tool-bg: #0a0f1a;
+  --tool-glow: rgba(249, 115, 22, 0.15);
+  --tool-card: #111827;
+  --tool-border: #1f2937;
+  --tool-text: #f1f5f9;
+}
+
+.tool-theme-replit .tool-funnel-hero {
+  background: linear-gradient(180deg, #1e2937 0%, #0a0f1a 100%);
+}
+
+/* Tutorial cards */
+.tutorial-card {
+  border: 1px solid var(--tool-border, #1e2744);
+  background: var(--tool-card, #0b0f1a);
+  padding: 14px;
+  border-radius: 8px;
+}
+
+.tutorial-card.coming-soon {
+  opacity: 0.7;
+  border-style: dashed;
+}
+
+/* Make sure premium nav works inside funnels */
+.tool-funnel-page .ncr-nav {
+  background: rgba(5,7,15,0.85);
+}

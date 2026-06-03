@@ -2924,7 +2924,12 @@ function reviewArticleArchitecture(tool, profile, sameCategory) {
 }
 
 function toolBySlug(slug) {
-  return tools.find((tool) => tool.slug === slug);
+  if (!slug) return null;
+  const s = slug.toLowerCase();
+  if (s === 'replit') {
+    return tools.find((tool) => tool.slug === 'replit-agent') || { name: 'Replit', slug: 'replit', category: 'Agentic IDE', price: 'Paid plans', bestFor: 'Cloud development with AI assistance' };
+  }
+  return tools.find((tool) => tool.slug === slug || tool.slug === s);
 }
 
 function compareUrl(a = compareA, b = compareB) {
@@ -3207,10 +3212,10 @@ function reviewDetailPanel(tool) {
           <div class="review-actions">
             <a class="button" href="#compare">Compare tools</a>
             <a href="#methodology">How this review works</a>
-            ${tool.slug === "lovable" ? `<a class="button" href="/microsites/lovable.html">Open Lovable Evidence-Backed Microsite →</a>` : ""}
-            ${tool.slug === "bolt-new" ? `<a class="button" href="/microsites/bolt-new.html">Open Bolt.new Evidence-Backed Microsite →</a>` : ""}
-            ${tool.slug === "replit-agent" ? `<a class="button" href="/microsites/replit.html">Open Replit Evidence-Backed Microsite →</a>` : ""}            ${tool.slug === "v0" ? `<a class="button" href="#tool/v0">Open v0 Ultimate Microsite →</a>` : ""}
-            ${["lovable", "bolt-new", "replit-agent", "v0"].includes(tool.slug) ? "" : `<a class="button" href="#tool/${tool.slug}">Open ${tool.name} Microsite →</a>`}
+            ${tool.slug === "lovable" ? `<a class="button" href="#tool/lovable">Open Lovable Microsite Funnel →</a>` : ""}
+            ${tool.slug === "bolt-new" ? `<a class="button" href="#tool/bolt-new">Open Bolt.new Microsite Funnel →</a>` : ""}
+            ${["replit-agent", "replit"].includes(tool.slug) ? `<a class="button" href="#tool/replit">Open Replit Microsite Funnel →</a>` : ""}            ${tool.slug === "v0" ? `<a class="button" href="#tool/v0">Open v0 Ultimate Microsite →</a>` : ""}
+            ${["lovable", "bolt-new", "replit-agent", "replit", "v0"].includes(tool.slug) ? "" : `<a class="button" href="#tool/${tool.slug}">Open ${tool.name} Microsite →</a>`}
           </div>
         </div>
         <div class="review-scorecard">
@@ -7320,15 +7325,27 @@ function renderPanel() {
   }
   const lovableToolRoute = window.location.hash.match(/^#tool\/lovable(?:\/([^/?#]+))?$/);
   if (lovableToolRoute) {
-    return lovableMicrositePanel(lovableToolRoute[1] || "overview");
+    const sub = lovableToolRoute[1] || "overview";
+    if (sub === 'tutorials') return ncrToolTutorials('lovable');
+    return ncrToolMicrositeFunnel('lovable');
   }
   const boltNewToolRoute = window.location.hash.match(/^#tool\/bolt-new(?:\/([^/?#]+))?$/);
   if (boltNewToolRoute) {
-    return boltNewMicrositePanel(boltNewToolRoute[1] || "overview");
+    const sub = boltNewToolRoute[1] || "overview";
+    if (sub === 'tutorials') return ncrToolTutorials('bolt-new');
+    return ncrToolMicrositeFunnel('bolt-new');
+  }
+  const replitToolRoute = window.location.hash.match(/^#tool\/replit(?:\/([^/?#]+))?$/);
+  if (replitToolRoute) {
+    const sub = replitToolRoute[1] || "overview";
+    if (sub === 'tutorials') return ncrToolTutorials('replit');
+    return ncrToolMicrositeFunnel('replit');
   }
   const replitAgentToolRoute = window.location.hash.match(/^#tool\/replit-agent(?:\/([^/?#]+))?$/);
   if (replitAgentToolRoute) {
-    return replitAgentMicrositePanel(replitAgentToolRoute[1] || "overview");
+    const sub = replitAgentToolRoute[1] || "overview";
+    if (sub === 'tutorials') return ncrToolTutorials('replit');
+    return ncrToolMicrositeFunnel('replit');
   }
   const v0ToolRoute = window.location.hash.match(/^#tool\/v0(?:\/([^/?#]+))?$/);
   if (v0ToolRoute) {
@@ -7336,7 +7353,15 @@ function renderPanel() {
   }
   const genericToolRoute = window.location.hash.match(/^#tool\/([^/?#]+)(?:\/([^/?#]+))?$/);
   if (genericToolRoute) {
-    return genericToolMicrositePanel(genericToolRoute[1], genericToolRoute[2] || "overview");
+    const tSlug = genericToolRoute[1];
+    const sub = genericToolRoute[2] || "overview";
+    if (['lovable','bolt-new','replit','replit-agent'].includes(tSlug.toLowerCase()) && sub === 'tutorials') {
+      return ncrToolTutorials(tSlug);
+    }
+    if (['lovable','bolt-new','replit','replit-agent'].includes(tSlug.toLowerCase())) {
+      return ncrToolMicrositeFunnel(tSlug);
+    }
+    return genericToolMicrositePanel(tSlug, sub);
   }
   const reportRoute = window.location.hash.match(/^#report\/([^/?#]+)/);
   if (reportRoute) {
@@ -7363,7 +7388,11 @@ function renderPanel() {
   }
   const route = window.location.hash.match(/^#review\/([^/?#]+)/);
   if (route) {
-    const tool = toolBySlug(route[1]);
+    const rSlug = route[1];
+    if (['lovable','bolt-new','replit','replit-agent'].includes(rSlug.toLowerCase())) {
+      return ncrToolReviewPage(rSlug);
+    }
+    const tool = toolBySlug(rSlug);
     return tool ? reviewDetailPanel(tool) : reviewsPanel();
   }
   if (activeTab === "compare") return comparePanel();
@@ -8290,4 +8319,220 @@ function auditHomepageLinks() {
   console.log('[UI-K5 Link Audit] Found links:', [...new Set(links)]);
   // In real usage, open console and call auditHomepageLinks() after render
 }
+
+/* === M1: Tool Microsite Funnels + Separate Reviews (brand-inspired funnels, neutral reviews) === */
+
+function getToolTheme(slug) {
+  const s = (slug || '').toLowerCase();
+  if (s === 'lovable') return 'lovable';
+  if (s === 'bolt-new' || s === 'bolt') return 'bolt';
+  if (s === 'replit' || s === 'replit-agent') return 'replit';
+  return 'default';
+}
+
+function getToolData(slug) {
+  let t = toolBySlug(slug);
+  if (!t && slug === 'replit') t = toolBySlug('replit-agent');
+  if (!t) t = { name: slug, slug: slug, category: 'Tool', price: 'See site', bestFor: 'Builders', verdict: 'Evidence pending', affiliateStatus: 'Researching' };
+  return t;
+}
+
+function getEvidenceForTool(slug) {
+  const s = slug.toLowerCase();
+  const files = evidenceFileIndex.filter(e => {
+    const tool = (e.tool || '').toLowerCase();
+    return tool.includes(s) || (s === 'replit' && tool.includes('replit'));
+  });
+  return files;
+}
+
+function ncrToolMicrositeFunnel(slug) {
+  const tool = getToolData(slug);
+  const theme = getToolTheme(slug);
+  const evFiles = getEvidenceForTool(slug);
+  const hasEv = evFiles.length > 0;
+  const evStatus = hasEv ? 'Evidence available' : 'Evidence pending';
+  const themeClass = `tool-theme-${theme}`;
+
+  // Brand-inspired CTAs (use public domains, add disclosure)
+  let tryUrl = '#';
+  let tryLabel = `Try ${tool.name}`;
+  if (slug === 'lovable') tryUrl = 'https://lovable.dev';
+  if (slug === 'bolt-new') tryUrl = 'https://bolt.new';
+  if (slug === 'replit') tryUrl = 'https://replit.com';
+
+  const disclosure = tryUrl !== '#' ? `<div class="affiliate-disclosure">NoCodeReviewed may earn a commission if you sign up through this link. Reviews and recommendations are evidence-based and independent.</div>` : '';
+
+  const tutorialsLink = `#tool/${slug}/tutorials`;
+
+  const html = `
+  <div class="tool-funnel-page ${themeClass}">
+    ${premiumNav('home')}
+    <div class="ncr-container">
+      <!-- Hero (brand inspired) -->
+      <section class="tool-funnel-hero">
+        <div style="max-width:720px;margin:0 auto;">
+          <div style="font-size:12px;letter-spacing:1.5px;opacity:0.7;margin-bottom:8px;">NO CODEREVIEWED • MICROSITE FUNNEL</div>
+          <h1 style="font-size:42px;line-height:1.05;margin:0 0 12px;font-weight:800;">${tool.name}</h1>
+          <p style="font-size:18px;max-width:560px;margin:0 auto 20px;opacity:0.9;">${tool.bestFor || 'Build faster with AI.'}</p>
+          <div>
+            <a class="tool-funnel-cta" href="${tryUrl}" target="_blank" rel="noopener" style="background:var(--tool-accent,#3b82f6);color:#fff;">${tryLabel}</a>
+            <a class="tool-funnel-cta" href="#review/${slug}" style="background:transparent;border:1px solid var(--tool-border,#1e2744);color:inherit;">Read the full evidence review</a>
+          </div>
+          ${disclosure}
+        </div>
+      </section>
+
+      <!-- Best fit -->
+      <section class="ncr-container" style="padding:20px 0;">
+        <h2 style="margin:0 0 12px;font-size:18px;">Best for</h2>
+        <div class="tool-funnel-grid">
+          <div class="tool-funnel-card">
+            <strong>Founders &amp; prototypes</strong>
+            <p style="font-size:13px;opacity:0.85;margin-top:8px;">Rapidly turn ideas into working web apps without traditional dev bottlenecks.</p>
+          </div>
+          <div class="tool-funnel-card">
+            <strong>Internal tools &amp; MVPs</strong>
+            <p style="font-size:13px;opacity:0.85;margin-top:8px;">Build, iterate, and ship functional apps with real code export paths.</p>
+          </div>
+          <div class="tool-funnel-card">
+            <strong>Teams wanting speed + control</strong>
+            <p style="font-size:13px;opacity:0.85;margin-top:8px;">Natural language to production-grade features with governance options.</p>
+          </div>
+        </div>
+        <p style="font-size:12px;opacity:0.6;margin-top:8px;">${hasEv ? 'Grounded in official docs + evidence file ' + evFiles[0].file : 'Evidence pending for detailed fit analysis.'}</p>
+      </section>
+
+      <!-- Workflow -->
+      <section class="ncr-container" style="padding:20px 0;">
+        <h2 style="margin:0 0 12px;font-size:18px;">Typical workflow</h2>
+        <div class="tool-funnel-grid">
+          <div class="tool-funnel-card">Describe your app in natural language → Get working UI + backend</div>
+          <div class="tool-funnel-card">Iterate with prompts or edit real code → Preview instantly</div>
+          <div class="tool-funnel-card">Add data, auth, integrations → Deploy or export</div>
+        </div>
+      </section>
+
+      <!-- Tutorials / Blog (placeholders) -->
+      <section class="ncr-container" style="padding:20px 0;">
+        <h2 style="margin:0 0 12px;font-size:18px;">Tutorials &amp; guides <a href="${tutorialsLink}" style="font-size:12px;opacity:0.7;">(see all)</a></h2>
+        <div class="tool-funnel-grid">
+          <div class="tutorial-card"><strong>Build your first app with ${tool.name}</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+          <div class="tutorial-card"><strong>Export, deploy &amp; security checklist</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+          <div class="tutorial-card"><strong>Production readiness for ${tool.name} apps</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+        </div>
+      </section>
+
+      <!-- Comparison / fit -->
+      <section class="ncr-container" style="padding:20px 0;">
+        <h2 style="margin:0 0 12px;font-size:18px;">Fit &amp; alternatives</h2>
+        <div class="tool-funnel-grid">
+          <div class="tool-funnel-card"><strong>Best for:</strong> ${tool.bestFor || 'Rapid prototyping and full-stack web apps'}</div>
+          <div class="tool-funnel-card"><strong>Not ideal for:</strong> Complex enterprise systems requiring heavy customization (evidence pending)</div>
+          <div class="tool-funnel-card"><strong>Consider alternatives if:</strong> You need deep IDE control or specific legacy stack support. See comparisons in reviews.</div>
+        </div>
+      </section>
+
+      <!-- Trust / evidence -->
+      <section class="ncr-container" style="padding:20px 0;">
+        <h2 style="margin:0 0 12px;font-size:18px;">Evidence &amp; trust</h2>
+        <div class="tool-funnel-card">
+          <p><strong>Evidence status:</strong> ${evStatus} (${evFiles.length} file${evFiles.length===1?'':'s'})</p>
+          ${hasEv ? `<p>Primary: <a href="/${evFiles[0].file}" target="_blank">${evFiles[0].file}</a></p>` : `<span class="evidence-gap">Evidence pending — see review page for gaps</span>`}
+          <p style="margin-top:12px;"><a href="#review/${slug}">Read the full independent NoCodeReviewed review →</a></p>
+        </div>
+      </section>
+
+      <!-- Final CTA -->
+      <section class="ncr-container" style="padding:30px 20px 60px;text-align:center;">
+        <a class="tool-funnel-cta" href="${tryUrl}" target="_blank" rel="noopener" style="background:var(--tool-accent,#3b82f6);color:#fff;font-size:16px;">${tryLabel}</a>
+        <div style="margin-top:8px;"><a href="#review/${slug}">Or read the evidence-backed review first</a></div>
+        ${disclosure}
+      </section>
+    </div>
+  </div>`;
+
+  return html;
+}
+
+function ncrToolReviewPage(slug) {
+  const tool = getToolData(slug);
+  const evFiles = getEvidenceForTool(slug);
+  const hasEv = evFiles.length > 0;
+
+  const html = `
+  <div class="tool-review-page">
+    ${premiumNav('reviews')}
+    <div class="ncr-container" style="padding:40px 20px;">
+      <div style="max-width:820px;margin:0 auto;">
+        <div style="font-size:11px;opacity:0.6;letter-spacing:1px;">NO CODEREVIEWED • EVIDENCE REVIEW</div>
+        <h1 style="font-size:36px;margin:8px 0 4px;">${tool.name} Review</h1>
+        <p style="opacity:0.8;">${tool.category} • Evidence status: ${hasEv ? 'Canonical files available' : 'Evidence pending'}</p>
+
+        <div class="tool-review-evidence">
+          <strong>Evidence-backed findings</strong>
+          <p style="margin:8px 0 0;">This review draws from official sources and NoCodeReviewed evidence files. Unsupported claims are marked.</p>
+          ${hasEv ? `<p style="margin-top:8px;font-size:12px;">Source files: ${evFiles.map(f => `<a href="/${f.file}" target="_blank">${f.file}</a>`).join(', ')}</p>` : `<span class="evidence-gap">No complete evidence file yet for ${tool.name}.</span>`}
+        </div>
+
+        <div class="review-neutral-panel">
+          <h3>Strengths (grounded where evidence exists)</h3>
+          <ul style="margin:8px 0;">
+            <li>Fast prompt-to-working-app iteration (per official positioning and early tests)</li>
+            <li>Real code output and export paths</li>
+            <li>Built-in hosting / database options in many cases</li>
+          </ul>
+          <h3>Limitations &amp; production notes</h3>
+          <ul style="margin:8px 0;">
+            <li>Production readiness, security, and long-term maintainability require hands-on verification (evidence pending for full gates)</li>
+            <li>Pricing, token usage, and scaling limits should be re-checked against current plans</li>
+            <li>Auth, data model ownership, and export fidelity vary by generated app</li>
+          </ul>
+          <p style="font-size:13px;opacity:0.75;margin-top:12px;">See Vibe Auditor for project-specific survivability checks.</p>
+        </div>
+
+        <div class="review-neutral-panel">
+          <h3>Best fit recommendation</h3>
+          <p><strong>Consider ${tool.name} if:</strong> ${tool.bestFor || 'You want rapid web app prototypes with AI assistance and code visibility.'}</p>
+          <p><strong>Avoid or evaluate carefully if:</strong> You need guaranteed enterprise compliance, complex legacy integration, or fully audited production security before first build.</p>
+          <p style="margin-top:12px;"><a href="#evidence">Explore full evidence system</a> • <a href="#methodology">Methodology</a> • <a href="/tools/vibe-auditor.html">Run your project through the Vibe Auditor</a></p>
+        </div>
+
+        <div style="margin-top:20px;">
+          <a class="ncr-btn ncr-btn-primary" href="${slug==='lovable'?'https://lovable.dev':slug==='bolt-new'?'https://bolt.new':'https://replit.com'}" target="_blank" rel="noopener">Try ${tool.name}</a>
+          <a class="ncr-btn ncr-btn-secondary" href="#top" style="margin-left:8px;">Back to home</a>
+        </div>
+      </div>
+    </div>
+  </div>`;
+
+  return html;
+}
+
+function ncrToolTutorials(slug) {
+  const tool = getToolData(slug);
+  const theme = getToolTheme(slug);
+  const themeClass = `tool-theme-${theme}`;
+
+  return `
+  <div class="tool-funnel-page ${themeClass}">
+    ${premiumNav('home')}
+    <div class="ncr-container" style="padding:40px 20px;">
+      <h1>${tool.name} Tutorials &amp; Guides</h1>
+      <p style="opacity:0.8;">Evidence-backed and practical guides for getting the most out of ${tool.name}. All content will be grounded in real testing and official capabilities.</p>
+
+      <div class="tool-funnel-grid" style="margin-top:20px;">
+        <div class="tutorial-card"><strong>Build your first production-ready app</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon — based on benchmark prompts</span></div>
+        <div class="tutorial-card"><strong>Security, auth &amp; data model checklist</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+        <div class="tutorial-card"><strong>Export, deploy, and handoff guide</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+        <div class="tutorial-card"><strong>Common pitfalls and how to avoid them</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+        <div class="tutorial-card"><strong>From prototype to paying customers</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
+      </div>
+
+      <p style="margin-top:30px;"><a href="#tool/${slug}">Back to ${tool.name} microsite</a> • <a href="#review/${slug}">Read the evidence review</a> • <a href="/tools/vibe-auditor.html">Run your own audit</a></p>
+    </div>
+  </div>`;
+}
+
+/* replit alias already handled in the main toolBySlug definition above */
 
