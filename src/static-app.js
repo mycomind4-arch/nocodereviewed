@@ -7372,6 +7372,10 @@ function micrositesDirectoryPanel() {
 }
 
 function renderPanel() {
+  if (window.location.hash.match(/^#blog\//)) {
+    const sub = window.location.hash.split('/')[1];
+    return ncrArticlePage(sub);
+  }
   if (window.location.hash === "#microsites") return micrositesDirectoryPanel();
 
   const clusterRoute = window.location.hash.match(/^#cluster\/([^/?#]+)$/);
@@ -7566,6 +7570,14 @@ function render() {
       postRenderMotionEnhance(simple);
       return;
     }
+  }
+
+  // B1: Blog article routes
+  if (r === 'blog' && sub) {
+    document.querySelector("#app").innerHTML = ncrArticlePage(sub);
+    setupNcrPremiumNavActive('blog');
+    postRenderMotionEnhance('blog');
+    return;
   }
 
   // Complex routes (with sub like #review/xxx, #tool/xxx etc) or old simple tabs: delegate to old renderPanel logic
@@ -8351,22 +8363,7 @@ function ncrMethodologyPage() {
     </div>
   </div>`;
 }
-function ncrBlogPage() { 
-  return `
-  ${premiumNav('blog')}
-  <div class="ncr-container ncr-placeholder route-enter">
-    <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
-      <h1>Blog &amp; Guides</h1>
-      <p style="max-width:640px;margin:0 auto;">Editorial and analysis hub. Planned content: tool comparisons, builder guides, evidence updates, and no-code AI workflow analysis — all sourced from approved records (from expansion_pack docs/content/audit-ai-built-apps-guide-copy.md and content strategy in docs).</p>
-    </div>
-    <div class="tool-funnel-grid">
-      <div class="tutorial-card"><strong>Audit AI-built apps guide</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon — launch-readiness checklist</span></div>
-      <div class="tutorial-card"><strong>Tool comparisons grounded in evidence</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
-      <div class="tutorial-card"><strong>Evidence updates &amp; methodology notes</strong><br><span style="font-size:12px;opacity:0.7;">Coming soon</span></div>
-    </div>
-    <p style="margin-top:20px;"><a href="#methodology">Methodology</a> • <a href="#evidence">Evidence</a></p>
-  </div>`;
-}
+// ncrBlogPage and ncrArticlePage defined later in B1 section (overrides this placeholder)
 function ncrAboutPage() { 
   return `
   ${premiumNav('about')}
@@ -8835,4 +8832,287 @@ function ncrToolTutorials(slug) {
 }
 
 /* replit alias already handled in the main toolBySlug definition above */
+
+/* === B1: Premium Blog Hub + High-Converting Article System === */
+
+const BLOG_ARTICLES = [
+  {
+    slug: "ai-app-launch-audit-checklist",
+    title: "AI App Launch Audit Checklist: What to Verify Before You Ship",
+    category: "Audits",
+    status: "Draft",
+    intent: "Launch readiness",
+    description: "A practical checklist covering auth, data ownership, deployment, secrets, maintainability, and handoff for vibe-coded apps. Grounded in NoCodeReviewed production gates and evidence methodology.",
+    primaryCta: { label: "Run the Vibe Auditor", href: "/tools/vibe-auditor.html" },
+    relatedTools: ["lovable", "bolt-new", "replit"],
+    evidenceStatus: "Evidence pending - based on core methodology",
+    sections: [
+      { heading: "Why Audits Matter for AI-Built Apps", body: "AI builders can generate beautiful interfaces and working logic quickly, but production risks often hide in auth rules, data access, secrets handling, and long-term ownership. NoCodeReviewed evidence files repeatedly show that visual success does not equal launch readiness." },
+      { heading: "Core Checklist Areas", body: "1. Authentication & private routes\n2. Database rules and ownership\n3. Secrets and environment variables\n4. Deployment & hosting posture\n5. Export / handoff quality\n6. Failure recovery and monitoring\n7. Performance under real load\n\nEach area should be manually verified before real users or revenue." },
+      { heading: "How to Use This With Your Project", body: "Export your AI chat history to the Chat Intelligence Vault, then run the Vibe Auditor on the generated app. The auditor surfaces exactly these gaps with project-specific notes." },
+      { heading: "Evidence Status", body: "This guide is a draft derived from repeated patterns across Lovable, Bolt.new, Replit, and similar evidence files. Full per-tool benchmark results are evidence pending for most tools." }
+    ]
+  },
+  {
+    slug: "chatgpt-export-project-recovery",
+    title: "How to Recover Projects, Prompts, Code, and Business Ideas from ChatGPT Exports",
+    category: "Tutorials",
+    status: "Draft",
+    intent: "Project intelligence recovery",
+    description: "Step-by-step process to turn fragmented AI chat history into searchable, reusable project memory using the Chat Intelligence Vault and local parsers.",
+    primaryCta: { label: "Open Chat Intelligence Vault", href: "/tools/chat-intelligence-vault.html" },
+    relatedTools: ["lovable", "bolt-new", "replit"],
+    evidenceStatus: "Grounded in Vault Data Contract and Local Vault Handoff",
+    sections: [
+      { heading: "The Problem: Fragmented AI Memory", body: "Builders spread critical decisions, prompts, code, and monetization ideas across dozens of ChatGPT/Grok threads. Without recovery, this intelligence is lost or duplicated." },
+      { heading: "Export Your History Safely", body: "Use the Chat Intelligence Vault to import conversations.json or ZIP exports locally. No data leaves your browser." },
+      { heading: "What Gets Recovered", body: "Conversations, messages, code blocks, prompts, commands, architecture notes, business ideas, and decision timelines are normalized into vault.v1 records." },
+      { heading: "Next Steps After Recovery", body: "Feed recovered assets into the Vibe Auditor for launch risk analysis, or the evidence system for tool comparisons. Use the Vault Ingestion Parser for offline processing." }
+    ]
+  },
+  {
+    slug: "lovable-vs-bolt-vs-replit",
+    title: "Lovable vs Bolt.new vs Replit: Which AI Builder Fits Your Project?",
+    category: "Comparisons",
+    status: "Draft",
+    intent: "Tool selection",
+    description: "Evidence-based comparison of three leading AI app builders using NoCodeReviewed tool data, evidence files, and production-readiness observations.",
+    primaryCta: { label: "Read Lovable Review", href: "#review/lovable" },
+    relatedTools: ["lovable", "bolt-new", "replit"],
+    evidenceStatus: "Evidence pending - uses existing tool cards + evidence manifest",
+    sections: [
+      { heading: "Quick Fit Matrix", body: "Lovable: Best for founders who want full-stack web apps from natural language with Git/Supabase export paths.\nBolt.new: Strong for browser-based iteration with visible code and fast runtime feedback.\nReplit: Ideal when you want AI assistance inside a real cloud IDE with deployment and collaboration built-in." },
+      { heading: "Evidence Notes", body: "All three have canonical evidence files (Lovable 04+12, Bolt.new 03, Replit 01). Production readiness, security, and scaling details remain evidence pending across the board per manifest." },
+      { heading: "Decision Framework", body: "Start with your primary goal: pure speed to first working app (Lovable/Bolt), or need for IDE, real deployment, and team features (Replit). Always run the Vibe Auditor on your specific project before committing." }
+    ]
+  },
+  {
+    slug: "no-code-tool-evidence-methodology",
+    title: "How NoCodeReviewed Evaluates AI and No-Code Tools",
+    category: "Evidence",
+    status: "Draft",
+    intent: "Transparency",
+    description: "The repeatable process, quality gates, and evidence standards used to produce every review, comparison, and recommendation on this site.",
+    primaryCta: { label: "See Full Methodology", href: "#methodology" },
+    relatedTools: [],
+    evidenceStatus: "Grounded in Vault Data Contract, architecture docs, and evidence manifest",
+    sections: [
+      { heading: "Evidence-First Core Principle", body: "No public claim is made without a traceable source in docs/evidence/ or approved methodology. Gaps are labeled explicitly." },
+      { heading: "Quality Gates", body: "Build tests, pricing snapshots, production-readiness checks (auth, data, secrets, deploy, handoff), and editorial review before anything ships." },
+      { heading: "Freshness & Expiration", body: "Scores and snapshots expire when tools change. The evidence manifest tracks completeness and duplicate candidates." }
+    ]
+  },
+  {
+    slug: "hidden-risks-in-vibe-coded-apps",
+    title: "7 Hidden Risks in Vibe-Coded Apps",
+    category: "Audits",
+    status: "Draft",
+    intent: "Risk awareness",
+    description: "Common failure modes observed across evidence files for AI-generated apps: overbroad client logic, weak data rules, secret leakage, and more.",
+    primaryCta: { label: "Run the Vibe Auditor", href: "/tools/vibe-auditor.html" },
+    relatedTools: ["lovable", "bolt-new", "replit"],
+    evidenceStatus: "Evidence pending - patterns from multiple tool evidence files",
+    sections: [
+      { heading: "Risk 1-3: Auth & Data", body: "Missing private route protection, overly permissive database rules, and client-side secret exposure appear repeatedly in generated apps." },
+      { heading: "Risk 4-7: Ops & Ownership", body: "Poor error recovery, no monitoring, difficult handoff, and unclear code ownership make maintenance expensive after the initial demo." },
+      { heading: "Mitigation", body: "Export the app, run it through the Vibe Auditor, and address the flagged gaps before real users arrive." }
+    ]
+  },
+  {
+    slug: "best-ai-app-builders-for-founders",
+    title: "Best AI App Builders for Founders: What to Check First",
+    category: "Buyer Guides",
+    status: "Draft",
+    intent: "Founder decision",
+    description: "A founder-focused decision framework for choosing between Lovable, Bolt.new, Replit, and similar tools when speed to MVP is critical.",
+    primaryCta: { label: "Browse Tools", href: "#tools" },
+    relatedTools: ["lovable", "bolt-new", "replit"],
+    evidenceStatus: "Evidence pending - synthesized from tool cards and evidence manifest",
+    sections: [
+      { heading: "Founder Priority: Speed + Ownership", body: "Founders need to validate ideas fast while retaining code ownership and the ability to hand off or scale later." },
+      { heading: "Key Checks", body: "1. How quickly can you get a working multi-screen app?\n2. Can you export real, editable code?\n3. What is the path to production auth, data, and deploy?\n4. How hard is it to hand the project to a developer later?" },
+      { heading: "Evidence Note", body: "Current tool data shows strong speed claims for Lovable and Bolt.new. Production and handoff evidence remains thin across the category." }
+    ]
+  },
+  {
+    slug: "pricing-evidence-changes-fast",
+    title: "Why Pricing Evidence Changes Fast in AI Tools",
+    category: "Evidence",
+    status: "Draft",
+    intent: "Buyer caution",
+    description: "AI tool pricing, token limits, and plan features move quickly. This is why NoCodeReviewed treats pricing evidence as time-sensitive.",
+    primaryCta: { label: "Evidence Library", href: "#evidence-library" },
+    relatedTools: [],
+    evidenceStatus: "Grounded in manifest freshness rules and architecture docs",
+    sections: [
+      { heading: "The Problem With Static Pricing Pages", body: "Token allowances, credit resets, and enterprise features are updated frequently by vendors. A review written six weeks ago can already be stale." },
+      { heading: "NoCodeReviewed Approach", body: "Pricing snapshots are captured during evidence collection and explicitly expire. Readers are directed to re-verify before making purchase decisions." }
+    ]
+  },
+  {
+    slug: "build-with-evidence-not-hype",
+    title: "Build With Evidence, Not Hype: The NoCodeReviewed Philosophy",
+    category: "Strategy",
+    status: "Draft",
+    intent: "Mindset",
+    description: "Why NoCodeReviewed refuses to publish listicles, fake benchmarks, or unverified 'best of' claims even when they would drive traffic.",
+    primaryCta: { label: "Read Methodology", href: "#methodology" },
+    relatedTools: [],
+    evidenceStatus: "Grounded in AGENTS.md and CODEX_CONTEXT",
+    sections: [
+      { heading: "Trust Is the Product", body: "Builders who have been burned by hype need a source that labels uncertainty instead of papering over it with marketing copy." },
+      { heading: "What We Publish vs What We Don't", body: "We publish grounded reviews, clear evidence gaps, and actionable audit tools. We do not publish fake user counts, invented case studies, or '10x faster' claims without reproducible tests." }
+    ]
+  }
+];
+
+function ncrBlogPage() {
+  const nav = premiumNav('blog');
+  const featured = BLOG_ARTICLES[0];
+  const grid = BLOG_ARTICLES.map(a => `
+    <div class="blog-card ncr-glass">
+      <div class="blog-card__meta">
+        <span class="blog-category">${a.category}</span>
+        <span class="blog-card__status ${a.status.toLowerCase().replace(/\s+/g,'-')}">${a.status}</span>
+      </div>
+      <h3><a href="#blog/${a.slug}">${a.title}</a></h3>
+      <p>${a.description}</p>
+      <div class="blog-card__footer">
+        <a class="ncr-btn ncr-btn-secondary" href="#blog/${a.slug}">Read ${a.status === 'Draft' ? 'draft' : 'guide'}</a>
+        <span class="blog-intent">${a.intent}</span>
+      </div>
+    </div>
+  `).join('');
+
+  return `
+  ${nav}
+  <div class="blog-page ncr-container">
+    <div class="blog-hero">
+      <div class="eyebrow">NO-CODE INTELLIGENCE BRIEFINGS</div>
+      <h1>Guides, audits, and evidence-backed strategy for the AI-built web.</h1>
+      <p>NoCodeReviewed helps builders choose tools, audit AI-built apps, recover project intelligence from chat history, and avoid hype. All content is labeled by evidence status.</p>
+      <div class="hero-ctas">
+        <a class="ncr-btn ncr-btn-primary" href="/tools/vibe-auditor.html">Run the Vibe Auditor</a>
+        <a class="ncr-btn ncr-btn-secondary" href="/tools/chat-intelligence-vault.html">Open Chat Intelligence Vault</a>
+      </div>
+    </div>
+
+    <div class="blog-featured ncr-glass">
+      <div class="blog-card__meta">
+        <span class="blog-category">${featured.category}</span>
+        <span class="blog-card__status ${featured.status.toLowerCase().replace(/\s+/g,'-')}">${featured.status}</span>
+      </div>
+      <h2><a href="#blog/${featured.slug}">${featured.title}</a></h2>
+      <p>${featured.description}</p>
+      <a class="ncr-btn ncr-btn-primary" href="#blog/${featured.slug}">Read ${featured.status === 'Draft' ? 'draft' : 'guide'}</a>
+    </div>
+
+    <div class="blog-category-filter">
+      <span class="filter-chip active">All</span>
+      <span class="filter-chip">Buyer Guides</span>
+      <span class="filter-chip">Tutorials</span>
+      <span class="filter-chip">Evidence</span>
+      <span class="filter-chip">Comparisons</span>
+      <span class="filter-chip">Audits</span>
+    </div>
+
+    <div class="blog-grid">
+      ${grid}
+    </div>
+
+    <aside class="conversion-sidebar ncr-glass">
+      <h4>Start here</h4>
+      <a class="ncr-btn ncr-btn-primary" href="/tools/vibe-auditor.html">Audit your AI-built app</a>
+      <a class="ncr-btn ncr-btn-secondary" href="/tools/chat-intelligence-vault.html">Recover projects from AI chats</a>
+      <a class="ncr-btn ncr-btn-secondary" href="#methodology">Read the methodology</a>
+      <a class="ncr-btn ncr-btn-secondary" href="#tools">Browse tool reviews</a>
+    </aside>
+
+    <div class="newsletter-card ncr-glass">
+      <h4>Stay sharp</h4>
+      <p>Evidence updates, new audit guides, and methodology notes. Newsletter coming soon.</p>
+      <a class="ncr-btn ncr-btn-secondary" href="#newsletter">Join waitlist (placeholder)</a>
+    </div>
+  </div>`;
+}
+
+function ncrArticlePage(slug) {
+  const article = BLOG_ARTICLES.find(a => a.slug === slug);
+  if (!article) {
+    return `
+    ${premiumNav('blog')}
+    <div class="ncr-container ncr-placeholder">
+      <h1>Article not found</h1>
+      <p>The article you're looking for doesn't exist yet or the slug is incorrect.</p>
+      <div style="margin-top:20px;">
+        <a class="ncr-btn ncr-btn-primary" href="#blog">Back to Blog</a>
+        <a class="ncr-btn ncr-btn-secondary" href="/tools/vibe-auditor.html">Run the Vibe Auditor</a>
+      </div>
+    </div>`;
+  }
+
+  const related = article.relatedTools.map(sl => {
+    const t = getToolData(sl);
+    return `<a href="#review/${sl}" class="related-tool">${t.name}</a>`;
+  }).join('');
+
+  const bodyHtml = article.sections.map(s => `
+    <section class="article-section">
+      <h2>${s.heading}</h2>
+      <p>${s.body.replace(/\n/g, '<br>')}</p>
+    </section>
+  `).join('');
+
+  const toc = article.sections.map(s => `<a href="#${s.heading.toLowerCase().replace(/\s+/g,'-')}">${s.heading}</a>`).join('');
+
+  return `
+  ${premiumNav('blog')}
+  <div class="article-page ncr-container">
+    <header class="article-hero">
+      <div class="blog-card__meta">
+        <span class="blog-category">${article.category}</span>
+        <span class="blog-card__status ${article.status.toLowerCase().replace(/\s+/g,'-')}">${article.status}</span>
+      </div>
+      <h1>${article.title}</h1>
+      <p class="article-intent">${article.intent} • ${article.evidenceStatus}</p>
+    </header>
+
+    <div class="article-layout">
+      <nav class="article-toc">
+        <strong>On this page</strong>
+        ${toc}
+      </nav>
+
+      <div class="article-body">
+        ${bodyHtml}
+
+        <div class="article-evidence-note ncr-glass">
+          <strong>Evidence note:</strong> ${article.evidenceStatus}. This article is published as a high-quality draft to help builders. Full supporting benchmarks and per-tool evidence are being collected.
+        </div>
+
+        <div class="article-cta ncr-glass">
+          <a class="ncr-btn ncr-btn-primary" href="${article.primaryCta.href}">${article.primaryCta.label}</a>
+          <p style="margin-top:8px;font-size:13px;">One focused action beats reading another 10 listicles.</p>
+        </div>
+
+        ${article.relatedTools.length ? `
+        <div class="article-related">
+          <strong>Related tools</strong>
+          <div>${related}</div>
+        </div>` : ''}
+      </div>
+    </div>
+
+    <div class="article-related ncr-glass" style="margin-top:30px;">
+      <strong>Keep exploring</strong>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;">
+        <a href="#blog">Back to Blog</a>
+        <a href="#reviews">Browse reviews</a>
+        <a href="#tools">All tools</a>
+        <a href="#methodology">Methodology</a>
+        <a href="/tools/vibe-auditor.html">Run Vibe Auditor</a>
+      </div>
+    </div>
+  </div>`;
+}
 
