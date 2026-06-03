@@ -9204,13 +9204,18 @@ body {
   .tool-card,
   .microsite-directory-card,
   .homepage-proof-band .homepage-proof-cards article,
-  .evidence-strip div {
+  .evidence-strip div,
+  .ncr-glass, .ncr-card, .ncr-stat, .ncr-stat-tile, .ncr-command, .ncr-cta-band,
+  .glass-3d, .ncr-tilt, .stat-slide-in, .dashboard-scan, .ambient-glow, .route-enter,
+  .ncr-mini-chart polyline {
     transition: none !important;
-  }
-  .card-hover:hover,
-  .tool-card:hover,
-  .microsite-directory-card:hover {
+    animation: none !important;
     transform: none !important;
+    opacity: 1 !important;
+  }
+  .ncr-glass::before, .ncr-command::after, .ncr-live {
+    animation: none !important;
+    opacity: 0.3 !important;
   }
 }
 
@@ -9850,4 +9855,243 @@ body {
 @media (max-width: 900px) {
   .ncr-hero { grid-template-columns: 1fr; }
   .ncr-footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* === UI-K6: Animated 3D Glassmorphic Motion Layer (vanilla CSS + lightweight JS) ===
+   Premium depth, glass, tilt, stat slide-ins, dashboard life, ambient, route transitions.
+   All enhancements additive to existing .ncr-* classes. Fast, professional, respects reduced-motion.
+   No new deps, no canvas, no heavy loops.
+*/
+
+:root {
+  --ncr-tilt-x: 0deg;
+  --ncr-tilt-y: 0deg;
+  --ncr-glow-strength: 0.15;
+  --ncr-depth: 0;
+}
+
+/* Enhanced glassmorphic with depth and sweep */
+.ncr-glass {
+  position: relative;
+  overflow: hidden;
+  transition: transform 220ms cubic-bezier(0.23, 1, 0.32, 1), 
+              box-shadow 220ms cubic-bezier(0.23, 1, 0.32, 1),
+              border-color 200ms;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4),
+              0 1px 0 rgba(255,255,255,0.06) inset,
+              0 -1px 0 rgba(0,0,0,0.3) inset;
+}
+
+.ncr-glass::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -100%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    115deg,
+    transparent 20%,
+    rgba(255,255,255,0.18) 35%,
+    rgba(255,255,255,0.08) 45%,
+    transparent 70%
+  );
+  transform: skewX(-18deg);
+  pointer-events: none;
+  animation: glassSweep 12s linear infinite;
+  z-index: 1;
+  mix-blend-mode: screen;
+}
+
+.ncr-glass.glass-3d,
+.ncr-card.glass-3d,
+.ncr-stat-tile.glass-3d,
+.ncr-command.glass-3d {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+  transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1);
+  will-change: transform;
+}
+
+.ncr-glass.glass-3d::after,
+.ncr-card.glass-3d::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 30%),
+    rgba(255,255,255, calc(0.12 * var(--ncr-glow-strength, 1))),
+    transparent 60%
+  );
+  pointer-events: none;
+  z-index: 2;
+  transition: background 120ms;
+  border-radius: inherit;
+}
+
+/* 3D tilt support via CSS vars (set by vanilla JS) */
+.ncr-tilt,
+.ncr-glass.glass-3d,
+.ncr-card.glass-3d,
+.ncr-command.glass-3d {
+  transform: perspective(1000px) 
+             rotateX(var(--ncr-tilt-x, 0deg)) 
+             rotateY(var(--ncr-tilt-y, 0deg)) 
+             translateZ(0);
+}
+
+.ncr-tilt:hover,
+.ncr-glass.glass-3d:hover,
+.ncr-card.glass-3d:hover {
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.5),
+              0 2px 0 rgba(255,255,255,0.08) inset;
+}
+
+/* Stat slide-in + stagger */
+.ncr-stat,
+.ncr-stat-tile,
+.ncr-card,
+.ncr-cta-band {
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+}
+
+.ncr-stat.animate-in,
+.ncr-stat-tile.animate-in,
+.ncr-card.animate-in,
+.ncr-cta-band.animate-in {
+  animation: statSlideIn 620ms cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes statSlideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Stagger via nth-child in grids (works without JS for basic) */
+.ncr-command-stats .ncr-stat:nth-child(1) { animation-delay: 80ms; }
+.ncr-command-stats .ncr-stat:nth-child(2) { animation-delay: 160ms; }
+.ncr-command-stats .ncr-stat:nth-child(3) { animation-delay: 240ms; }
+.ncr-command-stats .ncr-stat:nth-child(4) { animation-delay: 320ms; }
+
+.ncr-statband .ncr-stat-tile:nth-child(1) { animation-delay: 60ms; }
+.ncr-statband .ncr-stat-tile:nth-child(2) { animation-delay: 120ms; }
+.ncr-statband .ncr-stat-tile:nth-child(3) { animation-delay: 180ms; }
+.ncr-statband .ncr-stat-tile:nth-child(4) { animation-delay: 240ms; }
+.ncr-statband .ncr-stat-tile:nth-child(5) { animation-delay: 300ms; }
+.ncr-statband .ncr-stat-tile:nth-child(6) { animation-delay: 360ms; }
+
+.ncr-review-grid .ncr-card:nth-child(1) { animation-delay: 90ms; }
+.ncr-review-grid .ncr-card:nth-child(2) { animation-delay: 170ms; }
+.ncr-review-grid .ncr-card:nth-child(3) { animation-delay: 250ms; }
+.ncr-review-grid .ncr-card:nth-child(4) { animation-delay: 330ms; }
+.ncr-review-grid .ncr-card:nth-child(5) { animation-delay: 410ms; }
+
+.ncr-micro-grid .ncr-card:nth-child(1) { animation-delay: 110ms; }
+.ncr-micro-grid .ncr-card:nth-child(2) { animation-delay: 200ms; }
+
+/* Dashboard life: scan, live pulse, chart grow */
+.ncr-command {
+  position: relative;
+}
+
+.ncr-command::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(59, 130, 246, 0.18),
+    transparent
+  );
+  pointer-events: none;
+  animation: dashboardScan 5.5s linear infinite;
+  z-index: 3;
+  border-radius: inherit;
+}
+
+@keyframes dashboardScan {
+  0% { left: -120%; }
+  12% { left: 140%; }
+  100% { left: 140%; }
+}
+
+.ncr-live {
+  animation: livePulse 2.2s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
+}
+
+/* Mini chart stroke animation (triggered by .chart-anim class on polyline) */
+.ncr-mini-chart polyline {
+  stroke-dasharray: 120;
+  stroke-dashoffset: 120;
+  transition: stroke-dashoffset 900ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.ncr-mini-chart.chart-anim polyline {
+  stroke-dashoffset: 0;
+}
+
+/* Ambient glow / subtle drift on premium background layer */
+.ncr-premium::before {
+  animation: ambientDrift 22s ease-in-out infinite;
+}
+
+@keyframes ambientDrift {
+  0%, 100% { 
+    background-position: 30% 20%, 0 0; 
+    opacity: 0.65;
+  }
+  50% { 
+    background-position: 38% 28%, 4px 3px; 
+    opacity: 0.78;
+  }
+}
+
+/* Route enter transition (applied to main content container after render) */
+.route-enter,
+.ncr-container.route-enter,
+.ncr-placeholder.route-enter {
+  animation: routeEnter 420ms cubic-bezier(0.23, 1, 0.32, 1) backwards;
+}
+
+@keyframes routeEnter {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Subtle interactive glow boost on tilt */
+.ncr-tilt:hover .ncr-glass::after,
+.ncr-glass.glass-3d:hover::after {
+  opacity: 0.9;
+}
+
+/* Make sure cards in grids get depth */
+.ncr-review-grid .ncr-card,
+.ncr-micro-grid .ncr-card,
+.ncr-command-stats .ncr-stat {
+  transition: transform 180ms cubic-bezier(0.23, 1, 0.32, 1), 
+              box-shadow 180ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Small polish for command center inner elements */
+.ncr-command .ncr-stat {
+  background: rgba(10, 14, 26, 0.6);
+  border: 1px solid rgba(30, 39, 68, 0.6);
 }

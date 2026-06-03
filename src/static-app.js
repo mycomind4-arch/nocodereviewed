@@ -7478,6 +7478,7 @@ function render() {
     if (pageHtml) {
       document.querySelector("#app").innerHTML = pageHtml;
       setupNcrPremiumNavActive(simple === 'top' || simple === 'home' || simple === '' ? 'home' : simple);
+      postRenderMotionEnhance(simple);
       return;
     }
   }
@@ -7488,11 +7489,13 @@ function render() {
     const oldContent = renderPanel();
     document.querySelector("#app").innerHTML = `<div class="ncr-legacy-wrap">${oldContent}</div>`;
     setupNcrPremiumNavActive(r);
+    postRenderMotionEnhance(r);
     try { bind(); } catch (_) {}
   } catch (e) {
     // ultimate fallback
     document.querySelector("#app").innerHTML = ncrHomePage();
     setupNcrPremiumNavActive('home');
+    postRenderMotionEnhance('home');
   }
 }
 
@@ -7520,6 +7523,83 @@ function setupNcrPremiumNavActive(activeKey) {
       });
     });
   } catch (_) {}
+}
+
+function postRenderMotionEnhance(pageKey = 'home') {
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // still make sure visible
+    document.querySelectorAll('.ncr-stat, .ncr-stat-tile, .ncr-card, .ncr-cta-band').forEach(el => {
+      el.style.opacity = '1';
+      el.style.transform = 'none';
+    });
+    return;
+  }
+
+  // Trigger staggered slide-ins
+  const animEls = document.querySelectorAll('.ncr-stat, .ncr-stat-tile, .ncr-card, .ncr-cta-band');
+  animEls.forEach((el, i) => {
+    el.classList.remove('animate-in');
+    // force reflow for re-trigger on same page re-renders
+    void el.offsetWidth;
+    const delay = 40 + Math.min(i, 11) * 38;
+    setTimeout(() => {
+      el.classList.add('animate-in');
+    }, delay);
+  });
+
+  // Init 3D pointer tilt (lightweight)
+  initGlassTilt();
+
+  // Dashboard specific (chart re-anim, etc)
+  initDashboardAnims(pageKey);
+}
+
+function initGlassTilt() {
+  const tiltEls = document.querySelectorAll('.ncr-tilt, .ncr-glass.glass-3d, .ncr-card.glass-3d, .ncr-command.glass-3d, .ncr-stat-tile.glass-3d');
+  tiltEls.forEach(el => {
+    if (el._tiltBound) return;
+    el._tiltBound = true;
+
+    const applyTilt = (clientX, clientY) => {
+      const rect = el.getBoundingClientRect();
+      const x = ((clientX - rect.left) / rect.width - 0.5);
+      const y = ((clientY - rect.top) / rect.height - 0.5);
+      const rotX = (-y * 5.5).toFixed(1) + 'deg';
+      const rotY = (x * 6.5).toFixed(1) + 'deg';
+      el.style.setProperty('--ncr-tilt-x', rotX);
+      el.style.setProperty('--ncr-tilt-y', rotY);
+      el.style.setProperty('--mouse-x', ((x + 0.5) * 100) + '%');
+      el.style.setProperty('--mouse-y', ((y + 0.5) * 100) + '%');
+    };
+
+    const resetTilt = () => {
+      el.style.setProperty('--ncr-tilt-x', '0deg');
+      el.style.setProperty('--ncr-tilt-y', '0deg');
+    };
+
+    el.addEventListener('mousemove', (e) => applyTilt(e.clientX, e.clientY), { passive: true });
+    el.addEventListener('mouseleave', resetTilt, { passive: true });
+
+    // light touch support
+    el.addEventListener('touchmove', (e) => {
+      if (e.touches && e.touches[0]) applyTilt(e.touches[0].clientX, e.touches[0].clientY);
+    }, { passive: true });
+    el.addEventListener('touchend', resetTilt, { passive: true });
+  });
+}
+
+function initDashboardAnims(pageKey) {
+  const chart = document.querySelector('.ncr-mini-chart');
+  if (chart) {
+    const poly = chart.querySelector('polyline');
+    if (poly) {
+      chart.classList.remove('chart-anim');
+      // force restart
+      void chart.offsetWidth;
+      setTimeout(() => chart.classList.add('chart-anim'), 60);
+    }
+  }
+  // live pulse and scan are CSS driven
 }
 
 function bind() {
@@ -7855,17 +7935,17 @@ function ncrHomePage() {
         </div>
       </div>
 
-      <div class="ncr-command ncr-glass ncr-neon">
+      <div class="ncr-command ncr-glass ncr-neon glass-3d ncr-tilt dashboard-animated">
         <div class="ncr-command-header">
           <div class="title">INTELLIGENCE COMMAND CENTER</div>
           <div class="ncr-live">● Live</div>
         </div>
 
         <div class="ncr-command-stats">
-          <div class="ncr-stat"><div class="num">${numTools}</div><div class="label">Tools Reviewed</div></div>
-          <div class="ncr-stat"><div class="num">${customMicro}</div><div class="label">Microsites Audited</div></div>
-          <div class="ncr-stat"><div class="num">${numEv}</div><div class="label">Evidence Files</div></div>
-          <div class="ncr-stat"><div class="num">0</div><div class="label">Sponsored Rankings</div></div>
+          <div class="ncr-stat glass-3d stat-slide-in"><div class="num">${numTools}</div><div class="label">Tools Reviewed</div></div>
+          <div class="ncr-stat glass-3d stat-slide-in"><div class="num">${customMicro}</div><div class="label">Microsites Audited</div></div>
+          <div class="ncr-stat glass-3d stat-slide-in"><div class="num">${numEv}</div><div class="label">Evidence Files</div></div>
+          <div class="ncr-stat glass-3d stat-slide-in"><div class="num">0</div><div class="label">Sponsored Rankings</div></div>
         </div>
 
         <div class="ncr-command-health">
@@ -7901,14 +7981,14 @@ function ncrHomePage() {
     </div>
 
     <!-- STAT BAND -->
-    <div class="ncr-statband ncr-glass">
+    <div class="ncr-statband ncr-glass glass-3d">
       <div class="ncr-statband-inner">
-        <div class="ncr-stat-tile"><span class="icon">🛡️</span><div><div class="num">${numTools}</div><div class="lbl">Tools Indexed</div></div></div>
-        <div class="ncr-stat-tile"><span class="icon">📄</span><div><div class="num">${numEv}</div><div class="lbl">Evidence Files</div></div></div>
-        <div class="ncr-stat-tile"><span class="icon">🌐</span><div><div class="num">${customMicro}</div><div class="lbl">Microsites</div></div></div>
-        <div class="ncr-stat-tile"><span class="icon">⚖️</span><div><div class="num">0</div><div class="lbl">Sponsored Rankings</div></div></div>
-        <div class="ncr-stat-tile"><span class="icon">✓</span><div><div class="num">Active</div><div class="lbl">Evidence Integrity</div></div></div>
-        <div class="ncr-stat-tile"><span class="icon">👥</span><div><div class="num">Building</div><div class="lbl">Community Trust</div></div></div>
+        <div class="ncr-stat-tile glass-3d ncr-tilt stat-slide-in"><span class="icon">🛡️</span><div><div class="num">${numTools}</div><div class="lbl">Tools Indexed</div></div></div>
+        <div class="ncr-stat-tile glass-3d ncr-tilt stat-slide-in"><span class="icon">📄</span><div><div class="num">${numEv}</div><div class="lbl">Evidence Files</div></div></div>
+        <div class="ncr-stat-tile glass-3d ncr-tilt stat-slide-in"><span class="icon">🌐</span><div><div class="num">${customMicro}</div><div class="lbl">Microsites</div></div></div>
+        <div class="ncr-stat-tile glass-3d ncr-tilt stat-slide-in"><span class="icon">⚖️</span><div><div class="num">0</div><div class="lbl">Sponsored Rankings</div></div></div>
+        <div class="ncr-stat-tile glass-3d ncr-tilt stat-slide-in"><span class="icon">✓</span><div><div class="num">Active</div><div class="lbl">Evidence Integrity</div></div></div>
+        <div class="ncr-stat-tile glass-3d ncr-tilt stat-slide-in"><span class="icon">👥</span><div><div class="num">Building</div><div class="lbl">Community Trust</div></div></div>
       </div>
     </div>
 
@@ -7917,7 +7997,7 @@ function ncrHomePage() {
       <h2>LATEST TOOL REVIEWS <a href="#reviews">View all reviews →</a></h2>
       <div class="ncr-review-grid">
         ${latestReviews.map(r => `
-          <div class="ncr-card">
+          <div class="ncr-card glass-3d ncr-tilt stat-slide-in">
             <div class="ncr-card-head">
               <div class="logo">${r.name[0]}</div>
               <div>
@@ -7949,7 +8029,7 @@ function ncrHomePage() {
       </div>
       <div class="ncr-micro-grid">
         ${msTools.map(m => `
-          <div class="ncr-card ncr-ms-card">
+          <div class="ncr-card ncr-ms-card glass-3d ncr-tilt stat-slide-in">
             <div class="header"></div>
             <div class="name">${m.name}</div>
             <div class="cat">${m.cat}</div>
@@ -7961,7 +8041,7 @@ function ncrHomePage() {
     </div>
 
     <!-- BOTTOM CTA -->
-    <div class="ncr-cta-band ncr-glass ncr-purple-neon">
+    <div class="ncr-cta-band ncr-glass ncr-purple-neon glass-3d">
       <div class="icon">🛡️</div>
       <div class="text">
         <div style="color:#a78bfa;font-size:11px;letter-spacing:1px;">JOIN THE EVIDENCE REVOLUTION</div>
@@ -8018,13 +8098,13 @@ function ncrPlaceholder(title, desc, extra = '') {
   const nav = premiumNav(title.toLowerCase());
   return `
   ${nav}
-  <div class="ncr-container ncr-placeholder">
+  <div class="ncr-container ncr-placeholder route-enter">
     <div class="ncr-placeholder-hero">
       <div class="eyebrow">NO CODEREVIEWED</div>
       <h1>${title}</h1>
       <p style="max-width:560px;margin:0 auto;color:var(--ncr-muted);">${desc}</p>
     </div>
-    <div class="ncr-glass ncr-ph-card" style="max-width:720px;margin:0 auto 24px;">
+    <div class="ncr-glass ncr-ph-card glass-3d" style="max-width:720px;margin:0 auto 24px;">
       <p style="margin:0 0 12px;">This section is under active construction as part of the Intelligence Platform rollout.</p>
       ${extra || '<p style="margin:0;">All content will be grounded in the Vault Data Contract, real evidence files, and the production Vibe Auditor + Chat Intelligence Vault tooling.</p>'}
       <div style="margin-top:16px;">
@@ -8042,7 +8122,7 @@ function ncrReviewsRealPage() {
   const cards = allTools.map(t => {
     const hasEv = (typeof evidenceFileIndex !== 'undefined') && evidenceFileIndex.some(e => (e.tool || '').toLowerCase().includes((t.name || '').toLowerCase().split(' ')[0]));
     return `
-      <div class="ncr-card">
+      <div class="ncr-card glass-3d ncr-tilt stat-slide-in">
         <div class="ncr-card-head">
           <div class="logo">${(t.name || 'T')[0]}</div>
           <div><div class="name">${t.name}</div><div class="cat">${t.category || 'Tool'}</div></div>
@@ -8058,14 +8138,14 @@ function ncrReviewsRealPage() {
   }).join('');
   return `
   ${nav}
-  <div class="ncr-container ncr-placeholder">
+  <div class="ncr-container ncr-placeholder route-enter">
     <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
       <div class="eyebrow">EVIDENCE-BACKED REVIEWS</div>
       <h1>Tool Reviews</h1>
       <p style="max-width:640px;">All reviews are grounded in repeatable benchmarks, pricing snapshots, production gates, and the evidence manifest. Click any card for the full dossier.</p>
     </div>
     <div class="ncr-review-grid" style="margin-bottom:30px;">
-      ${cards || '<div class="ncr-card">No tools loaded yet.</div>'}
+      ${cards || '<div class="ncr-card glass-3d">No tools loaded yet.</div>'}
     </div>
     <div style="text-align:center; margin:20px 0;">
       <a class="ncr-btn ncr-btn-primary" href="/tools/vibe-auditor.html">Run the Vibe Auditor</a>
@@ -8080,7 +8160,7 @@ function ncrMicrositesRealPage() {
   const cards = allTools.map((t, i) => {
     const isCustom = ['lovable','bolt-new','replit-agent','replit'].some(s => (t.slug || '').includes(s));
     return `
-      <div class="ncr-card ncr-ms-card">
+      <div class="ncr-card ncr-ms-card glass-3d ncr-tilt stat-slide-in">
         <div class="header"></div>
         <div class="name">${t.name}</div>
         <div class="cat">${t.category || 'Platform'}</div>
@@ -8090,14 +8170,14 @@ function ncrMicrositesRealPage() {
   }).join('');
   return `
   ${nav}
-  <div class="ncr-container ncr-placeholder">
+  <div class="ncr-container ncr-placeholder route-enter">
     <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
       <div class="eyebrow">INTELLIGENCE DIRECTORY</div>
       <h1>Microsite Intelligence Directory</h1>
       <p style="max-width:640px;">Custom flagship microsites have deep evidence pages. Others are auto-generated from the evidence manifest and quality gates.</p>
     </div>
     <div class="ncr-micro-grid" style="margin-bottom:30px;">
-      ${cards || '<div class="ncr-card">No tools loaded yet.</div>'}
+      ${cards || '<div class="ncr-card glass-3d">No tools loaded yet.</div>'}
     </div>
     <div style="text-align:center;">
       <a class="ncr-btn ncr-btn-primary" href="#submit">Submit a Microsite</a>
@@ -8112,7 +8192,7 @@ function ncrToolsRealPage() {
   const cards = allTools.map(t => {
     const hasEv = (typeof evidenceFileIndex !== 'undefined') && evidenceFileIndex.some(e => (e.tool || '').toLowerCase().includes((t.name || '').toLowerCase().split(' ')[0]));
     return `
-      <div class="ncr-card">
+      <div class="ncr-card glass-3d ncr-tilt stat-slide-in">
         <div class="ncr-card-head">
           <div class="logo">${(t.name || 'T')[0]}</div>
           <div><div class="name">${t.name}</div><div class="cat">${t.category || 'Tool'}</div></div>
@@ -8128,14 +8208,14 @@ function ncrToolsRealPage() {
   }).join('');
   return `
   ${nav}
-  <div class="ncr-container ncr-placeholder">
+  <div class="ncr-container ncr-placeholder route-enter">
     <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
       <div class="eyebrow">INDEX</div>
       <h1>All Tools</h1>
       <p style="max-width:640px;">Every no-code and AI builder tool we track, with evidence status and quick links to reviews or microsites.</p>
     </div>
     <div class="ncr-review-grid" style="margin-bottom:30px;">
-      ${cards || '<div class="ncr-card">No tools loaded yet.</div>'}
+      ${cards || '<div class="ncr-card glass-3d">No tools loaded yet.</div>'}
     </div>
     <div style="text-align:center;">
       <a class="ncr-btn ncr-btn-primary" href="#reviews">Browse Reviews</a>
@@ -8149,7 +8229,7 @@ function ncrEvidenceRealPage() {
   const numEv = (typeof evidenceFileIndex !== 'undefined' ? evidenceFileIndex.length : 25);
   return `
   ${nav}
-  <div class="ncr-container ncr-placeholder">
+  <div class="ncr-container ncr-placeholder route-enter">
     <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
       <div class="eyebrow">EVIDENCE SYSTEM</div>
       <h1>Evidence</h1>
