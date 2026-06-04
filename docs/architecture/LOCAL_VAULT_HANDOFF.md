@@ -134,7 +134,7 @@ The Vault Ingestion Parser currently supports:
 - HTML
 - ChatGPT `conversations.json`
 
-Phase 5 bundles are parser-compatible as local JSON document bundles. The generic document parser can preserve and parse JSON files today. A future dedicated `local-vault-handoff` parser adapter should read `manifest.json`, classify records by folder and `record_type`, and write first-class normalized records.
+Phase 5 bundles are parser-compatible as local JSON document bundles. The generic document parser can preserve and parse JSON files today. A dedicated `local-vault-handoff` parser adapter (and agent-swarm-coder-handoff variant) in the Vault Ingestion Parser can read `manifest.json` + records (either per-folder .json in full bundles, or flat records.jsonl for agent-run-handoff.v1 exports from agent-swarm-coder), classify by record_type, and produce normalized records. The agent handoff uses the flat records.jsonl format inside coding-agent-runs/**/vault-handoff/ for per-run intelligence. Raw sources (agent run package or browser vault) are never mutated.
 
 Rules:
 

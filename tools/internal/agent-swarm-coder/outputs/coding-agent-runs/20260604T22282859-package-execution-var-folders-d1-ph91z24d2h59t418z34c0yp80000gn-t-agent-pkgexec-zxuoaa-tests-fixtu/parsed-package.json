@@ -1,0 +1,21 @@
+{
+  "objective": "Test package exec in isolated tmp.",
+  "files": [
+    {
+      "path": "tests/fixtures/demo-from-pkg.txt",
+      "action": "create",
+      "description": "From package markdown",
+      "content": "demo content"
+    }
+  ],
+  "commands": [],
+  "testCommands": [],
+  "implementationSteps": [],
+  "qaChecklist": [],
+  "riskChecklist": [],
+  "rollbackNotes": "",
+  "evidenceRequirements": "",
+  "nextAction": [],
+  "schema_version": "agent-package.v1",
+  "approvals": {}
+}

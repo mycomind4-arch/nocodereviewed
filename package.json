@@ -9,7 +9,10 @@
     "preview": "node server.mjs",
     "inventory:evidence": "node scripts/inventory-evidence.mjs --write data/intelligence-vault/evidence-manifest.json",
     "validate:evidence": "node scripts/validate-evidence-manifest.mjs",
-    "audit:site": "node scripts/run-universal-site-audit.mjs"
+    "audit:site": "node scripts/run-universal-site-audit.mjs",
+    "test": "node --test 'tools/internal/agent-swarm-coder/tests/*.test.js'",
+    "agent": "node tools/internal/agent-swarm-coder/src/cli.js",
+    "vault:ingest-agent-runs": "npx --yes tsx tools/internal/vault-ingestion-parser/src/ingest-agent-handoff.ts"
   },
   "dependencies": {},
   "devDependencies": {}

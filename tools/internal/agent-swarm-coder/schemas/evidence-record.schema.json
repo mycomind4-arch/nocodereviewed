@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "evidence-record.schema.json",
+  "title": "EvidenceRecord",
+  "type": "object",
+  "required": [
+    "id",
+    "schema_version",
+    "record_type",
+    "source_platform",
+    "created_at",
+    "tags",
+    "privacy_level",
+    "run_id",
+    "summary",
+    "artifacts"
+  ],
+  "properties": {
+    "id": { "type": "string" },
+    "schema_version": { "type": "string", "const": "vault.v1" },
+    "record_type": { "type": "string", "const": "VaultArtifact" },
+    "source_platform": { "type": "string", "const": "agent-swarm-coder" },
+    "source_ref": {
+      "type": "object",
+      "properties": {
+        "raw_path": { "type": "string" },
+        "run_dir": { "type": "string" }
+      }
+    },
+    "created_at": { "type": "string" },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "privacy_level": { "type": "string", "enum": ["local_private", "review_required", "approved_internal", "approved_public"] },
+    "run_id": { "type": "string" },
+    "summary": { "type": "string" },
+    "artifacts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "path": { "type": "string" },
+          "hash": { "type": "string" }
+        }
+      }
+    },
+    "plan_objective": { "type": "string" },
+    "files_changed": { "type": "array", "items": { "type": "string" } },
+    "commands_run": { "type": "array", "items": { "type": "string" } },
+    "outcome": { "type": "string", "enum": ["dry-run", "applied", "failed", "repaired"] }
+  },
+  "additionalProperties": true
+}

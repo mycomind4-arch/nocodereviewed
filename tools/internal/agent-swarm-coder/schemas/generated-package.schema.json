@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "generated-package.schema.json",
+  "title": "GeneratedImplementationPackage",
+  "description": "Output shape of planToPackageCompiler. Always safe-by-default. Produced from a goal-mode implementation-plan.json. Compatible with package-execution.schema.json and the parser/planner pipeline. High-level (may omit file content).",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "objective",
+    "files",
+    "implementationSteps",
+    "commands",
+    "testCommands",
+    "qaChecklist",
+    "riskChecklist",
+    "rollbackNotes",
+    "evidenceRequirements",
+    "nextAction",
+    "approvals"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "agent-package.v1" },
+    "objective": { "type": "string", "minLength": 3 },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "action"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "action": { "type": "string", "enum": ["create", "write", "modify", "patch", "delete"] },
+          "description": { "type": "string" },
+          "content": { "type": "string" },
+          "search": { "type": "string" },
+          "replace": { "type": "string" },
+          "approved": { "type": "boolean" }
+        }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "testCommands": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "implementationSteps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "qaChecklist": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "riskChecklist": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rollbackNotes": { "type": "string" },
+    "evidenceRequirements": { "type": "string" },
+    "nextAction": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "approvals": {
+      "type": "object",
+      "properties": {
+        "deletes": { "type": "boolean", "const": false },
+        "secretEdits": { "type": "boolean", "const": false },
+        "externalActions": { "type": "boolean", "const": false }
+      },
+      "required": ["deletes", "secretEdits", "externalActions"]
+    }
+  },
+  "additionalProperties": true
+}

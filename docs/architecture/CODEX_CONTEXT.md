@@ -9,6 +9,8 @@ Before implementing infrastructure features, inspect:
 - `docs/architecture/MERGE_PLAN.md`
 - `docs/architecture/INTELLIGENCE_VAULT_ARCHITECTURE.md`
 - `docs/architecture/VAULT_DATA_CONTRACT.md`
+- The Vault Ingestion Parser now has an agent-swarm-coder-handoff adapter and `vault:ingest-agent-runs` support (see registry/TOOLS.md and parser README). Agent produces vault-handoff/ exports; parser normalizes them locally into vault-ingestion-runs outputs. Raw always preserved.
+- Agent now supports --context-packet (reader from normalized Vault outputs + builder) for local memory/context packets in runs (via --compound for full loop). Deterministic, advisory, no auto-apply. See agent AGENTS.md + CODING docs.
 
 ## Project Mission
 

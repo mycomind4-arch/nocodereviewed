@@ -1,0 +1,62 @@
+{
+  "objective": "Test package exec in isolated tmp.",
+  "sourcePackage": {
+    "objective": "Test package exec in isolated tmp.",
+    "files": [
+      {
+        "path": "tests/fixtures/demo-from-pkg.txt",
+        "action": "create",
+        "description": "From package markdown",
+        "content": "demo content"
+      }
+    ],
+    "commands": [],
+    "testCommands": [],
+    "implementationSteps": [],
+    "qaChecklist": [],
+    "riskChecklist": [],
+    "rollbackNotes": "",
+    "evidenceRequirements": "",
+    "nextAction": [],
+    "schema_version": "agent-package.v1",
+    "approvals": {}
+  },
+  "fileOps": [
+    {
+      "path": "tests/fixtures/demo-from-pkg.txt",
+      "absPath": "/var/folders/d1/ph91z24d2h59t418z34c0yp80000gn/T/agent-pkgexec-ZXuOAa/tests/fixtures/demo-from-pkg.txt",
+      "action": "create",
+      "description": "From package markdown",
+      "hasContent": true,
+      "isSecretTarget": false,
+      "isDelete": false
+    }
+  ],
+  "commands": [],
+  "steps": [
+    {
+      "id": "file-0",
+      "type": "file",
+      "action": "create",
+      "target": "tests/fixtures/demo-from-pkg.txt",
+      "desc": "CREATE tests/fixtures/demo-from-pkg.txt — From package markdown",
+      "safety": {
+        "warnings": [],
+        "blocked": false,
+        "requiresApproval": false
+      }
+    }
+  ],
+  "safety": {
+    "warnings": [],
+    "blockedActions": [],
+    "requiresApproval": [],
+    "dryRunDefault": true,
+    "applyAllowed": true
+  },
+  "testCommands": [],
+  "rollbackNotes": "Backups created by FileOps before any write. See .bak files and rollback-plan.md",
+  "qaChecklist": [],
+  "riskChecklist": [],
+  "nextAction": []
+}

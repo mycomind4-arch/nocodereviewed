@@ -1,0 +1,11 @@
+{
+  "schema_version": "vault.v1",
+  "export_version": "agent-run-handoff.v1",
+  "generated_at": "2026-06-04T00:00:00.000Z",
+  "source_application": "agent-swarm-coder",
+  "source_run_path": "samples/raw/agent-handoff-fixture/20260604T000000-test-agent-run",
+  "record_counts": { "VaultArtifact": 3, "VaultCommand": 1 },
+  "included_record_types": ["VaultArtifact", "VaultCommand"],
+  "parser_compatibility_version": "vault-ingestion-parser.local-json.v1",
+  "privacy_notice": "Test fixture."
+}

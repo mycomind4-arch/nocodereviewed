@@ -1,0 +1,12 @@
+[
+  {
+    "command": "git status --short",
+    "exitCode": 128,
+    "stdout": "",
+    "stderr": "fatal: not a git repository (or any of the parent directories): .git\n",
+    "durationMs": 52,
+    "timestamp": "2026-06-04T22:28:59.654Z",
+    "cwd": "/var/folders/d1/ph91z24d2h59t418z34c0yp80000gn/T/agent-pkgexec-ZXuOAa",
+    "success": false
+  }
+]

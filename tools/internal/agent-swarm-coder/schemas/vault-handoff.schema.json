@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "vault-handoff.schema.json",
+  "title": "AgentVaultHandoff",
+  "description": "Local Vault Handoff export produced by agent-swarm-coder inside a run directory. Contains normalized vault.v1 records derived from the raw run artifacts (which remain the source of truth and are never modified). Compatible with LOCAL_VAULT_HANDOFF principles and VAULT_DATA_CONTRACT (uses existing record types like VaultArtifact, VaultCommand; no new top-level types invented). Intended for future generic JSON document ingestion by vault-ingestion-parser; no live ingestion performed here.",
+  "type": "object",
+  "properties": {
+    "manifest": {
+      "type": "object",
+      "required": ["schema_version", "export_version", "generated_at", "source_application", "source_run_path", "record_counts", "included_record_types", "parser_compatibility_version", "privacy_notice"],
+      "properties": {
+        "schema_version": { "type": "string", "const": "vault.v1" },
+        "export_version": { "type": "string", "const": "agent-run-handoff.v1" },
+        "generated_at": { "type": "string" },
+        "source_application": { "type": "string", "const": "agent-swarm-coder" },
+        "source_run_path": { "type": "string" },
+        "record_counts": { "type": "object" },
+        "included_record_types": { "type": "array", "items": { "type": "string" } },
+        "parser_compatibility_version": { "type": "string" },
+        "privacy_notice": { "type": "string" }
+      }
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "schema_version", "record_type", "source_platform", "source_ref", "created_at", "tags", "privacy_level"],
+        "properties": {
+          "id": { "type": "string" },
+          "schema_version": { "type": "string", "const": "vault.v1" },
+          "record_type": { "type": "string", "enum": ["VaultArtifact", "VaultCommand"] },
+          "source_platform": { "type": "string", "const": "agent-swarm-coder" },
+          "source_tool": { "type": "string" },
+          "source_run_path": { "type": "string" },
+          "project": { "type": "string" },
+          "source_ref": { "type": "object" },
+          "created_at": { "type": "string" },
+          "title": { "type": "string" },
+          "summary": { "type": "string" },
+          "content_ref": { "type": "object" },
+          "content": { "type": "string" },
+          "tags": { "type": "array", "items": { "type": "string" } },
+          "confidence": { "type": "number" },
+          "privacy_level": { "type": "string", "const": "local_private" },
+          "evidence_status": { "type": "string" },
+          "related_records": { "type": "array" },
+          "promote_to_long_term": { "type": "boolean" },
+          "artifact_type": { "type": "string" },
+          "command": { "type": "string" }
+        },
+        "additionalProperties": true
+      }
+    }
+  }
+}

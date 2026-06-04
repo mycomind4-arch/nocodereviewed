@@ -25,3 +25,16 @@ data/intelligence-vault/parser-inbox/site-audits/*
 !data/intelligence-vault/parser-inbox/site-audits/.gitkeep
 data/intelligence-vault/parsed/admin-site-audits/*
 !data/intelligence-vault/parsed/admin-site-audits/.gitkeep
+
+# Vibe Launch Audit customer orders (local-only, contains PII and private project details — never commit)
+data/vibe-audits/*
+!data/vibe-audits/.gitkeep
+!data/vibe-audits/reports/.gitkeep
+
+# AI Forge generations (local history of generated prompts/blueprints)
+data/ai-forge/*
+!data/ai-forge/.gitkeep
+
+# agent-swarm-coder run packages (local durable artifacts, always review before commit)
+outputs/coding-agent-runs/*
+!outputs/coding-agent-runs/.gitkeep

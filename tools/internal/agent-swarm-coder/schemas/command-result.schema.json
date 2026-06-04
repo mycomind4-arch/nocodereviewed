@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "command-result.schema.json",
+  "title": "CommandResult",
+  "type": "object",
+  "required": [
+    "command",
+    "exitCode",
+    "stdout",
+    "stderr",
+    "durationMs",
+    "timestamp"
+  ],
+  "properties": {
+    "command": { "type": "string" },
+    "exitCode": { "type": "integer" },
+    "stdout": { "type": "string" },
+    "stderr": { "type": "string" },
+    "durationMs": { "type": "number" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "cwd": { "type": "string" },
+    "success": { "type": "boolean" }
+  },
+  "additionalProperties": false
+}

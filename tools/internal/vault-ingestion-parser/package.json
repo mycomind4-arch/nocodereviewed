@@ -10,6 +10,7 @@
     "build": "tsc",
     "dev": "tsx src/cli.ts",
     "ingest": "tsx src/cli.ts ingest",
+    "ingest-agent-handoff": "tsx src/ingest-agent-handoff.ts",
     "test": "tsx tests/smoke.ts"
   },
   "dependencies": {

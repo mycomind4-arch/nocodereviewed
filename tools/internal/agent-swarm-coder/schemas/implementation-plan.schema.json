@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "implementation-plan.schema.json",
+  "title": "ImplementationPlan",
+  "type": "object",
+  "required": [
+    "objective",
+    "assumptions",
+    "constraints",
+    "filesLikelyToModify",
+    "implementationSteps",
+    "riskChecklist",
+    "testCommands",
+    "rollbackPlan"
+  ],
+  "properties": {
+    "objective": { "type": "string", "minLength": 1 },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "constraints": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "filesLikelyToModify": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "implementationSteps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["step", "action"],
+        "properties": {
+          "step": { "type": "integer" },
+          "action": { "type": "string" },
+          "files": { "type": "array", "items": { "type": "string" } },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "riskChecklist": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "testCommands": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rollbackPlan": {
+      "type": "object",
+      "required": ["strategy", "backupLocations", "restoreCommands"],
+      "properties": {
+        "strategy": { "type": "string" },
+        "backupLocations": { "type": "array", "items": { "type": "string" } },
+        "restoreCommands": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "additionalProperties": false
+}

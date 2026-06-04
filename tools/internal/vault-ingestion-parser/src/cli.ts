@@ -27,6 +27,13 @@ program.command('ingest')
     console.log(`Output: ${result.output}`);
   });
 
+program.command('ingest-agent-handoff')
+  .option('-s, --source <source>', 'source directory containing coding-agent-runs (with vault-handoff subdirs)', 'outputs/coding-agent-runs')
+  .action(async (opts) => {
+    const { ingestAgentHandoff } = await import('./ingest-agent-handoff.js');
+    await ingestAgentHandoff({ source: opts.source });
+  });
+
 program.parseAsync(process.argv).catch((error) => {
   console.error(error);
   process.exit(1);

@@ -1,0 +1,7 @@
+{
+  "planned": [
+    "tests/fixtures/demo-from-pkg.txt"
+  ],
+  "actuallyChanged": [],
+  "dryRun": true
+}

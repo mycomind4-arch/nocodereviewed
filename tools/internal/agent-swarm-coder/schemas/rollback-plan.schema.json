@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "rollback-plan.schema.json",
+  "title": "RollbackPlan",
+  "type": "object",
+  "required": ["strategy", "backupLocations", "restoreCommands", "changedFiles"],
+  "properties": {
+    "strategy": { "type": "string" },
+    "backupLocations": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "restoreCommands": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "changedFiles": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "notes": { "type": "string" }
+  },
+  "additionalProperties": false
+}

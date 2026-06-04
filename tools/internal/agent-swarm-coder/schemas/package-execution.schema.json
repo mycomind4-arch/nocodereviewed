@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "package-execution.schema.json",
+  "title": "AgentPackageExecution",
+  "description": "Structured implementation package that the agent-swarm-coder can parse, plan, validate for safety, and (optionally with --apply) execute as scoped file+command changes.",
+  "type": "object",
+  "required": ["objective", "schema_version"],
+  "properties": {
+    "schema_version": { "type": "string", "const": "agent-package.v1" },
+    "objective": { "type": "string", "minLength": 5 },
+    "files": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["path", "action"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "action": { "type": "string", "enum": ["create", "write", "modify", "patch", "delete"] },
+          "description": { "type": "string" },
+          "content": { "type": "string" },
+          "search": { "type": "string" },
+          "replace": { "type": "string" },
+          "approved": { "type": "boolean" }
+        }
+      }
+    },
+    "commands": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "testCommands": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "implementationSteps": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "qaChecklist": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "riskChecklist": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "rollbackNotes": { "type": "string" },
+    "evidenceRequirements": { "type": "string" },
+    "nextAction": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "approvals": {
+      "type": "object",
+      "properties": {
+        "deletes": { "type": "boolean" },
+        "secretEdits": { "type": "boolean" },
+        "externalActions": { "type": "boolean" }
+      }
+    }
+  },
+  "additionalProperties": true
+}

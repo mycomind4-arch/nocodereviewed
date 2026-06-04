@@ -101,6 +101,25 @@ Status: Installed foundational infrastructure at `tools/internal/vault-ingestion
 
 Rule: Do not duplicate ingestion logic elsewhere. Extend this parser through modular adapters and keep raw import preservation as the default.
 
+### agent-swarm-coder (Coding Agent)
+
+Status: Installed MVP internal infrastructure at `tools/internal/agent-swarm-coder/`.
+
+Purpose: Local-first controlled coding agent. Inspects projects, produces reviewable implementation plans, performs safe file operations (dry-run default + backups), runs commands, bounded repair on failure, and always emits a complete durable run package (plans, results, evidence-record shaped for Vault, rollback, decision log).
+
+Rules:
+- Dry-run by default; writes require explicit --apply and are always preceded by plan + backup.
+- Use only the simulated provider until a real adapter is registered with explicit consent for a run.
+- Never bypass safetyGuard. All secret redaction, ignore rules, and destructive command blocks are mandatory.
+- Its evidence-record.json and decision-log.md are candidates for future ingestion by the Vault Ingestion Parser (do not invent parallel record types; propose contract updates first).
+- This is the executor foundation. The Codex Instruction Compiler remains a separate future concept.
+- New: supports --package mode for safe execution of structured implementation packages (md/json) with pre-execution safety planning, blocked action lists, and scoped apply.
+- New: supports --vault-handoff (default false) + --backfill-vault-handoff. When enabled, after writing the raw durable run package the agent emits a vault-handoff/ subdir (manifest + records.jsonl + summary) containing normalized vault.v1 records (VaultArtifact + VaultCommand only) derived from the run outputs. Raw artifacts remain untouched and are the source of truth. This is the producer side of the Local Vault Handoff (see docs/architecture/LOCAL_VAULT_HANDOFF.md and VAULT_DATA_CONTRACT.md). No parser modification and no live ingestion performed. Prepares run packages for future generic JSON ingestion. Update to TOOLS registry documents the additive capability.
+- The Vault Ingestion Parser now includes a dedicated adapter (agent-swarm-coder-handoff) for ingesting the flat records.jsonl + manifest from agent vault-handoff/ folders (in addition to chatgpt/generic etc and the local-vault-handoff for full bundles). A `vault:ingest-agent-runs` command (and `ingest-agent-handoff` subcmd) produces local normalized output under outputs/vault-ingestion-runs/*-agent-swarm-coder-handoff/ with the listed artifacts. Ingestion is manual/local; sources unchanged. See parser README and LOCAL_VAULT_HANDOFF for details.
+- New: agent-swarm-coder supports --context-packet (and --compound = context + handoff). Before planning, reads local Vault normalized records (from prior ingest), uses deterministic reader+builder to emit context-packet.{md,json} (with all required prior intel sections + lineage + staleness/low-conf flags + confidence notes). Packet is advisory artifact only (referenced in summary/plan); no auto-apply, no mutation of sources, no secrets, no new deps. Strengthens nucleus via local compounding loop (run→handoff→ingest→normalized→context packet→better run). See agent docs and CODING_AGENT_ARCHITECTURE.md.
+
+See: tools/internal/agent-swarm-coder/{README.md,AGENTS.md,docs/*.md}
+
 ### Strategic Memory Extractor
 
 Concept: Extracts reusable project decisions, product direction, naming decisions, build constraints, and unresolved risks from chat exports and project notes.

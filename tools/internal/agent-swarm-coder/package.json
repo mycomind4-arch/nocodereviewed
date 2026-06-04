@@ -1,0 +1,14 @@
+{
+  "name": "agent-swarm-coder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-first controlled coding agent MVP for project inspection, planning, safe file ops, command running, repair loops, and durable run packages. Foundation for future agent-swarm.",
+  "scripts": {
+    "test": "node --test 'tests/*.test.js'",
+    "agent": "node src/cli.js",
+    "agent:dry": "node src/cli.js --dry-run"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
