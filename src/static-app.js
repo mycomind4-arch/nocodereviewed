@@ -7459,7 +7459,16 @@ function micrositesDirectoryPanel() {
   `;
 }
 
+function renderAdminPage() {
+  // Returns the full admin dashboard markup (audit controls + parser-backed panels + legacy capture)
+  // so that direct #admin hash renders the internal admin content instead of falling back to reviews.
+  return adminPanel();
+}
+
 function renderPanel() {
+  if (window.location.hash === "#admin") {
+    return renderAdminPage();
+  }
   if (window.location.hash.match(/^#blog\//)) {
     const sub = window.location.hash.split('/')[1];
     return ncrArticlePage(sub);
@@ -7593,7 +7602,7 @@ function renderPanel() {
   if (activeTab === "tools") return toolsPanel();
   if (activeTab === "autonomy") return autonomyPanel();
   if (activeTab === "readiness") return readinessPanel();
-  if (activeTab === "admin") return adminPanel();
+  if (activeTab === "admin") return renderAdminPage();
   if (activeTab === "roadmap") return roadmapPanel();
   return reviewsPanel();
 }
@@ -7603,6 +7612,7 @@ function render() {
   const routeMatch = hash.match(/^#([a-z-]+)(?:\/([^/?#]+))?/);
   const r = routeMatch ? routeMatch[1] : 'top';
   const sub = routeMatch ? routeMatch[2] : null;
+  if (r === 'admin') activeTab = 'admin';
 
   // UI-K5: Robust router - simple top-level premium routes from mockup nav first (no sub)
   if (!sub) {
@@ -7651,6 +7661,9 @@ function render() {
       case 'newsletter':
         pageHtml = ncrNewsletterPage();
         break;
+      case 'admin':
+        pageHtml = premiumNav('admin') + renderAdminPage();
+        break;
       case 'top':
       case 'home':
       case '':
@@ -7661,6 +7674,9 @@ function render() {
       document.querySelector("#app").innerHTML = pageHtml;
       setupNcrPremiumNavActive(simple === 'top' || simple === 'home' || simple === '' ? 'home' : simple);
       postRenderMotionEnhance(simple);
+      if (simple === 'admin') {
+        try { bind(); } catch (_) {}
+      }
       return;
     }
   }
