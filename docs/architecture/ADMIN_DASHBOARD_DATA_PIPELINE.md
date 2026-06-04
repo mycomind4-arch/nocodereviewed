@@ -28,6 +28,14 @@ See the buildAdminDashboardState helper in server.mjs for the exact mapping from
 
 latest.json points to the most recent parsed dashboard-state.json.
 
+## A4 Visual Sitemap
+The parser/audit flow now also produces sitemap-graph.json (nodes + edges with health status) under the same parsed/admin-site-audits/<id>/ folder when the audit script emits sections.sitemapGraph.
+
+#admin links to #sitemap.
+GET /api/admin/latest-sitemap-graph serves the graph (parser > raw_audit > static_fallback with honest labeling).
+
+The visual workspace at #sitemap is vanilla SVG + div nodes (draggable, clickable, filterable, search) with n8n-like canvas feel. No new dependencies.
+
 ## Safety
 - Public Vibe Auditor is never called or modified from admin flow.
 - Visitor audits in public Vibe Auditor do not enter parser-inbox or admin parsed.

@@ -371,6 +371,10 @@ export async function runUniversalSiteAudit() {
     recommendedActions
   };
 
+  // A4: Build sitemap graph data for visual workspace (nodes + edges with health)
+  const sitemapGraph = buildSitemapGraph(sections, summary);
+  sections.sitemapGraph = sitemapGraph;
+
   const handoff = await buildParserHandoff(auditRunId, summary);
   sections.parserHandoff = { status: 'queued', ...handoff };
 
@@ -401,11 +405,19 @@ export async function runUniversalSiteAudit() {
   };
   await writeFile(join(runDir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 
+  // A4: also write dedicated sitemap-graph.json for the visual workspace
+  if (sections.sitemapGraph) {
+    await writeFile(join(runDir, 'sitemap-graph.json'), JSON.stringify(sections.sitemapGraph, null, 2) + '\n');
+  }
+
   // Also drop a copy into the inbox for easy ingest
   const inboxCopyDir = join(handoff.inboxPath);
   await ensureDir(inboxCopyDir);
   await writeFile(join(inboxCopyDir, 'universal-site-audit.json'), JSON.stringify(result, null, 2) + '\n');
   await writeFile(join(inboxCopyDir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+  if (sections.sitemapGraph) {
+    await writeFile(join(inboxCopyDir, 'sitemap-graph.json'), JSON.stringify(sections.sitemapGraph, null, 2) + '\n');
+  }
 
   return {
     ok: true,
@@ -416,6 +428,107 @@ export async function runUniversalSiteAudit() {
     parserInboxPath: handoff.inboxPath.replace(ROOT + '/', ''),
     summary,
     topRecommendedActions: recommendedActions.slice(0, 5)
+  };
+}
+
+function buildSitemapGraph(sections, summary) {
+  // A4: nodes for core, reviews, microsites, admin, standalone, etc.
+  const nodes = [
+    { id: 'home', label: 'Home', route: '#home', type: 'core', group: 'core', status: 'working', description: 'Homepage' },
+    { id: 'reviews', label: 'Reviews', route: '#reviews', type: 'core', group: 'core', status: 'working' },
+    { id: 'tools', label: 'Tools', route: '#tools', type: 'core', group: 'core', status: 'working' },
+    { id: 'microsites', label: 'Microsites', route: '#microsites', type: 'core', group: 'core', status: 'working' },
+    { id: 'evidence', label: 'Evidence', route: '#evidence', type: 'evidence', group: 'evidence', status: 'working' },
+    { id: 'methodology', label: 'Methodology', route: '#methodology', type: 'core', group: 'evidence', status: 'working' },
+    { id: 'blog', label: 'Blog', route: '#blog', type: 'blog', group: 'blog', status: 'working' },
+    { id: 'about', label: 'About', route: '#about', type: 'core', group: 'core', status: 'working' },
+    { id: 'submit', label: 'Submit', route: '#submit', type: 'core', group: 'core', status: 'working' },
+    { id: 'admin', label: 'Admin', route: '#admin', type: 'admin', group: 'admin', status: 'working', description: 'Internal intelligence dashboard' },
+    { id: 'sitemap', label: 'Visual Sitemap', route: '#sitemap', type: 'admin', group: 'admin', status: 'working' },
+    { id: 'evidence-library', label: 'Evidence Library', route: '#evidence-library', type: 'evidence', group: 'evidence', status: 'working' },
+    { id: 'benchmarks', label: 'Benchmarks', route: '#benchmarks', type: 'evidence', group: 'evidence', status: 'working' },
+    { id: 'review/lovable', label: 'Lovable Review', route: '#review/lovable', type: 'review', group: 'reviews', status: 'working' },
+    { id: 'review/bolt-new', label: 'Bolt.new Review', route: '#review/bolt-new', type: 'review', group: 'reviews', status: 'working' },
+    { id: 'review/replit', label: 'Replit Review', route: '#review/replit', type: 'review', group: 'reviews', status: 'working' },
+    { id: 'review/cursor', label: 'Cursor Review', route: '#review/cursor', type: 'review', group: 'reviews', status: 'working' },
+    { id: 'review/windsurf', label: 'Windsurf Review', route: '#review/windsurf', type: 'review', group: 'reviews', status: 'working' },
+    { id: 'review/webflow', label: 'Webflow Review', route: '#review/webflow', type: 'review', group: 'reviews', status: 'working' },
+    { id: 'review/bubble', label: 'Bubble Review', route: '#review/bubble', type: 'review', group: 'reviews', status: 'working' },
+    { id: 'review/framer', label: 'Framer Review', route: '#review/framer', type: 'review', group: 'reviews', status: 'working' },
+    { id: 'review/v0', label: 'v0 Review', route: '#review/v0', type: 'review', group: 'reviews', status: 'working' },
+    { id: 'review/shopify', label: 'Shopify Review', route: '#review/shopify', type: 'review', group: 'reviews', status: 'pending' },
+    { id: 'tool/lovable', label: 'Lovable', route: '#tool/lovable', type: 'microsite', group: 'microsites', status: 'working' },
+    { id: 'tool/bolt-new', label: 'Bolt.new', route: '#tool/bolt-new', type: 'microsite', group: 'microsites', status: 'working' },
+    { id: 'tool/replit', label: 'Replit', route: '#tool/replit', type: 'microsite', group: 'microsites', status: 'working' },
+    { id: 'tool/cursor', label: 'Cursor', route: '#tool/cursor', type: 'microsite', group: 'microsites', status: 'working' },
+    { id: 'tool/windsurf', label: 'Windsurf', route: '#tool/windsurf', type: 'microsite', group: 'microsites', status: 'working' },
+    { id: 'tool/webflow', label: 'Webflow', route: '#tool/webflow', type: 'microsite', group: 'microsites', status: 'working' },
+    { id: 'tool/bubble', label: 'Bubble', route: '#tool/bubble', type: 'microsite', group: 'microsites', status: 'working' },
+    { id: 'tool/framer', label: 'Framer', route: '#tool/framer', type: 'microsite', group: 'microsites', status: 'working' },
+    { id: 'tool/v0', label: 'v0', route: '#tool/v0', type: 'microsite', group: 'microsites', status: 'working' },
+    { id: 'tool/shopify', label: 'Shopify', route: '#tool/shopify', type: 'microsite', group: 'microsites', status: 'pending' },
+    { id: 'vibe-auditor', label: 'Vibe Auditor', route: '/tools/vibe-auditor.html', type: 'standalone_tool', group: 'standalone', status: 'working' },
+    { id: 'chat-vault', label: 'Chat Intelligence Vault', route: '/tools/chat-intelligence-vault.html', type: 'standalone_tool', group: 'standalone', status: 'working' }
+  ];
+
+  // Core + review-tool edges + some from audit links
+  let edges = [
+    { id: 'home-reviews', source: 'home', target: 'reviews', href: '#reviews', status: 'working', type: 'internal_hash' },
+    { id: 'home-tools', source: 'home', target: 'tools', href: '#tools', status: 'working', type: 'internal_hash' },
+    { id: 'home-microsites', source: 'home', target: 'microsites', href: '#microsites', status: 'working', type: 'internal_hash' },
+    { id: 'home-evidence', source: 'home', target: 'evidence', href: '#evidence', status: 'working', type: 'internal_hash' },
+    { id: 'reviews-lovable', source: 'reviews', target: 'review/lovable', href: '#review/lovable', status: 'working', type: 'internal_hash' },
+    { id: 'lovable-tool-review', source: 'tool/lovable', target: 'review/lovable', href: '#review/lovable', status: 'working', type: 'internal_hash' },
+    { id: 'admin-sitemap', source: 'admin', target: 'sitemap', href: '#sitemap', status: 'working', type: 'internal_hash' },
+    { id: 'home-admin', source: 'home', target: 'admin', href: '#admin', status: 'working', type: 'internal_hash' },
+    { id: 'vibe-standalone', source: 'home', target: 'vibe-auditor', href: '/tools/vibe-auditor.html', status: 'working', type: 'standalone' },
+    { id: 'chat-standalone', source: 'home', target: 'chat-vault', href: '/tools/chat-intelligence-vault.html', status: 'working', type: 'standalone' }
+  ];
+
+  // Apply audit data for realistic health (routes missing -> broken edges/nodes, links suspicious -> broken)
+  const auditRoutes = sections.routes || {};
+  if (auditRoutes.missing && Array.isArray(auditRoutes.missing)) {
+    auditRoutes.missing.forEach(m => {
+      const n = nodes.find(nn => nn.route === m || nn.id.includes(m));
+      if (n) n.status = 'broken';
+    });
+  }
+  const auditLinks = sections.links || {};
+  if (auditLinks.suspiciousUnsafeLinks && Array.isArray(auditLinks.suspiciousUnsafeLinks)) {
+    auditLinks.suspiciousUnsafeLinks.forEach(h => {
+      const e = edges.find(ee => ee.href === h);
+      if (e) e.status = 'broken';
+      else edges.push({ id: 'susp-' + h.replace(/[^a-z]/g,''), source: 'home', target: 'reviews', href: h, status: 'broken', type: 'suspicious' });
+    });
+  }
+
+  // pending for shopify etc
+  nodes.filter(n => n.status === 'pending').forEach(n => {
+    const e = edges.find(ee => ee.source === n.id || ee.target === n.id);
+    if (e) e.status = 'pending';
+  });
+
+  const brokenCount = edges.filter(e => e.status === 'broken').length;
+  const pendingCount = edges.filter(e => e.status === 'pending').length;
+
+  return {
+    id: `sitemap_graph_${Date.now()}`,
+    schema_version: '1.0.0',
+    record_type: 'admin_visual_sitemap_graph',
+    created_at: new Date().toISOString(),
+    source_application: 'nocodereviewed-admin',
+    privacy_level: 'local_private',
+    summary: {
+      nodes: nodes.length,
+      edges: edges.length,
+      workingLinks: edges.length - brokenCount - pendingCount,
+      brokenLinks: brokenCount,
+      placeholderRoutes: nodes.filter(n => n.status === 'pending').length,
+      standalonePages: nodes.filter(n => n.type === 'standalone_tool').length,
+      externalLinks: 0
+    },
+    nodes,
+    edges
   };
 }
 

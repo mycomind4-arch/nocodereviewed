@@ -285,6 +285,11 @@ async function handleApi(request, response) {
         await writeFile(join(parsedAdminDir, 'recommended-actions.json'), JSON.stringify(sec.recommendedActions || [], null, 2) + '\n');
         await writeFile(join(parsedAdminDir, 'parser-manifest.json'), JSON.stringify({ auditRunId, parserStatus, parsedAt: new Date().toISOString() }, null, 2) + '\n');
 
+        // A4: sitemap graph for visual workspace
+        if (raw.sections && raw.sections.sitemapGraph) {
+          await writeFile(join(parsedAdminDir, 'sitemap-graph.json'), JSON.stringify(raw.sections.sitemapGraph, null, 2) + '\n');
+        }
+
         // latest pointer
         const latestPath = join(rootDir, 'data', 'intelligence-vault', 'parsed', 'admin-site-audits', 'latest.json');
         await writeFile(latestPath, JSON.stringify({ latest: `data/intelligence-vault/parsed/admin-site-audits/${auditRunId}/dashboard-state.json`, auditRunId }, null, 2) + '\n');
@@ -325,7 +330,66 @@ async function handleApi(request, response) {
     }
     return true;
   }
+
+  if (url.pathname === "/api/admin/latest-sitemap-graph" && request.method === "GET") {
+    try {
+      const rootDir = fileURLToPath(new URL(".", import.meta.url));
+      const latestPath = join(rootDir, 'data', 'intelligence-vault', 'parsed', 'admin-site-audits', 'latest.json');
+      if (existsSync(latestPath)) {
+        const latest = JSON.parse(await readFile(latestPath, 'utf8'));
+        // prefer dedicated sitemap-graph.json next to the dashboard-state
+        const graphPath = join(rootDir, latest.latest.replace('dashboard-state.json', 'sitemap-graph.json'));
+        if (existsSync(graphPath)) {
+          const graph = JSON.parse(await readFile(graphPath, 'utf8'));
+          sendJson(response, 200, { ok: true, source: 'parser', graph });
+          return true;
+        }
+        // fallback to raw audit which now contains sections.sitemapGraph
+        const rawPath = join(rootDir, latest.latest.replace('parsed/admin-site-audits/' + latest.auditRunId + '/dashboard-state.json', 'audit-runs/' + latest.auditRunId + '/universal-site-audit.json'));
+        if (existsSync(rawPath)) {
+          const raw = JSON.parse(await readFile(rawPath, 'utf8'));
+          if (raw.sections && raw.sections.sitemapGraph) {
+            sendJson(response, 200, { ok: true, source: 'raw_audit', graph: raw.sections.sitemapGraph });
+            return true;
+          }
+        }
+      }
+      // honest static fallback
+      sendJson(response, 200, { ok: true, source: 'static_fallback', graph: buildStaticSitemapFallback() });
+    } catch (e) {
+      sendJson(response, 200, { ok: true, source: 'static_fallback', graph: buildStaticSitemapFallback(), error: e.message });
+    }
+    return true;
+  }
   return false;
+}
+
+function buildStaticSitemapFallback() {
+  // Minimal honest fallback - label as such in UI
+  const nodes = [
+    { id: 'home', label: 'Home', route: '#home', type: 'core', group: 'core', status: 'working' },
+    { id: 'reviews', label: 'Reviews', route: '#reviews', type: 'core', group: 'core', status: 'working' },
+    { id: 'admin', label: 'Admin', route: '#admin', type: 'admin', group: 'admin', status: 'working' },
+    { id: 'sitemap', label: 'Sitemap', route: '#sitemap', type: 'admin', group: 'admin', status: 'working' },
+    { id: 'review/lovable', label: 'Lovable Review', route: '#review/lovable', type: 'review', group: 'reviews', status: 'working' },
+    { id: 'tool/lovable', label: 'Lovable', route: '#tool/lovable', type: 'microsite', group: 'microsites', status: 'working' },
+    { id: 'vibe-auditor', label: 'Vibe Auditor', route: '/tools/vibe-auditor.html', type: 'standalone_tool', group: 'standalone', status: 'working' }
+  ];
+  const edges = [
+    { id: 'home-reviews', source: 'home', target: 'reviews', href: '#reviews', status: 'working', type: 'internal_hash' },
+    { id: 'admin-sitemap', source: 'admin', target: 'sitemap', href: '#sitemap', status: 'working', type: 'internal_hash' },
+    { id: 'reviews-lovable', source: 'reviews', target: 'review/lovable', href: '#review/lovable', status: 'working', type: 'internal_hash' },
+    { id: 'lovable-pair', source: 'tool/lovable', target: 'review/lovable', href: '#review/lovable', status: 'working', type: 'internal_hash' }
+  ];
+  return {
+    id: 'static_fallback',
+    schema_version: '1.0.0',
+    record_type: 'admin_visual_sitemap_graph',
+    source: 'static_fallback',
+    summary: { nodes: nodes.length, edges: edges.length, workingLinks: edges.length, brokenLinks: 0, placeholderRoutes: 0 },
+    nodes,
+    edges
+  };
 }
 
 async function appendLogSafe(logPath, message) {

@@ -5905,6 +5905,7 @@ function adminPanel() {
         </div>
         <div>
           <button id="run-universal-audit-btn" class="ncr-btn ncr-btn-primary" style="padding:12px 20px; font-size:14px;">Run Full Site Intelligence Audit</button>
+          <a href="#sitemap" class="ncr-btn ncr-btn-secondary" style="margin-left:8px; padding:10px 14px; font-size:13px; text-decoration:none;">Open Visual Sitemap</a>
           <div id="audit-status" style="margin-top:8px; font-size:12px; min-height:18px; opacity:0.8;"></div>
         </div>
       </div>
@@ -7465,9 +7466,428 @@ function renderAdminPage() {
   return adminPanel();
 }
 
+function ncrSitemapPage() {
+  return `
+    <div class="sitemap-page">
+      ${premiumNav('sitemap')}
+      <div class="ncr-container" style="padding: 20px 0;">
+        <div class="sitemap-toolbar ncr-glass" style="padding:12px 16px; margin-bottom:16px; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+          <div>
+            <div class="eyebrow" style="color:#a78bfa;">INTELLIGENCE VISUALIZATION</div>
+            <h1 style="margin:0; font-size:24px;">Visual Sitemap</h1>
+            <p style="margin:4px 0 0; opacity:0.8; font-size:13px;">Interactive node graph of all routes, reviews, microsites, admin surfaces and link health from latest audit.</p>
+          </div>
+          <div style="margin-left:auto; display:flex; gap:8px; flex-wrap:wrap;">
+            <button id="sitemap-refresh-btn" class="ncr-btn ncr-btn-secondary">Refresh From Latest Audit</button>
+            <button id="sitemap-run-audit-btn" class="ncr-btn ncr-btn-primary">Run Audit + Rebuild Sitemap</button>
+            <a href="#admin" class="ncr-btn ncr-btn-secondary" style="text-decoration:none;">Back to Admin</a>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <!-- Workspace -->
+          <div class="sitemap-workspace" id="sitemap-workspace" style="flex:1; min-height:620px; position:relative; border:1px solid #1e2744; border-radius:8px; overflow:hidden; background:#0a0c14;">
+            <svg id="sitemap-edges" width="100%" height="100%" style="position:absolute; top:0; left:0; pointer-events:none;"></svg>
+            <div id="sitemap-nodes" style="position:absolute; top:0; left:0; width:100%; height:100%;"></div>
+            <div class="sitemap-grid" style="position:absolute; inset:0; background-image: radial-gradient(circle, #1e2744 1px, transparent 1px); background-size: 24px 24px; opacity:0.6; pointer-events:none;"></div>
+          </div>
+
+          <!-- Inspector -->
+          <div class="sitemap-inspector ncr-glass" id="sitemap-inspector" style="width:320px; min-height:620px; padding:12px; border:1px solid #1e2744; border-radius:8px; display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong id="inspector-title">Inspector</strong>
+              <button id="inspector-close" class="ncr-btn ncr-btn-secondary" style="padding:2px 8px;">×</button>
+            </div>
+            <div id="inspector-body" style="margin-top:8px; font-size:13px; line-height:1.4;"></div>
+            <div id="inspector-actions" style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+          </div>
+        </div>
+
+        <div class="sitemap-legend" style="margin-top:12px; display:flex; gap:16px; flex-wrap:wrap; font-size:12px; opacity:0.9;">
+          <span><span style="color:#10b981;">●</span> working</span>
+          <span><span style="color:#ef4444;">●</span> broken <span style="color:#ef4444;">⚠</span></span>
+          <span><span style="color:#f59e0b;">●</span> pending / placeholder</span>
+          <span><span style="color:#3b82f6;">●</span> standalone / external</span>
+          <span style="margin-left:auto; opacity:0.7;">Data source: <span id="sitemap-source">static / audit</span> — click nodes/edges for details</span>
+        </div>
+
+        <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;" id="sitemap-filters">
+          <button data-filter="all" class="ncr-btn ncr-btn-secondary active" style="padding:4px 10px; font-size:12px;">All</button>
+          <button data-filter="working" class="ncr-btn ncr-btn-secondary" style="padding:4px 10px; font-size:12px;">Working</button>
+          <button data-filter="broken" class="ncr-btn ncr-btn-secondary" style="padding:4px 10px; font-size:12px;">Broken</button>
+          <button data-filter="pending" class="ncr-btn ncr-btn-secondary" style="padding:4px 10px; font-size:12px;">Pending</button>
+          <input id="sitemap-search" placeholder="Search nodes..." style="background:#0b0e18; border:1px solid #1e2744; color:#e5e7eb; padding:4px 8px; border-radius:4px; font-size:12px; width:180px;">
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function initSitemap() {
+  const workspace = document.getElementById('sitemap-workspace');
+  const nodesContainer = document.getElementById('sitemap-nodes');
+  const svg = document.getElementById('sitemap-edges');
+  const inspector = document.getElementById('sitemap-inspector');
+  const inspectorBody = document.getElementById('inspector-body');
+  const inspectorActions = document.getElementById('inspector-actions');
+  const sourceEl = document.getElementById('sitemap-source');
+
+  if (!workspace || !nodesContainer || !svg) return;
+
+  let graphData = null;
+  let nodePositions = {};
+  let scale = 1;
+  let offsetX = 0;
+  let offsetY = 0;
+  let isPanning = false;
+  let panStartX = 0;
+  let panStartY = 0;
+
+  async function loadGraphData() {
+    // Prefer dedicated sitemap endpoint (parser or fallback)
+    try {
+      const res = await fetch('/api/admin/latest-sitemap-graph');
+      if (res.ok) {
+        const payload = await res.json();
+        if (payload.graph) {
+          graphData = payload.graph;
+          sourceEl.textContent = payload.source || 'audit';
+          return;
+        }
+      }
+    } catch (e) {}
+
+    // Fallback to dashboard state which has routes/links
+    try {
+      const res = await fetch('/api/admin/latest-dashboard-state');
+      if (res.ok) {
+        const payload = await res.json();
+        if (payload.dashboardState) {
+          const ds = payload.dashboardState;
+          graphData = buildGraphFromDashboard(ds);
+          sourceEl.textContent = 'dashboard-state (audit)';
+          return;
+        }
+      }
+    } catch (e) {}
+
+    // Ultimate static fallback (honestly labeled)
+    graphData = buildStaticSitemapFallback();
+    sourceEl.textContent = 'static_fallback (run audit for verified health)';
+  }
+
+  function buildGraphFromDashboard(ds) {
+    const nodes = [
+      { id: 'home', label: 'Home', route: '#home', type: 'core', group: 'core', status: 'working' },
+      { id: 'reviews', label: 'Reviews', route: '#reviews', type: 'core', group: 'core', status: 'working' },
+      { id: 'admin', label: 'Admin', route: '#admin', type: 'admin', group: 'admin', status: 'working' },
+      { id: 'sitemap', label: 'Sitemap', route: '#sitemap', type: 'admin', group: 'admin', status: 'working' },
+      { id: 'review/lovable', label: 'Lovable Review', route: '#review/lovable', type: 'review', group: 'reviews', status: 'working' },
+      { id: 'tool/lovable', label: 'Lovable', route: '#tool/lovable', type: 'microsite', group: 'microsites', status: 'working' },
+      { id: 'vibe-auditor', label: 'Vibe Auditor', route: '/tools/vibe-auditor.html', type: 'standalone_tool', group: 'standalone', status: 'working' }
+    ];
+    const edges = [
+      { id: 'home-reviews', source: 'home', target: 'reviews', href: '#reviews', status: 'working', type: 'internal_hash' },
+      { id: 'admin-sitemap', source: 'admin', target: 'sitemap', href: '#sitemap', status: 'working', type: 'internal_hash' },
+      { id: 'reviews-lovable', source: 'reviews', target: 'review/lovable', href: '#review/lovable', status: 'working', type: 'internal_hash' },
+      { id: 'lovable-pair', source: 'tool/lovable', target: 'review/lovable', href: '#review/lovable', status: 'working', type: 'internal_hash' }
+    ];
+    // Enrich from panels if present
+    const p = ds.panels || {};
+    if (p.routes && Array.isArray(p.routes) && p.routes.length) {
+      // mark any missing in audit as broken if we had ids
+    }
+    if (p.links && Array.isArray(p.links) && p.links.length) {
+      p.links.forEach(l => {
+        if (l.status === 'suspicious' || l.status === 'broken') {
+          const e = edges.find(ee => ee.href === l.href);
+          if (e) e.status = 'broken';
+        }
+      });
+    }
+    return { nodes, edges, summary: ds.summary || {} };
+  }
+
+  function buildStaticSitemapFallback() {
+    const nodes = [
+      { id: 'home', label: 'Home', route: '#home', type: 'core', group: 'core', status: 'working' },
+      { id: 'reviews', label: 'Reviews', route: '#reviews', type: 'core', group: 'core', status: 'working' },
+      { id: 'admin', label: 'Admin', route: '#admin', type: 'admin', group: 'admin', status: 'working' },
+      { id: 'sitemap', label: 'Sitemap', route: '#sitemap', type: 'admin', group: 'admin', status: 'working' },
+      { id: 'review/lovable', label: 'Lovable Review', route: '#review/lovable', type: 'review', group: 'reviews', status: 'working' },
+      { id: 'tool/lovable', label: 'Lovable', route: '#tool/lovable', type: 'microsite', group: 'microsites', status: 'working' },
+      { id: 'vibe-auditor', label: 'Vibe Auditor', route: '/tools/vibe-auditor.html', type: 'standalone_tool', group: 'standalone', status: 'working' }
+    ];
+    const edges = [
+      { id: 'home-reviews', source: 'home', target: 'reviews', href: '#reviews', status: 'working', type: 'internal_hash' },
+      { id: 'admin-sitemap', source: 'admin', target: 'sitemap', href: '#sitemap', status: 'working', type: 'internal_hash' }
+    ];
+    return { nodes, edges, summary: { nodes: nodes.length, edges: edges.length }, source: 'static_fallback' };
+  }
+
+  function layoutNodes() {
+    // Grouped columns like n8n
+    const groups = {};
+    (graphData.nodes || []).forEach(n => {
+      if (!groups[n.group]) groups[n.group] = [];
+      groups[n.group].push(n);
+    });
+    const groupOrder = ['core', 'reviews', 'microsites', 'evidence', 'blog', 'standalone', 'admin'];
+    let x = 60;
+    const colWidth = 220;
+    const rowH = 78;
+
+    groupOrder.forEach(g => {
+      const list = groups[g] || [];
+      list.forEach((n, i) => {
+        const y = 80 + i * rowH;
+        nodePositions[n.id] = { x: x + (Math.random()-0.5)*20, y: y + (Math.random()-0.5)*10 };
+      });
+      if (list.length) x += colWidth;
+    });
+  }
+
+  function renderNodes() {
+    nodesContainer.innerHTML = '';
+    (graphData.nodes || []).forEach(n => {
+      const pos = nodePositions[n.id] || { x: 100, y: 100 };
+      const div = document.createElement('div');
+      div.className = `sitemap-node sitemap-node--${n.status || 'working'}`;
+      div.style.left = pos.x + 'px';
+      div.style.top = pos.y + 'px';
+      div.innerHTML = `
+        <div style="font-weight:600; font-size:13px;">${n.label}</div>
+        <div style="font-size:10px; opacity:0.7;">${n.route}</div>
+        <div style="margin-top:4px;"><span class="status-pill status-${n.status || 'working'}">${n.status || 'working'}</span></div>
+      `;
+      div.dataset.id = n.id;
+      div.addEventListener('click', () => showNodeInspector(n));
+      // drag
+      div.addEventListener('mousedown', (e) => startDrag(e, n.id, div));
+      nodesContainer.appendChild(div);
+    });
+  }
+
+  function renderEdges() {
+    svg.innerHTML = '';
+    const ns = 'http://www.w3.org/2000/svg';
+    (graphData.edges || []).forEach(e => {
+      const s = nodePositions[e.source];
+      const t = nodePositions[e.target];
+      if (!s || !t) return;
+      const line = document.createElementNS(ns, 'line');
+      line.setAttribute('x1', s.x + 90);
+      line.setAttribute('y1', s.y + 22);
+      line.setAttribute('x2', t.x + 10);
+      line.setAttribute('y2', t.y + 22);
+      line.setAttribute('stroke', e.status === 'broken' ? '#ef4444' : (e.status === 'pending' ? '#f59e0b' : (e.type === 'standalone' ? '#3b82f6' : '#10b981')));
+      line.setAttribute('stroke-width', e.status === 'broken' ? '2.5' : '1.8');
+      line.setAttribute('stroke-dasharray', e.status === 'pending' ? '4 2' : '');
+      svg.appendChild(line);
+
+      if (e.status === 'broken') {
+        const midX = (s.x + t.x) / 2 + 40;
+        const midY = (s.y + t.y) / 2 + 10;
+        const alert = document.createElementNS(ns, 'text');
+        alert.setAttribute('x', midX);
+        alert.setAttribute('y', midY);
+        alert.setAttribute('fill', '#ef4444');
+        alert.setAttribute('font-size', '14');
+        alert.textContent = '⚠';
+        svg.appendChild(alert);
+      }
+
+      // clickable thin overlay line for interaction
+      const hit = document.createElementNS(ns, 'line');
+      hit.setAttribute('x1', s.x + 90);
+      hit.setAttribute('y1', s.y + 22);
+      hit.setAttribute('x2', t.x + 10);
+      hit.setAttribute('y2', t.y + 22);
+      hit.setAttribute('stroke', 'transparent');
+      hit.setAttribute('stroke-width', '12');
+      hit.style.cursor = 'pointer';
+      hit.addEventListener('click', () => showEdgeInspector(e));
+      svg.appendChild(hit);
+    });
+  }
+
+  function startDrag(e, id, el) {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const orig = { ...nodePositions[id] };
+
+    function onMove(ev) {
+      const dx = (ev.clientX - startX) / scale;
+      const dy = (ev.clientY - startY) / scale;
+      nodePositions[id].x = orig.x + dx;
+      nodePositions[id].y = orig.y + dy;
+      el.style.left = nodePositions[id].x + 'px';
+      el.style.top = nodePositions[id].y + 'px';
+      renderEdges();
+    }
+    function onUp() {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+
+  function showNodeInspector(n) {
+    inspector.style.display = 'block';
+    inspectorBody.innerHTML = `
+      <div><strong>${n.label}</strong></div>
+      <div style="font-size:12px; opacity:0.75;">${n.route} • ${n.type} • ${n.group}</div>
+      <div style="margin:6px 0;"><span class="status-pill status-${n.status || 'working'}">${n.status || 'working'}</span></div>
+      <div style="font-size:12px;">${n.description || ''}</div>
+    `;
+    inspectorActions.innerHTML = `
+      <button class="ncr-btn ncr-btn-secondary" style="font-size:12px;" onclick="window.location.hash='${n.route}'">Open Route</button>
+      <button class="ncr-btn ncr-btn-secondary" style="font-size:12px;" onclick="document.getElementById('sitemap-inspector').style.display='none'">Close</button>
+    `;
+  }
+
+  function showEdgeInspector(e) {
+    inspector.style.display = 'block';
+    inspectorBody.innerHTML = `
+      <div><strong>Link</strong></div>
+      <div style="font-size:12px;">${e.source} → ${e.target}</div>
+      <div style="margin:4px 0;"><code>${e.href}</code></div>
+      <div><span class="status-pill status-${e.status}">${e.status}</span> ${e.type}</div>
+    `;
+    let rec = '';
+    if (e.status === 'broken') rec = '<div style="color:#ef4444; font-size:12px;">Broken link — verify route exists in router or add to sitemap nodes.</div>';
+    inspectorActions.innerHTML = `
+      <button class="ncr-btn ncr-btn-secondary" style="font-size:12px;" onclick="window.location.hash='${e.href}'">Follow Link</button>
+      <button class="ncr-btn ncr-btn-secondary" style="font-size:12px;" onclick="document.getElementById('sitemap-inspector').style.display='none'">Close</button>
+      ${rec}
+    `;
+  }
+
+  function applyFilters() {
+    const filter = document.querySelector('#sitemap-filters .active')?.dataset.filter || 'all';
+    const q = (document.getElementById('sitemap-search')?.value || '').toLowerCase();
+
+    document.querySelectorAll('.sitemap-node').forEach(div => {
+      const id = div.dataset.id;
+      const n = (graphData.nodes || []).find(nn => nn.id === id);
+      if (!n) return;
+      let show = true;
+      if (filter !== 'all') {
+        if (filter === 'broken' && n.status !== 'broken') show = false;
+        if (filter === 'working' && n.status !== 'working') show = false;
+        if (filter === 'pending' && n.status !== 'pending') show = false;
+      }
+      if (q && !n.label.toLowerCase().includes(q) && !n.route.toLowerCase().includes(q)) show = false;
+      div.style.display = show ? 'block' : 'none';
+    });
+
+    // re-render edges filtered by visible
+    renderEdges(); // simple re-draw; for production could hide lines too
+  }
+
+  // filters
+  document.querySelectorAll('#sitemap-filters button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#sitemap-filters button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    });
+  });
+  const search = document.getElementById('sitemap-search');
+  if (search) search.addEventListener('input', applyFilters);
+
+  // refresh buttons
+  const refreshBtn = document.getElementById('sitemap-refresh-btn');
+  if (refreshBtn) refreshBtn.addEventListener('click', async () => {
+    await loadGraphData();
+    layoutNodes();
+    renderNodes();
+    renderEdges();
+  });
+
+  const runBtn = document.getElementById('sitemap-run-audit-btn');
+  if (runBtn) runBtn.addEventListener('click', async () => {
+    runBtn.disabled = true;
+    runBtn.textContent = 'Running...';
+    try {
+      await fetch('/api/admin/run-universal-audit', { method: 'POST' });
+      await loadGraphData();
+      layoutNodes();
+      renderNodes();
+      renderEdges();
+    } catch (e) {
+      alert('Audit failed or endpoint not available. Using current data.');
+    } finally {
+      runBtn.disabled = false;
+      runBtn.textContent = 'Run Audit + Rebuild Sitemap';
+    }
+  });
+
+  // basic pan on workspace (background drag)
+  workspace.addEventListener('mousedown', (e) => {
+    if (e.target.id === 'sitemap-edges' || e.target.id === 'sitemap-nodes' || e.target.classList.contains('sitemap-grid')) {
+      isPanning = true;
+      panStartX = e.clientX - offsetX;
+      panStartY = e.clientY - offsetY;
+    }
+  });
+  document.addEventListener('mouseup', () => { isPanning = false; });
+  document.addEventListener('mousemove', (e) => {
+    if (!isPanning) return;
+    offsetX = e.clientX - panStartX;
+    offsetY = e.clientY - panStartY;
+    nodesContainer.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    svg.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+  });
+
+  // zoom buttons (simple)
+  const zoomIn = () => { scale = Math.min(2, scale + 0.15); applyTransform(); };
+  const zoomOut = () => { scale = Math.max(0.5, scale - 0.15); applyTransform(); };
+  function applyTransform() {
+    nodesContainer.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+    svg.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+  }
+  // add zoom controls to toolbar dynamically
+  const tb = document.querySelector('.sitemap-toolbar');
+  if (tb) {
+    const z = document.createElement('div');
+    z.style.marginLeft = 'auto';
+    z.innerHTML = `<button id="s-zoom-out" class="ncr-btn ncr-btn-secondary" style="padding:2px 8px;">−</button><button id="s-zoom-in" class="ncr-btn ncr-btn-secondary" style="padding:2px 8px;">+</button><button id="s-reset" class="ncr-btn ncr-btn-secondary" style="padding:2px 8px;">Reset</button>`;
+    tb.appendChild(z);
+    setTimeout(() => {
+      document.getElementById('s-zoom-in')?.addEventListener('click', zoomIn);
+      document.getElementById('s-zoom-out')?.addEventListener('click', zoomOut);
+      document.getElementById('s-reset')?.addEventListener('click', () => { scale=1; offsetX=0; offsetY=0; applyTransform(); });
+    }, 10);
+  }
+
+  // initial
+  (async () => {
+    await loadGraphData();
+    layoutNodes();
+    renderNodes();
+    renderEdges();
+    // default some filters visible
+    const allBtn = document.querySelector('#sitemap-filters button[data-filter="all"]');
+    if (allBtn) allBtn.classList.add('active');
+  })();
+}
+
+function initSitemapAfterRender() {
+  // called from render when sitemap page is injected
+  setTimeout(() => {
+    try { initSitemap(); } catch (e) { console.warn('sitemap init', e); }
+  }, 30);
+}
+
 function renderPanel() {
   if (window.location.hash === "#admin") {
     return renderAdminPage();
+  }
+  if (window.location.hash === "#sitemap") {
+    return ncrSitemapPage();
   }
   if (window.location.hash.match(/^#blog\//)) {
     const sub = window.location.hash.split('/')[1];
@@ -7664,6 +8084,9 @@ function render() {
       case 'admin':
         pageHtml = premiumNav('admin') + renderAdminPage();
         break;
+      case 'sitemap':
+        pageHtml = premiumNav('sitemap') + ncrSitemapPage();
+        break;
       case 'top':
       case 'home':
       case '':
@@ -7676,6 +8099,9 @@ function render() {
       postRenderMotionEnhance(simple);
       if (simple === 'admin') {
         try { bind(); } catch (_) {}
+      }
+      if (simple === 'sitemap') {
+        try { initSitemapAfterRender(); } catch (_) {}
       }
       return;
     }

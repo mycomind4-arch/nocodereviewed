@@ -470,6 +470,16 @@ Date: 2026-06 (this session)
 
 This completes the universal admin audit as the master local intelligence workflow on top of the C1 nucleus.
 
+# PHASE A4 — Visual Sitemap Workspace With Link Health Graph
+- Added #sitemap route + full vanilla n8n-style workspace (SVG edges + absolute draggable nodes, pan/zoom simulation, click inspector, status filters, search, refresh/run-audit buttons).
+- Enhanced audit script to emit sitemapGraph (nodes/edges with health) and write sitemap-graph.json.
+- Server: writes sitemap-graph.json in parsed flow + new GET /api/admin/latest-sitemap-graph (parser/raw/static_fallback with honest source label).
+- Admin: "Open Visual Sitemap" button added next to main audit run.
+- Styles: sitemap-node, status colors (green/red/amber/blue), inspector, legend, filters.
+- Docs: new VISUAL_SITEMAP_WORKSPACE.md + updates to ADMIN_PIPELINE.md + this report.
+- All vanilla, no new deps. Uses existing audit/parser data when available; clear fallback label otherwise.
+- #sitemap, #admin, #reviews etc. render distinctly. Public Vibe Auditor untouched.
+
 # PHASE A3 — Parser-Backed Admin Site Intelligence Dashboard (while preserving public Vibe Auditor)
 Date: 2026-06 (this session, following A2)
 

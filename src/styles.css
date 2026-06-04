@@ -10467,6 +10467,29 @@ body {
   border-radius: 999px;
   background: rgba(255,255,255,0.06);
   border: 1px solid rgba(255,255,255,0.1);
+
+/* A4 Visual Sitemap n8n-like workspace */
+.sitemap-page { min-height: 100vh; background: #0a0c14; color: #e5e7eb; }
+.sitemap-workspace { background: #0a0c14; }
+.sitemap-node {
+  position: absolute;
+  min-width: 170px;
+  padding: 8px 10px;
+  background: #0f1220;
+  border: 1px solid #1e2744;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  cursor: pointer;
+  font-size: 12px;
+  user-select: none;
+}
+.sitemap-node:hover { border-color: #3b82f6; }
+.status-pill { font-size: 10px; padding: 1px 6px; border-radius: 999px; border:1px solid currentColor; }
+.status-working { color: #10b981; border-color: #10b981; }
+.status-broken { color: #ef4444; border-color: #ef4444; }
+.status-pending { color: #f59e0b; border-color: #f59e0b; }
+.sitemap-inspector { font-size: 13px; }
+.sitemap-legend { font-size: 12px; }
   font-size: 12px;
   cursor: default;
 }
