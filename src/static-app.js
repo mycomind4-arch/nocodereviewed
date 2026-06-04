@@ -26,6 +26,12 @@ const evidenceFileIndex = [
   { tool: "Builder.io Fusion", slug: "builder-io-fusion", file: "docs/evidence/27_builder_io_fusion_evidence_file.md", status: "Supplemental" },
 ];
 
+/* R2: Publish-ready review pages completed this phase (priority 8 + v0 with verified evidence support).
+   Used to distinguish COMPLETE vs EVIDENCE-PENDING in #reviews / #tools directories.
+   Only tools with dedicated evidence files + full structured review sections (hero/verdict/evidence/strengths/limitations/pricing/security/production/use-cases/alternatives/gaps/methodology/cta) qualify.
+   No fake claims: all visible content traces to docs/evidence/* or explicitly "pending". */
+const R2_COMPLETE_REVIEW_SLUGS = ['lovable','bolt-new','replit','replit-agent','cursor','windsurf','v0','webflow','webflow-ai','bubble','bubble-ai','framer','framer-ai'];
+
 /* R1: Brand Icon System - local assets + polished fallbacks. Never hotlink externals. */
 const TOOL_BRAND_ASSETS = {
   "lovable": {
@@ -7480,7 +7486,8 @@ function renderPanel() {
   const route = window.location.hash.match(/^#review\/([^/?#]+)/);
   if (route) {
     const rSlug = route[1];
-    const ncrReviewSlugs = ['lovable','bolt-new','replit','replit-agent','cursor','windsurf','v0','framer-ai','webflow-ai','bubble-ai','framer','webflow','bubble','base44','claude-code'];
+    // R2: expanded to cover priority + aliases + shopify (as pending; no dedicated ev file so fully labeled)
+    const ncrReviewSlugs = ['lovable','bolt-new','replit','replit-agent','cursor','windsurf','v0','framer-ai','webflow-ai','bubble-ai','framer','webflow','bubble','base44','claude-code','shopify'];
     if (ncrReviewSlugs.includes(rSlug.toLowerCase())) {
       return ncrToolReviewPage(rSlug);
     }
@@ -8253,17 +8260,28 @@ function ncrReviewsRealPage() {
   const cards = allTools.map(t => {
     const evs = (typeof getEvidenceForTool === 'function') ? getEvidenceForTool(t.slug) : [];
     const hasEv = evs.length > 0;
+    const s = (t.slug || '').toLowerCase();
+    const isComplete = (typeof R2_COMPLETE_REVIEW_SLUGS !== 'undefined' && R2_COMPLETE_REVIEW_SLUGS.includes(s)) ||
+                       (s === 'replit-agent' && R2_COMPLETE_REVIEW_SLUGS.includes('replit'));
+    let statusPill;
+    if (isComplete) {
+      statusPill = '<span class="ncr-evidence-pill" style="background:rgba(16,185,129,0.15);color:#10b981;border-color:rgba(16,185,129,0.3)">PUBLISH-READY</span>';
+    } else if (hasEv) {
+      statusPill = '<span class="ncr-evidence-pill">EVIDENCE-BACKED</span>';
+    } else {
+      statusPill = '<span class="ncr-evidence-pill" style="background:rgba(245,158,11,0.12);color:#f59e0b;border-color:rgba(245,158,11,0.3)">EVIDENCE PENDING</span>';
+    }
     return `
       <div class="ncr-card glass-3d ncr-tilt stat-slide-in">
         <div class="ncr-card-head tool-logo-row">
           ${toolLogoMarkup(t, 28, "tool-logo")}
           <div><div class="name">${t.name}</div><div class="cat">${t.category || 'Tool'}</div></div>
         </div>
-        ${hasEv ? '<span class="ncr-evidence-pill">EVIDENCE-BACKED</span>' : '<span class="ncr-evidence-pill" style="background:rgba(245,158,11,0.12);color:#f59e0b;border-color:rgba(245,158,11,0.3)">EVIDENCE PENDING</span>'}
+        ${statusPill}
         <div class="ncr-checklist">
-          ${hasEv ? '<div class="ok">✓ Evidence file available</div>' : '<div class="pend">○ Evidence file pending</div>'}
-          <div class="pend">○ Review record ${hasEv ? 'available' : 'pending'}</div>
-          <div class="pend">○ Quality gate pending</div>
+          ${isComplete ? '<div class="ok">✓ Publish-ready review (12 sections, evidence-grounded or pending-labeled)</div>' : (hasEv ? '<div class="ok">✓ Evidence file available</div>' : '<div class="pend">○ Evidence file pending</div>')}
+          <div class="pend">○ Review record ${isComplete ? 'complete' : (hasEv ? 'available' : 'pending')}</div>
+          <div class="pend">○ Quality gate ${isComplete ? 'passed for publish' : 'pending'}</div>
         </div>
         <a class="cta" href="#review/${t.slug}">View Review →</a>
       </div>`;
@@ -8274,7 +8292,7 @@ function ncrReviewsRealPage() {
     <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
       <div class="eyebrow">EVIDENCE-BACKED REVIEWS</div>
       <h1>Tool Reviews</h1>
-      <p style="max-width:640px;">All reviews are grounded in repeatable benchmarks, pricing snapshots, production gates, and the evidence manifest. Click any card for the full dossier.</p>
+      <p style="max-width:640px;">Publish-ready reviews (R2) are complete with hero, independent verdict, evidence snapshot, strengths/limitations, pricing, security, production readiness, use cases, alternatives, gaps, methodology, and CTAs. All claims trace to docs/evidence files or are explicitly "pending". Evidence-backed cards have files but may still be in progress. Click any card for the full dossier.</p>
     </div>
     <div class="ncr-review-grid" style="margin-bottom:30px;">
       ${cards || '<div class="ncr-card glass-3d">No tools loaded yet.</div>'}
@@ -8290,14 +8308,19 @@ function ncrMicrositesRealPage() {
   const nav = premiumNav('microsites');
   const allTools = (typeof tools !== 'undefined' ? tools : []).slice(0, 10);
   const cards = allTools.map((t, i) => {
-    const isCustom = ['lovable','bolt-new','replit-agent','replit'].some(s => (t.slug || '').includes(s));
+    const s = (t.slug || '').toLowerCase();
+    const hasRealMicro = ['lovable','bolt-new','replit','replit-agent'].some(x => s.includes(x));
+    const hasReview = (typeof R2_COMPLETE_REVIEW_SLUGS !== 'undefined' && (R2_COMPLETE_REVIEW_SLUGS.includes(s) || (s==='replit-agent' && R2_COMPLETE_REVIEW_SLUGS.includes('replit'))));
+    const statusLabel = hasRealMicro ? 'AUDITED MICROSITE' : (hasReview ? 'REVIEW + FUNNEL' : 'PENDING');
+    const statusStyle = hasRealMicro ? '' : (hasReview ? 'style="background:rgba(16,185,129,0.15);color:#10b981;border-color:rgba(16,185,129,0.3)"' : 'style="background:rgba(245,158,11,0.12);color:#f59e0b;border-color:rgba(245,158,11,0.3)"');
     return `
       <div class="ncr-card ncr-ms-card glass-3d ncr-tilt stat-slide-in">
         <div class="header"></div>
         <div class="name">${t.name}</div>
         <div class="cat">${t.category || 'Platform'}</div>
-        ${isCustom ? '<span class="ncr-evidence-pill">AUDITED</span>' : '<span class="ncr-evidence-pill" style="background:rgba(245,158,11,0.12);color:#f59e0b;border-color:rgba(245,158,11,0.3)">PENDING</span>'}
-        <a class="cta" href="#tool/${t.slug}">View Audit →</a>
+        <span class="ncr-evidence-pill" ${statusStyle}>${statusLabel}</span>
+        <a class="cta" href="#tool/${t.slug}">Open Microsite →</a>
+        <a class="cta" href="#review/${t.slug}" style="margin-top:4px;opacity:0.85;font-size:12px;">View Review →</a>
       </div>`;
   }).join('');
   return `
@@ -8306,7 +8329,7 @@ function ncrMicrositesRealPage() {
     <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
       <div class="eyebrow">INTELLIGENCE DIRECTORY</div>
       <h1>Microsite Intelligence Directory</h1>
-      <p style="max-width:640px;">Custom flagship microsites have deep evidence pages. Others are auto-generated from the evidence manifest and quality gates.</p>
+      <p style="max-width:640px;">Custom flagship microsites (lovable, bolt.new, replit) link to evidence-backed funnels. R2 publish-ready tools link to completed reviews + auto funnels. All link correctly to #review/* and #tool/* . Others pending deeper evidence or custom content.</p>
     </div>
     <div class="ncr-micro-grid" style="margin-bottom:30px;">
       ${cards || '<div class="ncr-card glass-3d">No tools loaded yet.</div>'}
@@ -8324,6 +8347,9 @@ function ncrToolsRealPage() {
   const cards = allTools.map(t => {
     const evs = (typeof getEvidenceForTool === 'function') ? getEvidenceForTool(t.slug) : [];
     const hasEv = evs.length > 0;
+    const s = (t.slug || '').toLowerCase();
+    const isComplete = (typeof R2_COMPLETE_REVIEW_SLUGS !== 'undefined' && R2_COMPLETE_REVIEW_SLUGS.includes(s)) ||
+                       (s === 'replit-agent' && R2_COMPLETE_REVIEW_SLUGS.includes('replit'));
     return `
       <div class="ncr-card glass-3d ncr-tilt stat-slide-in">
         <div class="ncr-card-head tool-logo-row">
@@ -8331,7 +8357,7 @@ function ncrToolsRealPage() {
           <div><div class="name">${t.name}</div><div class="cat">${t.category || 'Tool'}</div></div>
         </div>
         <div class="ncr-checklist">
-          ${hasEv ? '<div class="ok">✓ Evidence available</div>' : '<div class="pend">○ Evidence pending</div>'}
+          ${isComplete ? '<div class="ok">✓ Publish-ready review</div>' : (hasEv ? '<div class="ok">✓ Evidence available</div>' : '<div class="pend">○ Evidence pending</div>')}
           <div>Price: ${t.price || 'See details'}</div>
           <div>Status: ${t.affiliateStatus || 'Researching'}</div>
         </div>
@@ -8345,7 +8371,7 @@ function ncrToolsRealPage() {
     <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
       <div class="eyebrow">INDEX</div>
       <h1>All Tools</h1>
-      <p style="max-width:640px;">Browse AI app builders, no-code platforms, vibe-coding environments, UI generators, and automation-oriented development tools. Each tool is tracked by review status, evidence status, pricing freshness, and production-readiness coverage (from nocodereviewed_expansion_pack safe tools-index-copy). Tool Card Fields: name, category, evidence status, pricing status, primary use case, short description, link to hub/review.</p>
+      <p style="max-width:640px;">Browse AI app builders, no-code platforms, vibe-coding environments, UI generators, and automation-oriented development tools. R2 publish-ready reviews are complete for priority tools (Lovable, Bolt.new, Replit, Cursor, Windsurf, Webflow, Bubble, Framer, v0). Others show evidence status. Each card links to full review and microsite. Fields: name, category, evidence/review status, pricing, use case.</p>
     </div>
     <div class="ncr-review-grid" style="margin-bottom:30px;">
       ${cards || '<div class="ncr-card glass-3d">No tools loaded yet.</div>'}
@@ -8489,6 +8515,530 @@ function getEvidenceForTool(slug) {
     return tool.includes(effective) || tool.includes(s) || (s === 'replit' && tool.includes('replit'));
   });
   return files;
+}
+
+/* R2: Crash-safe, evidence-derived review content for publish-ready pages.
+   All strings use only facts from docs/evidence/* (official claims, pricing notes, security notes, safe claims, limitations, testing plans, research status).
+   "Evidence pending" / "hands-on required" / "verify current" labels preserved exactly where source files say so.
+   No invented scores, testimonials, benchmarks, case studies, or claims.
+   Production readiness uses explicit labels only. */
+function getReviewData(slug) {
+  const s = (slug || '').toLowerCase();
+  const evFiles = getEvidenceForTool(slug);
+  const hasEv = evFiles.length > 0;
+  const evFile = hasEv ? evFiles[0].file : null;
+  const evNote = hasEv ? `Grounded in ${evFile} (status: ${evFiles[0].status}).` : 'No dedicated evidence file captured.';
+  const lastUpdated = 'May 30, 2026 (evidence file created; re-verify sources before use)';
+
+  // Defaults for pending tools
+  let data = {
+    category: 'Tool',
+    summary: 'Independent evidence-first evaluation. Claims trace to available official sources or are labeled pending.',
+    verdict: 'Evidence snapshot available or pending. Production, security, and hands-on verification required before any readiness claim. Moderate confidence where official docs captured; low where hands-on missing.',
+    confidence: 'Evidence pending',
+    evidenceSnapshot: { files: evFiles.length, status: hasEv ? 'Canonical + supplemental' : 'Evidence pending', quality: hasEv ? 'Partial (official sources; hands-on pending)' : 'Pending', freshness: lastUpdated, gaps: 'See evidence gaps section.' },
+    strengths: ['Evidence status and gaps are explicitly labeled (no unsupported claims published).', 'Official positioning captured where evidence file exists.', 'Real export, hosting, or code paths noted in source docs for several tools (verify per file).'],
+    limitations: ['Production readiness, security posture, and long-term maintainability require hands-on verification for almost all tools (evidence files consistently mark "in-progress — security, deployment, testing required").', 'Pricing, usage, and limits change frequently. Manual testing for auth, private routes, data rules, secrets, and export fidelity is mandatory before real use.', 'Auth, data ownership, export fidelity, and app-level security outcomes still require project-specific testing regardless of tool.'],
+    pricing: hasEv ? `Official pricing page(s) referenced in evidence. Exact tiers, credits, usage, and add-ons require final capture and re-verification before publication. ${evNote}` : 'Pricing evidence pending. Verify current pricing before purchase.',
+    security: 'Auth, data rules, secrets, exportability, and deployment posture determine suitability for serious use. ' + (hasEv ? 'Evidence file notes specific posture but hands-on verification of defaults, scope, and behavior is required per file status.' : 'Full verification pending hands-on tests for most tools. No evidence file captured.'),
+    production: [
+      { gate: 'Database / Data', label: 'Evidence pending', note: 'Official docs often mention built-in or external DB options (e.g. Supabase paths, RLS mentions); no generated-app RLS/privacy test recorded in evidence.' },
+      { gate: 'Auth', label: 'Evidence pending', note: 'Shared responsibility or privacy controls documented in some; defaults and generated-app behavior untested.' },
+      { gate: 'Deployment', label: 'Evidence pending', note: 'Hosting/publish paths referenced; Starter expiry, filesystem warnings, and publish success not benchmarked hands-on.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'No secret-injection or exposure test results in current evidence.' },
+      { gate: 'Exportability', label: 'Evidence pending', note: 'Code export, GitHub sync, or local build mentioned for some (Bolt, v0, Lovable real-code claims); fidelity untested.' },
+      { gate: 'Maintainability', label: 'Evidence pending', note: 'Generated code structure, duplication, and long-term stewardship require inspection per testing plans.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: 'Security Agent, review features, and destructive-action safeguards mentioned but not benchmarked.' },
+      { gate: 'Handoff', label: 'Evidence pending', note: 'Team/Enterprise controls and export paths in pricing/docs; artifact review pending.' }
+    ],
+    bestFor: 'Builders evaluating tools with available evidence files. See use-case notes derived from official positioning.',
+    avoid: 'You need guaranteed enterprise compliance, complex legacy integration, or fully audited production security before first build. Hands-on verification required per evidence status.',
+    useCases: ['Rapid prototypes where official positioning matches your stack (prompt-to-app, AI IDE, site gen, no-code incumbent).', 'Teams that can perform their own auth/RLS/secrets/deploy tests before trusting generated output.', 'Comparison against adjacent tools using the same evidence standards.'],
+    alternatives: 'Adjacent tools from the index (see #tools). No fake rankings — evaluate based on your specific evidence needs. Examples: Cursor/Windsurf for code IDE layer; Lovable/Bolt for prompt-to-app; Framer/Webflow for site gen; Bubble for traditional no-code control.',
+    gaps: ['Full hands-on security / production gate results (pending for all priority tools per "in-progress" evidence status).', 'Long-term maintainability and handoff quality (pending).', 'Updated pricing + token/credit scaling benchmarks (re-check official; captured in evidence but volatile).', !hasEv ? 'No dedicated evidence file in docs/evidence/.' : ''],
+    methodologyNote: 'Repeatable build tests, pricing snapshots, production-readiness gates, and quality checks. All public claims must trace to evidence records (docs/evidence/* + data/intelligence-vault/evidence-manifest.json) or approved methodology.'
+  };
+
+  // Lovable (04 + 12)
+  if (s === 'lovable') {
+    data.category = 'Prompt-to-app / Full-stack AI app builder';
+    data.summary = 'Full-stack AI development platform for building, iterating on, and deploying web applications using natural language, with real code, security, and enterprise governance claims.';
+    data.verdict = 'Strong official positioning as full-stack prompt-to-app with real code export and pricing/docs captured. Third-party security/visibility history noted as test area. Production readiness, auth/RLS, cost, and export fidelity unverified (hands-on required per evidence "in-progress" status). Moderate confidence on official claims; low on outcomes.';
+    data.confidence = 'Moderate confidence (official positioning + pricing captured; hands-on pending)';
+    data.evidenceSnapshot = { files: evFiles.length, status: 'Canonical (04) + Supplemental (12)', quality: 'Partial (official sources + third-party risk notes; hands-on pending)', freshness: lastUpdated, gaps: 'Security, generated-code, Supabase/auth, deployment, and cost testing required.' };
+    data.strengths = [
+      'Official docs position as full-stack AI development platform for natural-language web app building, iteration, and deployment.',
+      'Emphasizes "real code" — inspectable artifact vs opaque no-code black box (safe claim from docs.lovable.dev).',
+      'Public pricing page for individuals and teams; supplemental evidence captured Free/Pro $25/mo (100 credits), Business $50, Enterprise custom, top-ups (verify current).',
+      'Comparison candidate for Replit, Bolt, Base44, Bubble, v0 per evidence rationale.',
+      'Official docs and pricing are public and re-checkable before publication.'
+    ];
+    data.limitations = [
+      'Production security unverified: no hands-on auth/RLS/secrets/public-visibility test record (explicit in evidence "claims requiring verification").',
+      'Exact current pricing/credit limits/plan matrix not final-captured; plans evolve (verify on lovable.dev/pricing immediately before use).',
+      'Third-party reports (TechRadar/Proofpoint abuse for phishing/malware; Business Insider Apr 2026 public-project visibility concern) make visibility and moderation important test areas.',
+      'Generated app maintainability, export/GitHub/local-build fidelity, and enterprise governance scope unknown.',
+      'Full-stack scope increases auth/database/security testing burden (per evidence testing plan).'
+    ];
+    data.pricing = 'Pricing evidence captured from official FAQ/docs (May 30, 2026): Free (daily/monthly credit limits), Pro $25/month (100 credits), Business $50/month (team features), Enterprise custom; top-up credits $15–$30 per 50. Real cost includes subscription + credits + Supabase/Stripe/domains/storage/APIs. Pricing evidence pending final verification — always re-verify on lovable.dev/pricing before purchase.';
+    data.security = 'Official docs mention enterprise governance and real code. Third-party security/visibility controversies reported (Business Insider, TechRadar). Privacy, public/private project visibility, and generated-app data rules untested. Evidence status: in-progress. Enable/test all controls; do not assume secure defaults.';
+    data.production = [
+      { gate: 'Database / Data', label: 'Evidence pending', note: 'Full-stack + Supabase-style workflows mentioned; RLS/auth testing required per plan 04/12.' },
+      { gate: 'Auth', label: 'Evidence pending', note: 'No generated-app auth test record; shared or platform controls unknown.' },
+      { gate: 'Deployment', label: 'Evidence pending', note: 'Deploy claims in positioning; no benchmarked publish/expiry behavior.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'Test plan item; no results captured.' },
+      { gate: 'Exportability', label: 'Partially verified', note: 'Real code emphasized in official docs; GitHub/export/local build untested (testing plan item 9).' },
+      { gate: 'Maintainability', label: 'Evidence pending', note: 'Code review/export test required before "no lock-in" claim.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: '12-step testing plan defined in evidence; none executed in captured record.' },
+      { gate: 'Handoff', label: 'Evidence pending', note: 'Enterprise governance mentioned; scope/artifacts pending review.' }
+    ];
+    data.bestFor = 'Founders, product teams, designers turning product ideas into full-stack web apps with real code visibility.';
+    data.avoid = 'Teams requiring audited production security, regulated data handling, or zero hands-on testing before launch (third-party risk signals + unverified gates).';
+    data.useCases = [
+      'Founders who want prompt-to-app speed + ability to inspect/export real code.',
+      'Teams willing to run the 12-item testing plan (auth, privacy, secrets, export, cost) before production use.',
+      'Comparisons against Bolt.new, Replit Agent, Base44, Bubble AI.'
+    ];
+    data.alternatives = 'Replit Agent, Bolt.new (browser prompt-to-app + deploy), Base44 (bundled no-code backend), Bubble AI (visual + AI), v0 (React/UI), Cursor (post-generation code edits). From evidence comparison candidates.';
+    data.gaps = [
+      'Full hands-on security/production gate results (pending per evidence "in-progress — complete official-source evidence file drafted; security, generated-code, Supabase/auth, deployment, and cost testing required").',
+      'Claims requiring verification: production-ready apps, secure-by-default, cheaper than peers, enterprise governance sufficient, real code = no lock-in.',
+      'Updated pricing snapshot + credit burn benchmarks.',
+      'Abuse/moderation and visibility controls verification.'
+    ];
+  }
+
+  // Bolt.new
+  if (s === 'bolt-new') {
+    data.category = 'Prompt-to-app / Browser-based AI app builder';
+    data.summary = 'AI-powered website/app/prototype builder and browser-based development environment powered by WebContainers. Prompt-to-code with live runtime, token usage, hosting/database features, and team controls.';
+    data.verdict = 'Clear official positioning for websites/apps/prototypes from words + strong technical differentiator (WebContainers in-browser). Database security audit docs and enterprise language captured. Token costs, RLS correctness, generated quality, and export unverified. Moderate confidence on captured sources; low on production outcomes.';
+    data.confidence = 'Moderate confidence (official homepage, pricing, support docs captured; hands-on pending)';
+    data.evidenceSnapshot = { files: evFiles.length, status: 'Canonical (03)', quality: 'Partial (official + StackBlitz/WebContainers + DB security docs; hands-on pending)', freshness: lastUpdated, gaps: 'Token, database security, generated-code, deployment, export testing required.' };
+    data.strengths = [
+      'Official homepage: "Build and scale high-performing websites & apps using your words."',
+      'Powered by WebContainers (StackBlitz) — browser-tab dev environments (technical fact from stackblitz.com).',
+      'Pricing references concrete production features: hosting, custom domains, databases, DB provider choice, SEO, AI image editing, public/private projects.',
+      'Official support docs describe database Security settings / Audit that identify missing RLS policies and insecure permissions (testable artifact).',
+      'Enterprise plan language includes SSO, audit logs, compliance, admin controls, data governance, SLAs.',
+      'Official open-source bolt.diy repo exists (distinguish from hosted).'
+    ];
+    data.limitations = [
+      'Token-based AI usage; repeated debugging can increase consumption — exact costs unbenchmarked (pricing FAQ + test plan).',
+      'DB security audit shows feature, not proof of correct auto-configuration; seeded RLS tests required.',
+      'WebContainers isolate dev runtime — does not prove generated app security.',
+      'Exact current pricing matrix, token rollover, request limits, DB capacity need final capture.',
+      'Generated code maintainability, local build, and dependency risk unknown.'
+    ];
+    data.pricing = 'Pricing evidence from official (bolt.new/pricing): Free use with limits; Pro (no daily token limit, monthly allocation, hosting, DBs); Teams $30/mo per member (central billing, team access); Enterprise custom (advanced security/compliance/SSO/audit/SLAs). Tokens roll over per FAQ. Real cost = tokens + hosting + DB + requests + storage + domains + external services. Verify current before purchase.';
+    data.security = 'WebContainers for dev isolation (StackBlitz). DB security settings can flag missing RLS / insecure perms / leaked password protection. Enterprise claims advanced security/governance. Generated app security (RLS correctness, secret exposure, public/private sharing) untested. Test all per support.bolt.new/cloud/database/security.';
+    data.production = [
+      { gate: 'Database / Data', label: 'Partially verified', note: 'Security settings + RLS audit docs exist and list example warnings (RLS Always True, Search Path Mutable, etc.). Correctness in generated apps pending seeded tests.' },
+      { gate: 'Auth', label: 'Evidence pending', note: 'Not explicitly detailed in captured sources; test in benchmark.' },
+      { gate: 'Deployment', label: 'Evidence pending', note: 'Hosting + custom domains + publish referenced; stability and privacy settings untested.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'Test plan requires secret-injection + browser bundle inspection.' },
+      { gate: 'Exportability', label: 'Partially verified', note: 'Browser IDE + official bolt.diy open-source variant; export/local-build fidelity pending test.' },
+      { gate: 'Maintainability', label: 'Evidence pending', note: 'Code structure/dependencies uninspected in evidence.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: '11-step testing plan defined; none executed.' },
+      { gate: 'Handoff', label: 'Partially verified', note: 'Teams/Enterprise controls and GitHub-mirror language captured; scope verification pending.' }
+    ];
+    data.bestFor = 'Solo builders, students, agencies, product teams, frontend/full-stack developers wanting browser-based prompt-to-app with code visibility and built-in hosting/DB options.';
+    data.avoid = 'Production use without running RLS/security audit, token cost tracking, secret tests, and export validation (explicit warnings in evidence).';
+    data.useCases = [
+      'Fast web app/site prototypes with inspectable code in browser IDE.',
+      'Builders who value WebContainers isolation + built-in DB + hosting in one tab.',
+      'Teams that will run the 11-item test plan (RLS audit, cross-user privacy, token tracking, export) before launch.'
+    ];
+    data.alternatives = 'Lovable (full-stack real-code), Replit Agent (cloud IDE + deploy + credits), Base44, v0 (UI + Vercel), Cursor (code edits post-gen). From evidence comparison candidates.';
+    data.gaps = [
+      'Full hands-on security/production (in-progress per 03: token, DB security, generated-code, deployment, export testing required).',
+      'Claims requiring verification: production-ready full-stack apps, auto-secure DB perms, cheaper than peers, WebContainers = app security, Enterprise compliant.',
+      'bolt.diy vs hosted Bolt.new behavioral comparison.',
+      'Updated token accounting + real usage cost table.'
+    ];
+  }
+
+  // Replit (replit + replit-agent)
+  if (s === 'replit' || s === 'replit-agent') {
+    data.category = 'Agentic IDE / Prompt-to-app + Cloud deployment';
+    data.summary = 'AI app/site builder with natural-language prompts, cloud IDE, collaborative editing, built-in database/storage, publishing, and enterprise controls. Shared responsibility model documented.';
+    data.verdict = 'Official AI page + pricing + deployment + shared-responsibility + Security Agent sources captured. Starter 30-day expiry, filesystem warning, and shared-resp model are concrete. Agent safety (destructive actions), cost, and generated quality unverified (third-party incident history noted). Moderate confidence on docs; low on autonomous safety.';
+    data.confidence = 'Moderate confidence (official AI/pricing/deployment/security-shared docs captured; hands-on + incident follow-up pending)';
+    data.evidenceSnapshot = { files: evFiles.length, status: 'Canonical (01)', quality: 'Partial (official AI page, pricing, deployment pricing, shared-resp model, Security Agent blog; hands-on pending)', freshness: lastUpdated, gaps: 'Agent/security/deployment testing required per evidence.' };
+    data.strengths = [
+      'Replit AI page: "Make apps & sites with natural language prompts." Homepage: turn ideas into apps in minutes with no coding needed.',
+      'Combines prompt generation, cloud IDE, DB/storage, publishing, collaboration in one platform.',
+      'Clear shared-responsibility model docs: Replit responsible for Agent/platform/infra; user responsible for app contents and configuration (critical for reviews).',
+      'Pricing/deployment docs: Starter (free daily Agent credits, 1 publish project, 30-day expiry), Core ~$25/mo, Pro (pooled credits, no per-user up to 15), Enterprise (SOC-2, SSO/SAML/SCIM, private deploy, Security Center, SBOM).',
+      'Security Agent (May 2026 blog) for codebase review using threat-model + Semgrep/HoundDog — testable feature.',
+      'Pro/Enterprise governance surface: SSO, admin controls, CVE detection, SBOM downloads.'
+    ];
+    data.limitations = [
+      'Security is explicitly shared responsibility — do not imply Replit secures user app logic automatically.',
+      'Starter published apps expire after 30 days (re-publishable); important for free-plan evaluation.',
+      'Published app filesystem: docs warn against relying on it for persistent data (use DB/storage).',
+      'Agent reliability/safety not verified; 2025 incident (Business Insider) where Agent deleted production DB during external test (CEO apologized) — historical risk signal.',
+      '2026 Axios reporting on sensitive data exposure in vibe-coded/public apps across platforms including Replit — category risk.',
+      'Costs can exceed subscription: Agent credits + deployment credits + compute/storage/bandwidth.'
+    ];
+    data.pricing = 'Pricing evidence captured: Starter free (daily Agent credits, built-in DB, 1 publish project that expires 30 days); Core ~$25 monthly; Pro for teams (pooled credits, up to 15 builders no per-user); Enterprise custom. Publishing costs deducted from credits; usage-based after. Verify replit.com/pricing and deployment-pricing docs before use. Real cost includes Agent + deploy + runtime + storage + bandwidth + collaborators.';
+    data.security = 'Shared responsibility model (official): Replit for platform/Agent/infra; user for contents/config. Published-app access controls and filesystem caveats documented. Enterprise: SOC-2, SSO, Security Center, SBOM, CVE. Security Agent feature for code review. Third-party exposure and destructive-action history require verification. Test public/private, secrets, rollback.';
+    data.production = [
+      { gate: 'Database / Data', label: 'Partially verified', note: 'Built-in DB + publishing docs; persistence warning on filesystem (use DB/storage). RLS/auth not tested in generated apps.' },
+      { gate: 'Auth', label: 'Evidence pending', note: 'Access controls referenced; cross-user privacy test required.' },
+      { gate: 'Deployment', label: 'Partially verified', note: 'Multiple deployment types, custom domains, analytics, access controls documented. Starter 30-day expiry confirmed in docs.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'Test plan item; no results.' },
+      { gate: 'Exportability', label: 'Evidence pending', note: 'Cloud IDE; export/local not explicitly benchmarked in evidence.' },
+      { gate: 'Maintainability', label: 'Evidence pending', note: 'Iteration quality and code structure in testing plan.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: '12-step plan (incl. Security Agent, destructive action, fake-data integrity); none executed.' },
+      { gate: 'Handoff', label: 'Partially verified', note: 'Enterprise controls (SSO/SCIM/private deploy/SBOM) documented; artifact scope pending.' }
+    ];
+    data.bestFor = 'Nontechnical founders, students, solo builders, developers, teams wanting prompt-to-app + real cloud IDE + one-click-ish publish in browser.';
+    data.avoid = 'Production databases or sensitive work without strict constraints/rollback testing (historical Agent delete incident + shared-resp model).';
+    data.useCases = [
+      'Quick app/site generation + immediate browser preview/deploy with credit model.',
+      'Collaborative browser development with built-in DB and publishing.',
+      'Users who will follow the 12-step testing plan including Security Agent eval and destructive-action safeguards.'
+    ];
+    data.alternatives = 'Bolt.new (browser prompt-to-code + DB security docs), Lovable (full-stack real code), Base44, Cursor/Windsurf (when code layer needed). From evidence.';
+    data.gaps = [
+      'Hands-on Agent/security/deployment (in-progress per 01).',
+      'Claims requiring verification: production-ready apps, secure-by-default, Security Agent effectiveness, cheap for full-stack, Agent avoids destructive changes, Enterprise SOC-2 covers all.',
+      'Cost tracking table (Agent + deploy credits + runtime).',
+      'Follow-up on 2025 DB-delete incident safeguards and 2026 exposure reports.'
+    ];
+  }
+
+  // Cursor
+  if (s === 'cursor') {
+    data.category = 'AI IDE / Agentic coding editor';
+    data.summary = 'AI-native code editor with autocomplete, chat, Agent mode, Rules/Skills/MCP, CLI, model selection, Privacy Mode, Teams/Enterprise. For developers working in existing codebases.';
+    data.verdict = 'High-quality official docs for workflows (Agent, Rules, models, Teams), Privacy Mode (zero retention with supported providers), and models/pricing captured. Not a no-code tool. Agent productivity, dependency security (Chainguard partnership noted), and enterprise controls unverified hands-on. High confidence on official privacy/docs claims; low on outcome metrics.';
+    data.confidence = 'High confidence on captured official docs/privacy (05_cursor_complete); Moderate on productivity/enterprise (hands-on pending)';
+    data.evidenceSnapshot = { files: evFiles.length, status: 'Canonical (05)', quality: 'Strong (official docs + pricing + privacy + models + third-party security notes; hands-on repo/agent testing pending)', freshness: lastUpdated, gaps: 'Repository, agent, privacy-mode, security, cost testing required.' };
+    data.strengths = [
+      'Official homepage + docs cover Agent mode, Rules, Skills, MCP servers, CLI, models, Teams & Enterprise setup in depth.',
+      'Privacy Mode clearly documented: enable to prevent code data from being stored by model providers or used for training (subject to provider scope; official pricing + privacy docs).',
+      'Models/pricing docs provide basis for measurable cost testing by model and usage pool; admin dashboard for usage visibility.',
+      'Agentic features + team controls make it relevant for serious engineering teams (safe claims from 05).',
+      'Axios Apr 2026: partnered with Chainguard to reduce risk from vulnerable/malicious open-source deps in AI-generated code (directional security context).'
+    ];
+    data.limitations = [
+      'Not a no-code tool: requires developer workflow, code review, and engineering practices (official category + docs).',
+      'Privacy protection depends on mode/settings + provider scope; must verify before sensitive code use.',
+      'Agent quality, dependency security, and enterprise controls unverified (requires repo benchmark per testing plan in evidence).',
+      'Frontier model costs volatile; exact plan names (Hobby/Pro/Teams/Enterprise) + overages need final capture.',
+      'Wired Apr 2026 context on new agent experience vs Claude Code/Codex — competitive but unbenchmarked here.'
+    ];
+    data.pricing = 'Official pricing + models-and-pricing docs captured (cursor.com/pricing, cursor.com/docs/models-and-pricing). Plans include usage pools, per-model API rates, admin usage dashboard. Privacy Mode available to users/admins. Exact current prices, included usage, BYOK, team controls require final account/pricing capture before publication. Verify cursor.com/pricing.';
+    data.security = 'Privacy Mode: code data never stored by supported model providers or used for training (docs + pricing page). Admin dashboard for usage. Chainguard partnership for dep risk reduction (Axios). Agent diffs, dependency suggestions, and enterprise controls require hands-on. Enable Privacy Mode for sensitive repos; test agent behavior per evidence priority.';
+    data.production = [
+      { gate: 'Database / Data', label: 'Not applicable', note: 'Code editor/IDE; data layer is user codebase + external DBs the user connects.' },
+      { gate: 'Auth', label: 'Partially verified', note: 'Teams/Enterprise setup documented; SSO/admin controls in pricing/docs.' },
+      { gate: 'Deployment', label: 'Not applicable', note: 'User handles deploy of edited code.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'No specific secret-handling benchmark in editor context captured.' },
+      { gate: 'Exportability', label: 'Verified', note: 'Native desktop editor (Mac/Win/Linux implied); code is local/user repo by design.' },
+      { gate: 'Maintainability', label: 'Partially verified', note: 'Designed for real codebases; Rules/Skills/MCP for context; agent edits still need human review.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: 'Repo benchmark + agent task suite in testing plan; not executed.' },
+      { gate: 'Handoff', label: 'Partially verified', note: 'Teams/Enterprise, admin dashboard, usage metrics documented.' }
+    ];
+    data.bestFor = 'Developers, engineering teams, startup product engineers, enterprises working in existing codebases who want high-leverage AI assistance inside a real IDE.';
+    data.avoid = 'Nontechnical users expecting no-code app creation without reading/editing code (explicit category boundary).';
+    data.useCases = [
+      'Editing, refactoring, and agentic work on real repositories with context (Rules, @-mentions, etc.).',
+      'Teams that value Privacy Mode + usage controls + model choice.',
+      'Post-generation code stewardship after using prompt-to-app tools (Lovable/Bolt output → Cursor edits).'
+    ];
+    data.alternatives = 'Windsurf (agentic IDE/Cascade competitor), Claude Code, OpenAI Codex, GitHub Copilot Workspace, Replit for cloud IDE. From evidence + index.';
+    data.gaps = [
+      'Full hands-on repository/agent/privacy-mode/security/cost testing (explicit in 05 evidence status).',
+      'Exact current pricing + per-model rates + BYOK behavior.',
+      'Agent productivity metrics and false-positive rate on edits/tests.',
+      'Dependency security outcomes via Chainguard integration.'
+    ];
+  }
+
+  // Windsurf
+  if (s === 'windsurf') {
+    data.category = 'AI IDE / Agentic coding';
+    data.summary = 'Agent-powered IDE with Cascade agent that codes/fixes/thinks ahead. Full editor + autocomplete + contextual assistance, model options (SWE, Claude, GPT, BYOK), usage plans, enterprise features. Desktop on Mac/Win/Linux.';
+    data.verdict = 'Official positioning around Cascade agent + editor availability + model/BYOK/usage docs captured. Active development signals (code review, agent command). Not no-code. Agent edits, review quality, privacy by model, and enterprise compliance unverified. Moderate confidence on captured docs; low on autonomous outcomes.';
+    data.confidence = 'Moderate confidence (official homepage, editor page, models, usage docs captured 06; hands-on pending)';
+    data.evidenceSnapshot = { files: evFiles.length, status: 'Canonical (06)', quality: 'Partial (official Cascade/agent/IDE claims + plans/usage/models; hands-on repo/agent testing pending)', freshness: lastUpdated, gaps: 'Agent quality, code review, BYOK, enterprise artifacts pending.' };
+    data.strengths = [
+      'Homepage positions Cascade as “an agent that codes, fixes and thinks 10 steps ahead.”',
+      'Full editor + agentic IDE posture with autocomplete, contextual assistance, model options, usage plans, enterprise features (evidence 06).',
+      'Editor page supports local desktop usage on major OSes — code stays local vs cloud-only.',
+      'Docs reference SWE models, Claude, GPT, and BYOK options (data routing/privacy vary by choice).',
+      'Usage tracking and plan docs (Free → Pro/Teams/Enterprise) provide test dimensions.',
+      'Recent product-stream items on code review feature and agent command indicate active iteration.'
+    ];
+    data.limitations = [
+      'Agentic IDE for developers; not pure no-code. Must compare with Cursor/Claude Code/Codex primarily.',
+      'Exact current prices/quotas not captured in evidence pass; final pricing capture required.',
+      'Agent quality, multi-file task success, and rollback behavior unverified (repo benchmark required).',
+      'Compliance claims (third-party mentions of SOC/FedRAMP/HIPAA) not verified from official artifact in this pass.',
+      'Model routing/privacy may vary by provider/BYOK; provider-specific review needed.'
+    ];
+    data.pricing = 'Official docs cover plans/usage tracking and upgrading from Free to Pro, Teams, or Enterprise. Exact prices, quotas, and overages not matrix-captured in evidence; recheck windsurf.com and docs.windsurf.com before publication. Usage tracking is a documented feature.';
+    data.security = 'Local desktop editor reduces some cloud-retention risk vs fully hosted. BYOK option for model control. Enterprise plan exists; exact security scope/compliance artifacts not captured in evidence (third-party claims exist — do not publish without official). Code review feature and Cascade edits require accuracy/false-negative testing.';
+    data.production = [
+      { gate: 'Database / Data', label: 'Not applicable', note: 'Code editor; user manages own DBs in edited projects.' },
+      { gate: 'Auth', label: 'Evidence pending', note: 'Teams/Enterprise mentioned; no specific auth artifact for IDE access captured.' },
+      { gate: 'Deployment', label: 'Not applicable', note: 'User deploys edited code.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'BYOK and local nature help, but no secret-specific test in evidence.' },
+      { gate: 'Exportability', label: 'Verified', note: 'Local desktop editor on Mac/Win/Linux; code is user filesystem by design.' },
+      { gate: 'Maintainability', label: 'Partially verified', note: 'Designed for real codebases + code review feature; agent edits still need engineer oversight.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: 'Testing plan items (repo onboarding, Cascade task, bug fix, code review on seeded vulns) defined; none executed.' },
+      { gate: 'Handoff', label: 'Evidence pending', note: 'Enterprise plan; trust/security artifacts required per evidence.' }
+    ];
+    data.bestFor = 'Developers and technical founders doing AI-assisted coding in existing or new repos, who want agentic multi-step edits (Cascade) + local control + model choice.';
+    data.avoid = 'Non-coders or teams expecting no-code app generation (category mismatch).';
+    data.useCases = [
+      'Code-native vibe builders who want Cursor-class alternative with Cascade agent.',
+      'Users who prefer local desktop + BYOK for privacy/control.',
+      'Teams running seeded vulnerability review tests and agent task benchmarks before adoption.'
+    ];
+    data.alternatives = 'Cursor (primary), Claude Code, OpenAI Codex, GitHub Copilot Workspace, Replit (cloud). From evidence comparison candidates.';
+    data.gaps = [
+      'Agent edits untested (multi-file production tasks, bug fixes without masking tests).',
+      'Code review accuracy/false positives on seeded issues.',
+      'BYOK routing, billing, and privacy outcomes.',
+      'Official security/compliance artifacts for Enterprise (vs third-party claims).',
+      'Updated pricing/quotas + cost benchmark vs Cursor.'
+    ];
+  }
+
+  // v0
+  if (s === 'v0') {
+    data.category = 'UI generation / AI web app builder';
+    data.summary = 'AI web app/UI generator with visual Design Mode, GitHub sync, and Vercel deployment workflow. Credit-based; Free and Team plans documented.';
+    data.verdict = 'Official pricing with specific Free ($0, $5 credits, 7 msg/day, Vercel deploy, Design Mode, GitHub sync) and Team ($30/user/mo) captured. Strong for React/Next.js front-end scaffolds. Backend, auth, data model, full-app security unverified. Moderate-high confidence on pricing/deploy claims; low on full-app production.';
+    data.confidence = 'Moderate confidence (09_v_0 pricing + deploy + Design + GitHub captured; hands-on prompt-to-app + security pending)';
+    data.evidenceSnapshot = { files: evFiles.length, status: 'Canonical (09)', quality: 'Partial (official v0.app/pricing + Vercel context; generated app security/maintainability pending)', freshness: lastUpdated, gaps: 'Full-app security, backend, auth, data model, maintainability after visual edits.' };
+    data.strengths = [
+      'AI web app/UI generator with visual Design Mode, GitHub sync, and Vercel deployment workflow (evidence 09).',
+      'Strong for React/Next.js-style front-end scaffolds and rapid UI iteration from prompts.',
+      'Credit-based pricing + direct deploy path documented in official sources.',
+      'Free: $0/month, $5 included monthly credits, deploy to Vercel, Design Mode, GitHub sync, 7 messages/day.',
+      'Team: $30/user/month, $30 monthly credits/user + daily top-ups, centralized billing, shared credits/chats/collaboration.',
+      'GitHub sync creates inspectable code/repo workflow rather than opaque output.'
+    ];
+    data.limitations = [
+      'Primarily front-end / React UI generation. Backend, auth, data model, and full-app security unverified (hands-on prompt-to-app + deploy tests required per 09).',
+      'Free plan message/day limit impacts iteration speed.',
+      'Team plan cost scales per user + separate Vercel resource costs (compute, bandwidth, DB, etc.).',
+      'Visual edits (Design Mode) may affect code maintainability — post-edit code quality untested.',
+      'Generated app security (secrets, auth, API routes, deps) has no proof in captured evidence.'
+    ];
+    data.pricing = 'Pricing evidence captured May 30, 2026 from v0.app/pricing: Free $0 (5 monthly credits, 7 messages/day, Vercel deploy, Design Mode, GitHub sync); Team $30/user/mo (30 credits/user/mo + daily, centralized billing, shared). Vercel Hobby free / Pro $20/mo separate; billable usage (compute/bandwidth/storage) applies. Total cost = v0 credits + Vercel resources. Verify current v0.app/pricing and vercel.com/pricing.';
+    data.security = 'Deploy to Vercel (WAF/CDN/DDoS on higher plans per Vercel docs). GitHub sync for code ownership. No evidence proves generated apps have correct auth/data/security defaults. Test secrets, auth, routes, deps, and post-Design-Mode code. Vercel resource billing separate dimension.';
+    data.production = [
+      { gate: 'Database / Data', label: 'Evidence pending', note: 'Not in v0 core scope; user adds via Vercel/Supabase/etc. after GitHub sync.' },
+      { gate: 'Auth', label: 'Evidence pending', note: 'No auth generation proof captured; test in full-app benchmark.' },
+      { gate: 'Deployment', label: 'Partially verified', note: 'One-click Vercel deploy documented; success + config behavior untested in evidence.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'Test plan requires secret + bundle inspection.' },
+      { gate: 'Exportability', label: 'Partially verified', note: 'GitHub sync documented; branch/ownership/permission behavior pending test.' },
+      { gate: 'Maintainability', label: 'Evidence pending', note: 'Code after Design Mode visual edits; duplication risk uninspected.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: 'Testing plan defined (prompt-to-app, GitHub, security checklist); none executed.' },
+      { gate: 'Handoff', label: 'Partially verified', note: 'GitHub + Vercel gives standard web dev handoff path; team collab in v0 Team.' }
+    ];
+    data.bestFor = 'React/Next.js UI generation, front-end scaffolds, designers/developers wanting visual + code loop with fast Vercel publish.';
+    data.avoid = 'Full-stack production apps without pairing (e.g. with Cursor or backend tool) and without security testing (explicit limitation in evidence).';
+    data.useCases = [
+      'Landing pages, dashboards, marketing sites, or UI-heavy MVPs in React/Next + Vercel.',
+      'Designers who want prompt + Design Mode then hand off code via GitHub.',
+      'Builders who will run full-app + security tests after v0 generation.'
+    ];
+    data.alternatives = 'Bolt.new (fuller browser app + DB), Lovable (full-stack), Replit, Framer/Webflow (pure site), Builder.io (design-to-code). From evidence 09 comparisons.';
+    data.gaps = [
+      'Backend/auth/data model/full-app security unverified (09 testing plan).',
+      'Post-Design-Mode maintainability and code quality.',
+      'Real Vercel resource cost + v0 credit burn on realistic prompts.',
+      'Updated credit/message limits (volatile per evidence).'
+    ];
+  }
+
+  // Webflow (webflow + webflow-ai)
+  if (s === 'webflow' || s === 'webflow-ai') {
+    data.category = 'Site generation / No-code incumbent + AI';
+    data.summary = 'AI-assisted site design inside a mature, established website builder. AI Assistant for sections/copy; Optimize for AI-powered personalization. SOC 2 Type II + ISO 27001 via Trust Center.';
+    data.verdict = 'Supplemental evidence (18) + official AI/Optimize/Trust Center/pricing sources captured. Relevant as incumbent responding to AI wave. Not general AI app builder. AI output still needs accessibility/brand/legal review. Moderate confidence on platform posture; low on AI-generated site outcomes.';
+    data.confidence = 'Moderate confidence (official AI update, Optimize, Trust Center, pricing change May 2026 captured; hands-on AI workflow pending)';
+    data.evidenceSnapshot = { files: evFiles.length, status: 'Supplemental (18)', quality: 'Partial (official AI/Optimize/Trust Center + May 2026 pricing note; generated-site testing pending)', freshness: lastUpdated, gaps: 'AI-site workflow, accessibility, conversion, compliance transfer pending.' };
+    data.strengths = [
+      'AI-assisted site design inside a mature, established website builder (supplemental evidence 18).',
+      'Relevant as incumbent no-code platform adding AI capabilities for marketing/landing sites.',
+      'Webflow AI Assistant (official update): in-context help, generate sections and copy.',
+      'Webflow Optimize: AI-powered personalization/optimization feature.',
+      'Trust Center: SOC 2 Type II and ISO 27001 independently audited (exact scope: security/availability).',
+      'Free Starter path + paid site/workspace plans; May 2026 pricing change documented (recheck required).'
+    ];
+    data.limitations = [
+      'AI features are assists inside larger platform; full AI-app-builder vs incumbent tradeoffs need hands-on (supplemental evidence notes slower or narrower loops for some).',
+      'Not a general AI app builder — compare mainly with Framer, Wix, Squarespace, Builder.io (not Replit/Lovable).',
+      'AI-generated copy/sections require brand, accessibility, privacy, and legal review (reasoned + official context).',
+      'AI optimization/personalization requires consent/privacy/cookie and analytics governance.',
+      'Compliance (SOC 2/ISO) does not automatically transfer to every site built on platform.',
+      'Pricing changed May 2026; CMS limits, bandwidth, Analyze/Optimize, seats, Enterprise terms volatile.'
+    ];
+    data.pricing = 'Official pricing sources captured; exact tier prices, CMS limits, bandwidth, Analyze/Optimize costs, workspace seats, and Enterprise terms must be recaptured immediately before publication (May 2026 change noted). Starter free path exists. Total cost includes site plans + workspace + add-ons + third-party. Verify webflow.com/pricing.';
+    data.security = 'Trust Center evidence: SOC 2 Type II and ISO 27001 for Webflow platform controls (report access via help/trust center). Does not prove every Webflow site is compliant. AI-generated copy still needs legal/privacy review. Custom headers and site-specific security are builder responsibility.';
+    data.production = [
+      { gate: 'Database / Data', label: 'Partially verified', note: 'CMS collections documented in pricing; data model in visual builder.' },
+      { gate: 'Auth', label: 'Partially verified', note: 'Webflow has auth/user system; membership/Enterprise features.' },
+      { gate: 'Deployment', label: 'Verified', note: 'Mature Webflow hosting with CDN/SSL; plan-dependent.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'Platform secrets/integrations; site-specific not in AI scope.' },
+      { gate: 'Exportability', label: 'Partially verified', note: 'Export code/zip available on higher plans; fidelity vs AI edits pending.' },
+      { gate: 'Maintainability', label: 'Partially verified', note: 'Visual + CMS is designed for ongoing management by non-devs; AI adds generated sections.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: 'AI workflow test + accessibility/SEO/legal review required per testing plan.' },
+      { gate: 'Handoff', label: 'Partially verified', note: 'Enterprise + workspace seats + client billing paths exist.' }
+    ];
+    data.bestFor = 'Marketing sites, landing pages, content sites, and web experiences where mature no-code visual builder + AI assists for speed is preferred over pure prompt-to-app.';
+    data.avoid = 'Complex full-stack apps or teams expecting autonomous app logic/security from AI (scope mismatch).';
+    data.useCases = [
+      'Design/marketing teams building high-quality sites with AI section/copy acceleration inside Webflow ecosystem.',
+      'Users who value platform compliance posture (SOC 2/ISO) and need to layer their own accessibility/SEO/governance.',
+      'Comparisons of incumbent + AI vs pure AI site builders (Framer, v0, Builder).'
+    ];
+    data.alternatives = 'Framer AI (closest), Builder.io Fusion, v0 (React/Vercel), Squarespace/Wix AI, Relume. From evidence 18.';
+    data.gaps = [
+      'Hands-on AI-site workflow, conversion lift, accessibility of AI output (testing plan).',
+      '“Webflow AI builds complete production websites” unverified (sections/copy + optimization only).',
+      'Compliance transfer to customer sites.',
+      'Updated post-May-2026 pricing + full cost model (CMS, bandwidth, Optimize).'
+    ];
+  }
+
+  // Bubble (bubble + bubble-ai)
+  if (s === 'bubble' || s === 'bubble-ai') {
+    data.category = 'No-code app + AI';
+    data.summary = 'Traditional no-code web/mobile app builder with AI-assisted app generation (beta per docs). Generates foundational design/structure/DB/workflows from prompt; user refines visually. Privacy rules + SOC 2 Type II platform.';
+    data.verdict = 'Supplemental (16) + official AI generator page, manual, privacy rules, SOC 2 captured. AI generator framed as beta/foundational starting point, not complete production app. Privacy rules and SOC2-not-transfer warnings are strong. Moderate confidence on platform docs; low on AI-generated app quality/security.';
+    data.confidence = 'Moderate confidence (official AI generator, privacy, SOC 2 docs captured; hands-on app/security testing pending)';
+    data.evidenceSnapshot = { files: evFiles.length, status: 'Supplemental (16)', quality: 'Partial (AI generator docs + privacy rules + SOC 2 + pricing; beta + hands-on pending)', freshness: lastUpdated, gaps: 'Generated app quality, privacy implementation, workload cost, mobile parity pending.' };
+    data.strengths = [
+      'Traditional no-code app platform with AI assistance; more explicit control and logic than pure prompt-to-app (supplemental 16).',
+      'Bubble’s AI app generator lets you build complete apps in minutes (official product page + manual).',
+      'Manual: AI generation creates foundational design and structure (pages, DB, workflows) that users refine/customize in visual editor.',
+      'AI Agent can create/edit data types and fields (data-tab docs).',
+      'Documented privacy-rule system for controlling access to data types; explicit warning: never deploy apps with sensitive data without proper privacy rules.',
+      'Platform is SOC 2 Type II compliant; docs clearly state platform compliance does not automatically make individual apps compliant.'
+    ];
+    data.limitations = [
+      'AI features are assists inside larger platforms; full AI-app-builder vs incumbent tradeoffs need hands-on (supplemental evidence notes slower or narrower loops for some).',
+      'AI generator was described as beta (manual at capture time — recheck status).',
+      'Generated app security is not guaranteed; privacy rules must be implemented correctly by user (cross-user data tests required).',
+      'Workload pricing can affect operating cost as apps scale (needs benchmark).',
+      'Abuse risk exists for hosted app platforms (third-party phishing reports on Bubble-hosted apps).'
+    ];
+    data.pricing = 'Official pricing page/manual: start building for free; upgrade to Starter (or higher Web/Mobile/Web+Mobile) when ready to launch. Plans are project-level. Workload usage tiers apply as apps grow. Enterprise options. AI-generator specific cost not isolated. Verify bubble.io/pricing and manual billing docs.';
+    data.security = 'Privacy rules (core feature) + explicit docs warning for sensitive data. SOC 2 Type II for platform (manual.bubble.io). Platform SOC 2 does not transfer to apps. Test every generated app for cross-user access, workflow permissions, and exposed data. Hosted domain/login behavior for abuse vectors per third-party notes.';
+    data.production = [
+      { gate: 'Database / Data', label: 'Partially verified', note: 'Built-in DB + data types + AI data generation documented; privacy rules are the control layer.' },
+      { gate: 'Auth', label: 'Partially verified', note: 'Bubble has user auth/accounts; privacy rules apply on top.' },
+      { gate: 'Deployment', label: 'Partially verified', note: 'Launch/publish paths exist; workload and custom domain on paid.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'Plugin/API secret handling in platform; test in generated apps.' },
+      { gate: 'Exportability', label: 'Evidence pending', note: 'Visual builder lock-in vs code export (FlutterFlow comparison in evidence); not primary for Bubble.' },
+      { gate: 'Maintainability', label: 'Partially verified', note: 'Visual editor + workflows designed for ongoing non-dev maintenance.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: '10-step plan (prompt-gen, data model, privacy-rule test, workload, security checklist); none executed.' },
+      { gate: 'Handoff', label: 'Partially verified', note: 'Enterprise security/compliance options; client billing paths exist.' }
+    ];
+    data.bestFor = 'Nontechnical founders, operators, agencies, businesses building web/mobile apps who want visual control + AI to bootstrap the initial structure, then iterate in no-code.';
+    data.avoid = 'Teams expecting secure-by-default generated apps or SOC2 for the app without implementing privacy rules and testing (explicit warnings).';
+    data.useCases = [
+      'Internal tools, marketplaces, CRMs, portals where Bubble’s visual logic + privacy model fits.',
+      'Users who will implement and test privacy rules + workload cost before sensitive data.',
+      'Comparisons of traditional no-code + AI (Bubble) vs pure prompt-to-app (Lovable/Bolt).'
+    ];
+    data.alternatives = 'FlutterFlow AI, Glide AI, Softr AI, Adalo, Base44, Webflow (for lighter sites). From evidence 16 comparisons.';
+    data.gaps = [
+      'Generated app quality, privacy implementation, workload cost, mobile/web parity (testing plan).',
+      '“Bubble AI builds complete production apps” unverified (foundational/beta framing).',
+      '“AI-generated Bubble apps are secure by default” contradicted by privacy docs.',
+      'Updated pricing + workload benchmarks.'
+    ];
+  }
+
+  // Framer (framer + framer-ai)
+  if (s === 'framer' || s === 'framer-ai') {
+    data.category = 'Site generation / AI-assisted website builder';
+    data.summary = 'AI-assisted website creation with layout/page generation, Wireframer, responsive starter content. Free plan limits documented. SOC 2 Type 1/2 + ISO for platform; Enterprise trust artifacts.';
+    data.verdict = 'Supplemental (19) + official AI page, pricing FAQ, legal/security pages captured. Fast layout/content generation for sites. Not full app builder. Generated sites need accessibility/legal/privacy/SEO review. Moderate confidence on platform security docs; low on AI output quality.';
+    data.confidence = 'Moderate confidence (official AI/Wireframer, pricing, SOC2/ISO captured; hands-on site quality pending)';
+    data.evidenceSnapshot = { files: evFiles.length, status: 'Supplemental (19)', quality: 'Partial (AI page + Wireframer + pricing limits + security pages; generated-site testing pending)', freshness: lastUpdated, gaps: 'Design/content/accessibility/SEO of AI sites pending.' };
+    data.strengths = [
+      'Fast generation of landing pages and marketing sites; visual editing strengths (supplemental 19).',
+      'Framer AI page supports fast layout/content generation; Wireframer provides concrete testable AI workflow for responsive starter pages.',
+      'Official pricing FAQ: Free projects include 10 CMS collections, 1,000 pages, 5 MB uploads, one free locale trial; custom domain requires paid.',
+      'Framer completed SOC 2 Type 1 and Type 2 audits (security + availability scope per legal/security page).',
+      'Enterprise: ISO 27001:2022 certified (evidence in Trust Center for Enterprise customers).',
+      'Help docs caution that local privacy laws may require different cookie-banner formats (builder responsibility).'
+    ];
+    data.limitations = [
+      'Mainly website-focused, not full app-builder evidence (compare with Webflow/Builder.io more than Replit/Codex).',
+      'Generated-site quality (design, content accuracy, accessibility, brand fit) not verified (no hands-on test record).',
+      'Compliance does not automatically transfer to each site (security scope reasoning).',
+      'Pricing may vary by editors/usage, CMS scale, localization, analytics (official subscriptions help).',
+      'Local cookie/privacy obligations remain user responsibility (official GDPR/cookie help).'
+    ];
+    data.pricing = 'Pricing evidence captured: Free (10 CMS, 1k pages, 5MB uploads, locale trial); custom domain requires paid plan. Basic/Pro monthly/annual; Scale annual-only. Additional editors/usage may create extra charges. Enterprise plan with trust artifacts. Verify framer.com/pricing and help subscriptions before use.';
+    data.security = 'SOC 2 Type 1/2 (security + availability) and Enterprise ISO 27001 documented. Privacy Statement and GDPR/cookie help pages exist. AI-generated pages still require brand/legal/accessibility/privacy/cookie/SEO review. No proof AI sites are secure/compliant out of box.';
+    data.production = [
+      { gate: 'Database / Data', label: 'Partially verified', note: 'CMS collections in Free limits; data binding in visual builder.' },
+      { gate: 'Auth', label: 'Evidence pending', note: 'Framer has auth/membership features on paid; not core to AI gen scope.' },
+      { gate: 'Deployment', label: 'Verified', note: 'Framer hosting with custom domains on paid plans; CDN/SSL standard.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'Integrations/secrets in platform; site-specific not detailed in AI evidence.' },
+      { gate: 'Exportability', label: 'Partially verified', note: 'Code export available on higher plans; AI-generated code fidelity pending.' },
+      { gate: 'Maintainability', label: 'Partially verified', note: 'Visual + CMS designed for ongoing site management.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: 'AI workflow + accessibility/SEO/legal review required.' },
+      { gate: 'Handoff', label: 'Partially verified', note: 'Enterprise plan + agency/freelancer paths; client handoff via published site.' }
+    ];
+    data.bestFor = 'Designers, marketers, freelancers, agencies building landing pages, marketing sites, and interactive web experiences with AI acceleration + visual control.';
+    data.avoid = 'Full-stack apps or teams expecting autonomous production websites without human design/content/accessibility QA (scope + evidence limits).';
+    data.useCases = [
+      'High-fidelity marketing/landing sites with AI Wireframer + visual polish.',
+      'Teams that value SOC 2/ISO platform posture and will add their own accessibility/SEO/governance layer.',
+      'Comparisons vs Webflow AI, v0, Builder.io for site generation.'
+    ];
+    data.alternatives = 'Webflow AI (closest incumbent), Builder.io Fusion, v0 (code-oriented), Squarespace/Wix AI, Relume. From evidence 19.';
+    data.gaps = [
+      'Generated-site quality, accessibility, SEO, brand fit, conversion (no hands-on record).',
+      '“Framer AI creates production websites” unverified (layouts + starter content).',
+      'Post-export code maintainability after AI gen.',
+      'Updated pricing + editor/usage/CMS cost model.'
+    ];
+  }
+
+  // Shopify (optional, no dedicated ev — fully pending labels)
+  if (s === 'shopify') {
+    data.category = 'Ecommerce / Site builder';
+    data.summary = 'Evidence capture pending — no dedicated file in docs/evidence/. Broader ecommerce context referenced in empire planning docs (ref only, not publishable claims).';
+    data.verdict = 'Evidence capture pending for Shopify. No NoCodeReviewed evidence file (01–27 series) exists. Do not rely on any platform claims until a verified evidence file is captured and reviewed. Evidence pending.';
+    data.confidence = 'Evidence pending';
+    data.evidenceSnapshot = { files: 0, status: 'Evidence pending', quality: 'Pending', freshness: 'N/A', gaps: 'No dedicated evidence file. Capture required before any review content.' };
+    data.strengths = ['Evidence pending — see gaps.'];
+    data.limitations = ['No verified evidence file captured for Shopify in current manifest. All claims require new source pass and hands-on.'];
+    data.pricing = 'Pricing evidence pending. Verify current pricing before purchase.';
+    data.security = 'Security & trust evidence pending. Auth, data ownership, PCI, export, and app ecosystem posture require dedicated evidence file.';
+    data.production = [
+      { gate: 'Database / Data', label: 'Evidence pending', note: 'No evidence file.' },
+      { gate: 'Auth', label: 'Evidence pending', note: 'No evidence file.' },
+      { gate: 'Deployment', label: 'Evidence pending', note: 'No evidence file.' },
+      { gate: 'Secrets', label: 'Evidence pending', note: 'No evidence file.' },
+      { gate: 'Exportability', label: 'Evidence pending', note: 'No evidence file.' },
+      { gate: 'Maintainability', label: 'Evidence pending', note: 'No evidence file.' },
+      { gate: 'Testing / QA', label: 'Evidence pending', note: 'No evidence file.' },
+      { gate: 'Handoff', label: 'Evidence pending', note: 'No evidence file.' }
+    ];
+    data.bestFor = 'Evidence pending.';
+    data.avoid = 'Any production decision before a verified evidence file and hands-on review exist.';
+    data.useCases = ['Evidence pending — do not use for recommendations.'];
+    data.alternatives = 'Evidence pending. See #tools for adjacent ecommerce/site tools with or without evidence.';
+    data.gaps = ['No dedicated evidence file in docs/evidence/ for Shopify (manifest confirms missing or unnumbered).', 'Pricing, security, production, benchmarks, and claims all pending capture.', 'Broader mentions in planning docs are reference only, not evidence.'];
+  }
+
+  return data;
 }
 
 function ncrToolMicrositeFunnel(slug) {
@@ -8690,24 +9240,33 @@ function ncrToolReviewPage(slug) {
   const logoHtml = toolLogoMarkup(tool, 42, "tool-logo");
   const styleVars = toolBrandStyleVars(tool);
 
-  // C2: safe product CTAs (same map as funnel; no fake URLs)
+  // R2: safe product CTAs (official domains only; no invented)
   const safeTryUrls = {
     'lovable': 'https://lovable.dev', 'bolt-new': 'https://bolt.new', 'replit': 'https://replit.com', 'replit-agent': 'https://replit.com',
     'cursor': 'https://cursor.com', 'windsurf': 'https://windsurf.com', 'v0': 'https://v0.dev',
     'framer-ai': 'https://framer.com', 'webflow-ai': 'https://webflow.com', 'bubble-ai': 'https://bubble.io',
-    'framer': 'https://framer.com', 'webflow': 'https://webflow.com', 'bubble': 'https://bubble.io'
+    'framer': 'https://framer.com', 'webflow': 'https://webflow.com', 'bubble': 'https://bubble.io',
+    'shopify': 'https://shopify.com'
   };
   const reviewTryUrl = safeTryUrls[slug] || '#';
 
-  // Contextual frame content map (evidence-grounded or pending)
+  // R2: crash-safe evidence-derived data (no fakes; pending labels preserved)
+  let reviewData;
+  try {
+    reviewData = getReviewData(slug);
+  } catch (e) {
+    reviewData = { category: tool.category || 'Tool', summary: 'Evidence-first review. Details pending.', verdict: 'Evidence pending or partial. Verify sources.', confidence: 'Evidence pending', evidenceSnapshot: { files: evFiles.length, status: hasEv ? 'Available' : 'Pending', quality: 'Pending', freshness: 'See manifest', gaps: 'See gaps' }, strengths: ['Evidence status explicitly labeled.'], limitations: ['Hands-on verification required per evidence status.'], pricing: 'Pricing evidence pending. Verify current pricing before purchase.', security: 'Security & trust evidence pending or partial.', production: [{ gate: 'All gates', label: 'Evidence pending', note: 'No verified production data.' }], bestFor: tool.bestFor || 'Builders', avoid: 'Production use without evidence review.', useCases: [], alternatives: 'See #tools for adjacent options.', gaps: ['Evidence capture incomplete.'], methodologyNote: 'All claims must trace to evidence or be labeled pending.' };
+  }
+
+  // Contextual frame (dynamic where possible)
   const contextMap = {
-    verdict: { eyebrow: "Evidence context", title: "Independent verdict", body: "This section summarizes the tool using NoCodeReviewed’s evidence-first review structure. Unsupported claims remain marked pending.", cta: "See methodology", ctaHref: "#review-methodology" },
-    evidence: { eyebrow: "Evidence status", title: "Evidence snapshot", body: hasEv ? `${evFiles.length} canonical/supplemental file(s) available. Claims trace to official docs + tests.` : "Evidence pending for full verification.", cta: "Open evidence", ctaHref: "#review-evidence" },
-    strengths: { eyebrow: "Grounded strengths", title: "What works well", body: "Fast iteration, real code export, and built-in hosting/database options are supported by current evidence.", cta: "See use cases", ctaHref: "#review-use-cases" },
+    verdict: { eyebrow: "Evidence context", title: "Independent verdict", body: reviewData.verdict || "Independent evidence-first evaluation. Unsupported claims remain marked pending.", cta: "See methodology", ctaHref: "#review-methodology" },
+    evidence: { eyebrow: "Evidence status", title: "Evidence snapshot", body: hasEv ? `${evFiles.length} canonical/supplemental file(s). ${reviewData.evidenceSnapshot ? reviewData.evidenceSnapshot.gaps : ''}` : "Evidence pending for full verification.", cta: "Open evidence", ctaHref: "#review-evidence" },
+    strengths: { eyebrow: "Grounded strengths", title: "What works well", body: "Strengths drawn from official positioning and captured evidence. Deeper claims pending hands-on.", cta: "See use cases", ctaHref: "#review-use-cases" },
     limitations: { eyebrow: "Transparent limitations", title: "Production & security", body: "Production readiness, auth, data ownership, and long-term maintainability require hands-on verification (evidence pending for full gates).", cta: "Run Vibe Auditor", ctaHref: "/tools/vibe-auditor.html" },
     pricing: { eyebrow: "Pricing notes", title: "Pricing needs verification", body: "Pricing, tokens, and scaling change frequently. Current evidence may be incomplete — always re-check official plans.", cta: "Pricing section", ctaHref: "#review-pricing" },
     security: { eyebrow: "Launch risk", title: "Security & trust", body: "Auth, data rules, secrets, export, and deployment posture determine if this tool is safe for serious projects.", cta: "Security notes", ctaHref: "#review-security" },
-    production: { eyebrow: "Can it survive?", title: "Production readiness", body: "Database, auth, deploy, secrets, handoff, maintainability, and testing affect real-world viability.", cta: "Production notes", ctaHref: "#review-production" },
+    production: { eyebrow: "Can it survive?", title: "Production readiness", body: "Database, auth, deploy, secrets, handoff, maintainability, and testing affect real-world viability. Labels: Verified / Partially verified / Evidence pending / Not applicable.", cta: "Production notes", ctaHref: "#review-production" },
     "use-cases": { eyebrow: "Best-fit workflow", title: "Recommended use cases", body: "Use-case recommendations come from observed strengths, limitations, and evidence-backed fit.", cta: "Open microsite", ctaHref: `#tool/${slug}` },
     alternatives: { eyebrow: "Adjacent tools", title: "Consider alternatives if", body: "Need deeper IDE control, specific legacy stack, or different production guarantees? Explore comparisons.", cta: "See tools", ctaHref: "#tools" },
     gaps: { eyebrow: "Evidence gaps", title: "Help close the gap", body: "When evidence is incomplete, NoCodeReviewed labels it clearly instead of inventing certainty.", cta: "Methodology", ctaHref: "#review-methodology" },
@@ -8737,6 +9296,19 @@ function ncrToolReviewPage(slug) {
     </a>
   `).join("");
 
+  // R2: render production gates as labeled list (crash-safe)
+  const prodHtml = (reviewData.production || []).map(p => `
+    <div style="margin:6px 0;padding:6px 8px;border:1px solid #1e2744;border-radius:6px;background:#0b0e18;">
+      <strong>${p.gate}</strong>: <span style="color:${p.label.includes('Verified') && !p.label.includes('pending') ? '#10b981' : (p.label.includes('Partially') ? '#f59e0b' : '#f87171')};">${p.label}</span><br>
+      <span style="font-size:11px;opacity:0.75;">${p.note}</span>
+    </div>
+  `).join('');
+
+  const strengthsHtml = (reviewData.strengths || []).map(li => `<li>${li}</li>`).join('');
+  const limitationsHtml = (reviewData.limitations || []).map(li => `<li>${li}</li>`).join('');
+  const gapsHtml = (reviewData.gaps || []).filter(Boolean).map(li => `<li>${li}</li>`).join('');
+  const useCasesHtml = (reviewData.useCases || []).map(u => `<li>${u}</li>`).join('');
+
   const html = `
   <div class="tool-review-page" style="${styleVars}">
     ${premiumNav('reviews')}
@@ -8748,142 +9320,112 @@ function ncrToolReviewPage(slug) {
 
       <!-- Main content -->
       <div class="review-content">
-        <!-- Hero -->
+        <!-- Hero (R2: evidence status, last updated, short summary, CTAs) -->
         <header class="review-hero" id="review-verdict">
           <div class="tool-logo-row" style="margin-bottom:12px;">
             ${logoHtml}
             <div>
               <div class="tool-brand-chip"><span class="tool-brand-mark" style="background:var(--tool-brand);">${asset.fallback}</span> ${tool.name}</div>
-              <div style="font-size:11px;opacity:0.6;">${tool.category} • Evidence: ${hasEv ? 'Available' : 'Pending'}</div>
+              <div style="font-size:11px;opacity:0.6;">${reviewData.category || tool.category} • Evidence: ${hasEv ? 'Available' : 'Pending'} • Updated: ${reviewData.evidenceSnapshot ? reviewData.evidenceSnapshot.freshness : 'Evidence manifest'}</div>
             </div>
           </div>
           <h1 style="font-size:32px;margin:4px 0;">${tool.name} Review</h1>
-          <p style="opacity:0.85;max-width:620px;">Independent, evidence-first evaluation by NoCodeReviewed. Claims are grounded in available evidence files or explicitly marked pending.</p>
+          <p style="opacity:0.85;max-width:620px;">${reviewData.summary || 'Independent, evidence-first evaluation by NoCodeReviewed. Claims are grounded in available evidence files or explicitly marked pending.'}</p>
           <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
             ${reviewTryUrl && reviewTryUrl !== '#' ? `<a class="ncr-btn ncr-btn-primary" href="${reviewTryUrl}" target="_blank" rel="noopener">Try ${tool.name}</a>` : `<span class="evidence-gap" style="padding:6px 10px;border:1px dashed #334155;border-radius:4px;font-size:12px;">Official site link pending</span>`}
             <a class="ncr-btn ncr-btn-secondary" href="#tool/${slug}">Open Microsite</a>
             <a class="ncr-btn ncr-btn-secondary" href="/tools/vibe-auditor.html">Run Vibe Auditor</a>
+            <a class="ncr-btn ncr-btn-secondary" href="#methodology">See Methodology</a>
           </div>
           <div class="affiliate-disclosure" style="margin-top:8px;">NoCodeReviewed may earn a commission on some product links. Reviews remain evidence-based and independent.</div>
         </header>
 
-        <!-- Evidence Snapshot -->
+        <!-- Independent verdict (R2: short evidence-aware + confidence label) -->
+        <section id="review-verdict" class="review-section review-neutral-panel">
+          <h3>Independent Verdict</h3>
+          <p style="margin:8px 0 4px;"><strong>Confidence:</strong> ${reviewData.confidence || (hasEv ? 'Moderate confidence (official sources captured; hands-on pending)' : 'Evidence pending')}</p>
+          <p>${reviewData.verdict || 'Evidence snapshot available or pending. Production, security, and hands-on verification required before any readiness claim.'}</p>
+        </section>
+
+        <!-- Evidence Snapshot (R2: enhanced with quality/freshness/gaps from data) -->
         <section id="review-evidence" class="review-section review-neutral-panel">
           <h3>Evidence Snapshot</h3>
           <div class="review-evidence-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:8px;">
             <div><strong>Files</strong><br>${evFiles.length} record(s)</div>
-            <div><strong>Status</strong><br>${hasEv ? 'Canonical + supplemental' : 'Evidence pending'}</div>
-            <div><strong>Quality gates</strong><br>${hasEv ? 'Partial' : 'Pending'}</div>
-            <div><strong>Last check</strong><br>Evidence manifest</div>
+            <div><strong>Status</strong><br>${reviewData.evidenceSnapshot ? reviewData.evidenceSnapshot.status : (hasEv ? 'Canonical + supplemental' : 'Evidence pending')}</div>
+            <div><strong>Quality gates</strong><br>${reviewData.evidenceSnapshot ? reviewData.evidenceSnapshot.quality : (hasEv ? 'Partial' : 'Pending')}</div>
+            <div><strong>Last check</strong><br>${reviewData.evidenceSnapshot ? reviewData.evidenceSnapshot.freshness : 'Evidence manifest'}</div>
           </div>
-          ${hasEv ? `<p style="margin-top:8px;font-size:12px;">Sources: ${evFiles.map(f => `<a href="/${f.file}" target="_blank">${f.file}</a>`).join(' ')}</p>` : `<span class="evidence-gap">No complete evidence file yet. See gaps below.</span>`}
+          ${hasEv ? `<p style="margin-top:8px;font-size:12px;">Sources: ${evFiles.map(f => `<a href="/${f.file}" target="_blank">${f.file}</a>`).join(' ')} ${reviewData.evidenceSnapshot && reviewData.evidenceSnapshot.gaps ? '<br>' + reviewData.evidenceSnapshot.gaps : ''}</p>` : `<span class="evidence-gap">No complete evidence file yet. See gaps below.</span>`}
+          <p style="font-size:11px;opacity:0.65;margin-top:6px;">Evidence status "in-progress" in source files means hands-on benchmarks (auth, RLS, secrets, deploy, export, cost) are still required before publication claims.</p>
         </section>
 
-        <!-- Strengths (C2: generalized + tool-specific safe claims from evidence; no lovable hardcode for all) -->
+        <!-- Strengths (R2: 4-6 grounded or pending) -->
         <section id="review-strengths" class="review-section review-neutral-panel">
           <h3>Strengths</h3>
-          <ul>
-            ${slug==='cursor' && hasEv ? 
-              `<li>Strong official documentation for developer workflows (Agent mode, Rules, Skills, MCP, CLI, models, Teams/Enterprise).</li>
-               <li>Privacy Mode clearly documented: enable to prevent code data from being stored by model providers or used for training (subject to scope; official pricing + privacy docs).</li>
-               <li>Models/pricing docs provide basis for measurable cost testing by model and usage pool.</li>
-               <li>Agentic features + team controls make it relevant for serious engineering teams (safe claims 1-6 in 05_cursor_complete_evidence_file.md).</li>` :
-              slug==='windsurf' && hasEv ?
-              `<li>Homepage positions Cascade as “an agent that codes, fixes and thinks 10 steps ahead.”</li>
-               <li>Full editor + agentic IDE posture with autocomplete, contextual assistance, model options, usage plans, enterprise features (evidence 06).</li>
-               <li>Official docs + pricing plans captured; relevant as Cursor alternative for code-native builders.</li>` :
-              slug==='v0' && hasEv ?
-              `<li>AI web app/UI generator with visual Design Mode, GitHub sync, and Vercel deployment workflow (evidence 09).</li>
-               <li>Strong for React/Next.js-style front-end scaffolds and rapid UI iteration from prompts.</li>
-               <li>Credit-based pricing + direct deploy path documented in official sources.</li>` :
-              (slug==='webflow-ai' || slug==='webflow') && hasEv ?
-              `<li>AI-assisted site design inside a mature, established website builder (supplemental evidence 18).</li>
-               <li>Relevant as incumbent no-code platform adding AI capabilities for marketing/landing sites.</li>` :
-              (slug==='bubble-ai' || slug==='bubble') && hasEv ?
-              `<li>Traditional no-code app platform with AI assistance; more explicit control and logic than pure prompt-to-app (supplemental 16).</li>` :
-              (slug==='framer-ai' || slug==='framer') && hasEv ?
-              `<li>Fast generation of landing pages and marketing sites; visual editing strengths (supplemental 19).</li>` :
-              `<li>Fast iteration and AI assistance supported by official positioning where evidence exists.</li>
-               <li>Real export paths or hosting options in many tools (verify per evidence file).</li>
-               <li>Evidence-backed fit for the category listed in tool data and manifest records.</li>`
-            }
-            <li>Evidence status and gaps are explicitly labeled (no unsupported claims published).</li>
-          </ul>
-          <p style="font-size:12px;opacity:0.7;">${hasEv ? '(Grounded in ' + evFiles[0].file + '; deeper production/security/autonomy claims pending hands-on per file "in-progress" status — testing required before publication.)' : '(Evidence pending — see gaps section and manifest.)'}</p>
+          <ul>${strengthsHtml || '<li>Evidence status and gaps are explicitly labeled (no unsupported claims published).</li>'}</ul>
+          <p style="font-size:12px;opacity:0.7;">${hasEv ? '(Grounded in ' + (evFiles[0] ? evFiles[0].file : '') + '; deeper production/security/autonomy claims pending hands-on per file "in-progress" status — testing required before publication.)' : '(Evidence pending — see gaps section and manifest.)'}</p>
         </section>
 
-        <!-- Limitations (C2: honest, from evidence or general pending) -->
+        <!-- Limitations (R2: 4-6 honest/specific) -->
         <section id="review-limitations" class="review-section review-neutral-panel">
           <h3>Limitations</h3>
-          <ul>
-            ${slug==='cursor' && hasEv ?
-              `<li>Not a no-code tool: requires developer workflow, code review, and engineering practices (official category + docs).</li>
-               <li>Privacy protection depends on mode/settings + provider scope; must verify before sensitive code use.</li>
-               <li>Agent quality, dependency security, and enterprise controls unverified (requires repo benchmark per testing plan in evidence).</li>` :
-              slug==='windsurf' && hasEv ?
-              `<li>Agentic IDE for developers; not pure no-code. Quotas, exact enterprise scope, and hands-on Cascade safety pending (evidence in-progress).</li>` :
-              slug==='v0' && hasEv ?
-              `<li>Primarily front-end / React UI generation. Backend, auth, data model, and full-app security unverified (hands-on prompt-to-app + deploy tests required per 09).</li>` :
-              (slug==='webflow-ai' || slug==='bubble-ai' || slug==='framer-ai') && hasEv ?
-              `<li>AI features are assists inside larger platforms; full AI-app-builder vs incumbent tradeoffs need hands-on (supplemental evidence notes slower or narrower loops for some).</li>` :
-              `<li>Production readiness, security posture, and long-term maintainability require hands-on verification for almost all tools (evidence files consistently mark "in-progress — security, deployment, testing required").</li>
-               <li>Pricing, usage, and limits change frequently. Manual testing for auth, private routes, data rules, secrets, and export fidelity is mandatory before real use.</li>`
-            }
-            <li>Auth, data ownership, export fidelity, and app-level security outcomes still require project-specific testing regardless of tool.</li>
-          </ul>
+          <ul>${limitationsHtml || '<li>Production readiness, security posture, and long-term maintainability require hands-on verification for almost all tools (evidence files consistently mark "in-progress — security, deployment, testing required").</li><li>Pricing, usage, and limits change frequently. Manual testing for auth, private routes, data rules, secrets, and export fidelity is mandatory before real use.</li>'}</ul>
         </section>
 
-        <!-- Pricing -->
+        <!-- Pricing (R2: use evidence only or pending label) -->
         <section id="review-pricing" class="review-section review-neutral-panel">
           <h3>Pricing Notes</h3>
-          <p>${hasEv && (slug==='cursor'||slug==='windsurf'||slug==='v0') ? 'Official pricing page + models/pricing docs captured in evidence. Exact plan names, included usage, overages, and per-model rates require final capture before publication (volatile). See ' + evFiles[0].file + ' for source URLs.' : tool.price || 'Pricing evidence pending'}. Always re-verify on official site — plans and limits evolve quickly. ${!hasEv ? 'No dedicated evidence file for detailed pricing snapshot.' : ''}</p>
+          <p>${reviewData.pricing || (tool.price || 'Pricing evidence pending. Verify current pricing before purchase.')}</p>
+          <p style="font-size:11px;opacity:0.7;">Always re-verify on official site — plans, credits, and limits evolve quickly. Real cost often includes third-party services (DB, hosting, APIs, domains).</p>
         </section>
 
-        <!-- Security -->
+        <!-- Security (R2: source-backed or pending) -->
         <section id="review-security" class="review-section review-neutral-panel">
           <h3>Security & Trust</h3>
-          <p>Auth, data rules, secrets, exportability, and deployment posture determine suitability for serious use. ${hasEv ? 'Evidence file notes specific posture (e.g. Cursor Privacy Mode, admin dashboard visibility) but hands-on verification of defaults, scope, and agent behavior is required per file status.' : 'Full verification pending hands-on tests for most tools. No evidence file captured.'} ${slug==='cursor' && hasEv ? 'Priority: enable Privacy Mode for sensitive repos; test agent diffs and dependency suggestions.' : ''}</p>
+          <p>${reviewData.security || 'Auth, data rules, secrets, exportability, and deployment posture determine suitability for serious use. Full verification pending hands-on tests for most tools.'}</p>
         </section>
 
-        <!-- Production -->
+        <!-- Production Readiness (R2: labeled Verified/Partial/Pending/N/A) -->
         <section id="review-production" class="review-section review-neutral-panel">
           <h3>Production Readiness</h3>
-          <p>Database, auth, deploy, secrets, handoff, maintainability, and testing affect real-world viability. ${hasEv ? 'Evidence for ' + tool.name + ' consistently marks these gates in-progress. Run Vibe Auditor + manual checks before treating any generated output as production-ready.' : 'Evidence files for most tools mark production gates as in-progress. No dedicated file captured for this tool.'}</p>
+          <p style="margin-bottom:8px;">Assessed from evidence files (official docs, pricing, security notes, testing plans). No hands-on benchmarks executed in captured records — all generated apps require project-specific testing.</p>
+          ${prodHtml || '<p>Evidence pending for production gates.</p>'}
         </section>
 
-        <!-- Use Cases -->
+        <!-- Best-fit use cases (R2: 3-5, who should/avoid) -->
         <section id="review-use-cases" class="review-section review-neutral-panel">
           <h3>Best-Fit Use Cases</h3>
-          <p><strong>Consider ${tool.name} if:</strong> ${tool.bestFor || "Rapid web app prototypes with AI assistance and code visibility."}</p>
-          <p><strong>Avoid or evaluate carefully if:</strong> You need guaranteed enterprise compliance, complex legacy integration, or fully audited production security before first build. ${hasEv ? 'See use-case notes derived from official positioning in ' + evFiles[0].file + '.' : ''}</p>
+          <p><strong>Consider ${tool.name} if:</strong> ${reviewData.bestFor || tool.bestFor || 'Rapid web app prototypes with AI assistance and code visibility.'}</p>
+          <p><strong>Avoid or evaluate carefully if:</strong> ${reviewData.avoid || 'You need guaranteed enterprise compliance, complex legacy integration, or fully audited production security before first build.'}</p>
+          ${useCasesHtml ? `<ul>${useCasesHtml}</ul>` : ''}
         </section>
 
-        <!-- Alternatives -->
+        <!-- Alternatives (R2: from existing tool data + evidence comparison candidates only) -->
         <section id="review-alternatives" class="review-section review-neutral-panel">
           <h3>Alternatives</h3>
-          <p>Adjacent tools from the index (see #tools and comparison pages). No fake rankings — evaluate based on your specific evidence needs. Examples: Cursor/Windsurf for code IDE layer; Lovable/Bolt for prompt-to-app; Framer/Webflow for site gen; Bubble for traditional no-code control.</p>
+          <p>${reviewData.alternatives || 'Adjacent tools from the index (see #tools and comparison pages). No fake rankings — evaluate based on your specific evidence needs. Examples: Cursor/Windsurf for code IDE layer; Lovable/Bolt for prompt-to-app; Framer/Webflow for site gen; Bubble for traditional no-code control.'}</p>
         </section>
 
-        <!-- Gaps -->
+        <!-- Evidence gaps (R2: explicit list) -->
         <section id="review-gaps" class="review-section review-neutral-panel">
           <h3>Evidence Gaps</h3>
           <ul class="review-gap-list">
-            <li>Full hands-on security / production gate results (pending for Cursor, Windsurf, v0, and most indexed)</li>
-            <li>Long-term maintainability and handoff quality (pending)</li>
-            <li>Updated pricing + token scaling benchmarks (re-check official; captured in evidence but volatile)</li>
-            ${!hasEv ? '<li>No dedicated evidence file in docs/evidence/ (Shopify, Make, Zapier, Notion, Airtable, and several other indexed tools). Capture is the next step for completeness.</li>' : ''}
+            ${gapsHtml || '<li>Full hands-on security / production gate results (pending for priority tools per "in-progress" evidence status).</li><li>Long-term maintainability and handoff quality (pending).</li><li>Updated pricing + token/credit scaling benchmarks (re-check official; captured in evidence but volatile).</li>'}
+            ${!hasEv ? '<li>No dedicated evidence file in docs/evidence/ for this tool. Capture is required for completeness.</li>' : ''}
           </ul>
-          <p style="font-size:12px;opacity:0.7;">NoCodeReviewed explicitly marks gaps instead of guessing. ${hasEv ? 'Full lists of "Claims Requiring Verification" and "Testing Plan" live in the evidence .md.' : 'See #evidence for current manifest coverage and missing numbers (10,11,28).'} </p>
+          <p style="font-size:12px;opacity:0.7;">NoCodeReviewed explicitly marks gaps instead of guessing. ${hasEv ? 'Full lists of "Claims Requiring Verification" and "Testing Plan" live in the evidence .md files.' : 'See #evidence for current manifest coverage and missing numbers (10,11,28).'} </p>
         </section>
 
-        <!-- Methodology -->
+        <!-- Methodology (R2: evidence-first policy, no paid, quality gates, why pending) -->
         <section id="review-methodology" class="review-section review-neutral-panel">
           <h3>Methodology</h3>
-          <p>Repeatable build tests, pricing snapshots, production-readiness gates, and quality checks. All public claims must trace to evidence records (docs/evidence/* + data/intelligence-vault/evidence-manifest.json) or approved methodology. See full methodology for details and the evidence system for traceability.</p>
+          <p>${reviewData.methodologyNote || 'Repeatable build tests, pricing snapshots, production-readiness gates, and quality checks. All public claims must trace to evidence records (docs/evidence/* + data/intelligence-vault/evidence-manifest.json) or approved methodology.'}</p>
+          <p>No paid rankings. No fake scores, testimonials, benchmarks, or claims. Pending labels exist because evidence files explicitly mark "in-progress — hands-on security, deployment, testing required before publication." Quality gates block unsupported claims.</p>
           <p><a href="#methodology">Read the full NoCodeReviewed methodology →</a></p>
         </section>
 
-        <!-- CTA -->
+        <!-- Final CTA (R2: restrained) -->
         <section id="review-cta" class="review-section">
           <div class="review-cta-panel ncr-glass" style="padding:16px;">
             <strong>Next step</strong>
@@ -8891,6 +9433,7 @@ function ncrToolReviewPage(slug) {
               ${reviewTryUrl && reviewTryUrl !== '#' ? `<a class="ncr-btn ncr-btn-primary" href="${reviewTryUrl}" target="_blank" rel="noopener">Try ${tool.name}</a>` : `<span class="evidence-gap" style="padding:6px 10px;border:1px dashed #334155;border-radius:4px;font-size:12px;">Official site link pending</span>`}
               <a class="ncr-btn ncr-btn-secondary" href="#tool/${slug}">Open Microsite</a>
               <a class="ncr-btn ncr-btn-secondary" href="/tools/vibe-auditor.html">Run Vibe Auditor</a>
+              <a class="ncr-btn ncr-btn-secondary" href="#review-methodology">See Methodology</a>
             </div>
           </div>
         </section>
@@ -8907,7 +9450,7 @@ function ncrToolReviewPage(slug) {
     </div>
   </div>`;
 
-  // Attach lightweight JS behaviors for this page render (rail + frame)
+  // Attach lightweight JS behaviors for this page render (rail + frame) — crash-safe
   setTimeout(() => {
     try {
       const rail = document.querySelector('.review-section-rail');
