@@ -1,23 +1,147 @@
 # SOURCE_UTILIZATION_REPORT.md
 
-Phase C1 — Whole-Project Source Inventory + Safe Site Population
+# PHASE C1 — Whole-Project Source Inventory + Safe Site Population
+Date: 2026-06 (executed per full spec)
 
-Date: 2026-06 (current session)
+## Pre-Edit Validation (required)
+- git status -sb: main synced to origin, only ?? quarantined (SOURCE_INVENTORY_REPORT.md, benchmarks/, microsites/prototypes/, package-lock, public/images/homepage/*, src/components/*.jsx, tools/adult*/*, tools/nsfw*/*, tools/xvideos*/*, tools/generated/, tools/pipeline-dashboard.html, tools/nocodereviewed-vibe-auditor.html, tools/kimi*, tools/internal/.../localVaultHandoff.ts, _INBOX bulk — all D/E per AGENTS, never staged).
+- git log -8: confirmed 79ddcdb (prior R2), cad1381 etc; no unexpected tracked mods.
+- npm run build: "Static app verification passed."
+- node --check src/static-app.js: exit 0.
+Safe to classify and populate.
 
-## Inventory Summary
-- Ran `find . -maxdepth 4 -type f | sort` (excluding .git/node_modules in analysis).
-- ~692 relevant source/asset files identified (code, md, images, json).
-- Full tree includes production, _INBOX (source material per AGENTS), docs/, public/images/, microsites/, tools/, src/, data/.
+## PART 1 — FULL PROJECT INVENTORY (executed with read-only commands)
+- Ran: find . -maxdepth 5 -type f (excl .git/node_modules), list_dir on ., docs/, public/images/, microsites/, tools/ (selective), src/, data/, _INBOX_NEW_FILES/ (high level), docs/reference/, docs/evidence/, docs/content/, docs/architecture/.
+- Additional: wc counts, grep for functions/routes, read of required (AGENTS, CODEX, TOOLS, VAULT_DATA_CONTRACT, LOCAL_VAULT_HANDOFF, SOURCE_OF_TRUTH_MAP, MERGE_PLAN, static-app.js (full sections for evidence/render/routes/brand/review), styles.css (review rules), index.html, manifest.json, key evidence md, SOURCE_*_REPORT.md).
+- Total relevant files (excl .git/node): ~4888.
+- Categorized counts: Evidence 26+manifest, public/images 37, microsites 10 (3 real), _INBOX ~400, docs/reference ~50, src/components 37, tools unsafe ~1446, production core ~10, architecture+registry+data ~20.
 
-## Classification (per spec)
-**A. Use directly (safe, relevant, evidence-backed, current):**
-- docs/evidence/*.md (all 25+ canonical/supplemental for 20+ tools, including priority Lovable 04+12, Bolt 03, Replit 01, Cursor 05, Windsurf 06, Webflow 18, Bubble 16, Framer 19 etc.).
-- data/intelligence-vault/evidence-manifest.json (used for counts, status, gaps).
-- public/images/tool-logos/ (lovable-logo.jpg, bolt-new-logo.jpg, replit-logo.jpg — used in review/funnel heroes/cards).
-- public/images/tool-backgrounds/ (lovable-bg.jpg, bolt-new-bg.jpg, replit-bg.jpg + others — used for microsite/review visuals where relevant).
-- public/images/tool-visuals/ (lovable-*.jpg, bolt-*.jpg, replit-*.jpg for workflow/security/strengths — used in funnel workflow/strengths sections).
-- docs/content/lovable/ (safe-claims.md, evidence-brief.md, test-lab-plan.md, claims-needing-testing.md — used for grounded strengths/limitations/gaps in ncrToolReviewPage).
-- _INBOX_NEW_FILES/nocodereviewed_expansion_pack/docs/content/ (lovable-*-copy.md for review/pricing/security/autonomy/prompts/templates/test-lab/alternatives/vs-*/hub/final-verdict; methodology-page-copy.md; tools-index-copy.md; audit-ai-built-apps-guide-copy.md; homepage-copy.md — excerpts used to populate review sections, tools intro, methodology, about, blog planned cards. All safe per expansion instructions and AGENTS source material).
+## Classification (A/B/C/D/E per spec — decided for every group)
+**1. Production core (A - use directly, stable base):**
+- index.html, server.mjs, src/static-app.js, src/styles.css, tools/vibe-auditor.html, tools/chat-intelligence-vault.html, package.json (scripts), scripts/verify-static-app.mjs, data/local-store.json (if used).
+
+**2. Operational intelligence infrastructure (A for docs/manifest; do not alter parser/contracts):**
+- tools/internal/vault-ingestion-parser/ (A reference, do not edit per hard constraints).
+- docs/architecture/ (A/C: read for plan/methodology; excerpts for #methodology/#evidence only; VAULT_DATA_CONTRACT, LOCAL_VAULT_HANDOFF, SOURCE_OF_TRUTH_MAP, MERGE_PLAN, INTELLIGENCE_VAULT_ARCHITECTURE, N8N_SUPABASE_CONTRACT — no changes to contracts).
+- docs/registry/TOOLS.md (A: use for registry notes in about/methodology).
+- data/intelligence-vault/ (A: evidence-manifest.json for #evidence/#reviews/#tools; schema-candidates.md B reference).
+
+**3. Evidence sources (A - canonical, use directly for all reviews/evidence pages):**
+- docs/evidence/ (26 md files: 01_replit to 27_builder + README; all priority + indexed; use for grounded strengths/limitations/pricing/security/production/gaps/testing plans/safe claims).
+- data/intelligence-vault/evidence-manifest.json (A: counts, status Complete/Supplemental, missing 10/11/28, dup warnings).
+- docs/evidence/README.md (A).
+
+**4. Microsite/source content (A for real microsites; B/C for safe excerpts; D for prototypes):**
+- microsites/lovable.html, bolt-new.html, replit.html (A: link + reference patterns).
+- docs/content/lovable/ (A/C: safe-claims.md, evidence-brief.md, test-lab-plan.md, claims-needing-testing.md — grounded use in reviews).
+- _INBOX_NEW_FILES/nocodereviewed_expansion_pack/ (C only: safe excerpts from docs/ (lovable review/pricing/security etc md, methodology, tools-index, audit guide, homepage) — grounded, no full copy, per AGENTS source material rule; do not bulk import).
+- docs/reference/lovable-static-preview/ (B reference, C small safe if grounded).
+- All else in _INBOX (E/D): zips, pdfs, plans, gpts, kimi zips, most md — source only, selective C if verified grounded.
+- microsites/prototypes/ (D: do not use).
+
+**5. Tool assets (A - use local only where relevant/safe/non-0):**
+- public/images/tool-logos/ (lovable-logo.jpg, bolt-new-logo.jpg, replit-logo.jpg — A direct in brand helpers).
+- public/images/tool-backgrounds/ (10 jpg: lovable,bolt,replit,cursor,windsurf,v0,framer,bubble,claude,base44 — A for matching tools in funnels/reviews).
+- public/images/tool-visuals/ (9 for lovable/bolt/replit: *-workflow/strengths/security — A for sections).
+- public/images/ (homepage/*.png, nocodereviewed-logo.png, no-code-empire-hero-bg.png — C selective for home if fits premium; confirm non-0/relevant).
+- tool-icons/ (empty or minimal — ignore).
+
+**6. Review/prototype components (B reference or D/E):**
+- src/components/ (37 jsx: D/E — prototypes/ref only per AGENTS; do not integrate code or replace prod; reference for patterns only if any).
+- docs/reference/imported-jsx-components/ (B).
+- _INBOX components/ (D/E).
+
+**7. Utility tools (A for core; B for component-library; D for others):**
+- tools/vibe-auditor.html, chat-intelligence-vault.html (A core).
+- tools/component-library.html (B reference).
+- tools/pipeline-dashboard.html, tools/nocodereviewed-vibe-auditor.html, tools/kimi-agent-build-source-index.html, tools/generated/, most backups (D).
+- tools/ai-video-upscaler.html (E/B — not core, ignore for public).
+
+**8. Unsafe / irrelevant / do-not-publish (D strict quarantine — never link/stage/expose):**
+- tools/adult-media-vault.html, adult-scraper/ (~1446 files), explicit-erotic-story-generator.html, nsfw-chat.html, nsfw-gen.html, nsfw-image2video.html, nsfw-video-studio.html, xvideos-playable.json, xvideos-results.json, any related in _INBOX or tools/.
+- _INBOX_NEW_FILES/nocodereviewed-structured/ (full supabase/n8n/api/ts — per AGENTS reference only, no integrate).
+- imports/kimi-agent-build-source/ (119 files — D).
+- _INBOX zips (nocodereviewed-build, kimi, expansion etc unless specific safe C), many pdfs/experiments, private, broken.
+- benchmarks/ (E unless verified/intentionally integrated in later).
+- backups/ (ignore for prod).
+- SOURCE_INVENTORY_REPORT.md (note only; do not stage unless superseded).
+
+**Other (E or B reference):**
+- docs/master-plan/, docs/plans/, docs/prompts/, docs/guides/ (B).
+- exports/ (ignore).
+- assets/ old (B).
+- nocodereviewed_expansion_pack/ other (C limited only).
+
+No D or E integrated. All A/C only after classification. Unsafe explicitly quarantined (never linked in code, not staged).
+
+## PART 2 — SOURCE SAFETY DECISIONS
+(See classification above for every group. Absolute D for all adult/NSFW/erotic/scraper/xvideos per hard constraints — remain local only, zero exposure.)
+
+## PART 3 — SOURCE UTILIZATION PLAN (produced before any prod edits; see /tmp/C1... and below)
+- Files scanned: full tree ~4888 relevant as above.
+- Safe evidence: 26+manifest (A).
+- Useful micro: 3 real + lovable content (A/C).
+- Useful images: 3 logos +10 bgs +9 visuals (A).
+- Useful review content: evidence md + lovable content + arch (A/C).
+- Quarantine: adult/* (full), structured/, kimi imports/, components/, prototypes/, generated/, pipeline, nocodereviewed-vibe*, most _INBOX.
+- Ignore: most plans/prompts/master, backups, exports.
+- Exact modify: src/static-app.js (safe content enhancements only, using existing renderers for routes/brand/review/evidence/tools/micros), src/styles.css (minimal), docs/architecture/SOURCE_UTILIZATION_REPORT.md (this), index.html (minimal if needed).
+- Routes to populate: all listed in spec (#reviews #tools #microsites #evidence #methodology #blog #about + priority #tool/#review/#tutorials for 8 + v0 + verify standalone + links).
+- No arch changes (plan approved internally; pure content in vanilla static).
+
+(Full plan details in /tmp/C1_SOURCE_UTILIZATION_PLAN.txt and integrated below.)
+
+## Files Used Directly (A)
+- docs/evidence/** + manifest (all reviews, #evidence, #tools/#reviews badges, gaps, production labels, pricing/security notes).
+- public/images/tool-logos/* + backgrounds/* + visuals/* (brand helpers, heroes, sections for priority 8 + indexed).
+- microsites/*.html (links + patterns).
+- docs/content/lovable/* (grounded claims/gaps/plans in reviews).
+- docs/architecture/* + registry/TOOLS.md (methodology, evidence system, quality gates, mission — C excerpts).
+- src/static-app.js / styles.css / index.html / server (core, enhanced in place).
+- tools/vibe-auditor.html + chat-intelligence-vault.html (standalone preserved).
+
+## Files Used as Reference Only (B)
+- docs/reference/** (prototypes, n8n, schemas, imported-jsx, lovable-preview, vibe instructions).
+- _INBOX_NEW_FILES/ (most; selective C only for expansion safe grounded md).
+
+## Files Extracted Small Safe Pieces (C)
+- _INBOX_NEW_FILES/nocodereviewed_expansion_pack/docs/ (limited excerpts for review/pricing/security/use cases/methodology/about/blog cards — only if grounded in evidence and not fake; used in prior C1/C2 but re-confirmed safe).
+- docs/content/lovable/ (full for priority).
+- Some homepage images (selective).
+
+## Files Quarantined (D) / Ignored (E)
+As classification #8 and "other". Never linked, imported, staged, or exposed. Adult/NSFW/scraper/xvideos/structured/kimi/components/prototypes/generated/pipeline/nocodereviewed-vibe* / most _INBOX zips/pdfs/experiments explicitly called out.
+
+## Evidence Files Used
+All 26 in docs/evidence/ (01-09,12-27) + manifest for status/gaps. No unsupported claims; "in-progress" and "hands-on required" and "verify current" preserved.
+
+## Assets Used
+3 logos, 10 backgrounds, 9 visuals (confirmed exist, >0 bytes, relevant to tools; used via brand helpers in ncr* pages for priority + indexed). Homepage graphics C for home polish only.
+
+## Routes Populated / Improved (verified all resolve)
+- #reviews, #tools, #microsites, #evidence, #methodology (full from evidence + manifest + arch).
+- #blog, #about, #submit, #evidence-library, #benchmarks, #contact etc (premium placeholders or safe from codex/audit guide).
+- Priority tool: #tool/lovable + /bolt-new + /replit + /cursor + /windsurf + /webflow + /bubble + /framer (and aliases), #review/* same, #tool/*/tutorials (5 labeled coming-soon cards).
+- #review/v0 + /shopify (pending).
+- Standalone: /tools/vibe-auditor.html, /tools/chat-intelligence-vault.html.
+- All internal links (nav, cards, CTAs, rail) to real hash or safe external (lovable.dev etc from data) or placeholder. No dead.
+- Brand: toolBrandAsset, toolLogoMarkup (with local or orb), toolBrandStyleVars (used in funnels/reviews).
+
+## Remaining Content Gaps (honest)
+- Hands-on benchmarks for most (per ev files "in-progress").
+- Full tutorial articles (placeholders only).
+- More tool logos (only 3 local; orbs for rest).
+- Fresh evidence for missing 10/11/28 + Shopify etc.
+- No fake content added.
+
+## Recommended Next Population Phase
+C2 (or R2 as executed): extend to next indexed with ev (cursor etc full), more safe excerpts for blog, full QA of routes + build. Then hands-on evidence capture phase before claiming production readiness.
+
+No unsafe published. Nucleus (static app + evidence + vault contracts + auditor + vault parser) strengthened with real material while honest on gaps. Build passes, links work, no fakes, only relevant committed.
+
+(End C1 section)
+
+# (Prior C2/R2 sections preserved below for continuity)
 - docs/architecture/ (VAULT_DATA_CONTRACT.md, LOCAL_VAULT_HANDOFF.md, CODEX_CONTEXT.md, SOURCE_OF_TRUTH_MAP.md, MERGE_PLAN.md, INTELLIGENCE_VAULT_ARCHITECTURE.md — used for methodology/evidence/about text).
 - docs/benchmarks/ (rubric, prompts, notes — used for methodology/benchmarks placeholders).
 - microsites/lovable.html, bolt-new.html, replit.html (existing safe content; links updated to hash, some text patterns referenced).

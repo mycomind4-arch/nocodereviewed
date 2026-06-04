@@ -8386,19 +8386,22 @@ function ncrToolsRealPage() {
 function ncrEvidenceRealPage() {
   const nav = premiumNav('evidence');
   const numEv = (typeof evidenceFileIndex !== 'undefined' ? evidenceFileIndex.length : 25);
+  const missing = (typeof evidenceManifest !== 'undefined' && evidenceManifest.missingNumbers) ? evidenceManifest.missingNumbers.join(', ') : '10, 11, 28';
   return `
   ${nav}
   <div class="ncr-container ncr-placeholder route-enter">
     <div class="ncr-placeholder-hero" style="text-align:left; padding-bottom:10px;">
       <div class="eyebrow">EVIDENCE SYSTEM</div>
       <h1>Evidence</h1>
-      <p style="max-width:640px;">The canonical source of truth. ${numEv}+ evidence files, manifests, and quality gates power every claim on this platform.</p>
+      <p style="max-width:640px;">The canonical source of truth. ${numEv}+ evidence files, manifests, and quality gates power every claim on this platform. Missing numbers (no file yet): ${missing}.</p>
     </div>
     <div class="ncr-glass ncr-ph-card" style="max-width:720px;margin:0 auto 24px;">
-      <p>Evidence files live in <code>docs/evidence/</code>. The manifest tracks completeness and duplicates. All public verdicts must trace back to these records.</p>
+      <p>Evidence files live in <code>docs/evidence/</code>. The manifest tracks completeness, duplicate candidates, and status (Complete vs Supplemental). All public verdicts, reviews, and recommendations must trace back to these records or be explicitly marked "Evidence pending".</p>
+      <p style="font-size:12px;opacity:0.7;margin-top:8px;">See data/intelligence-vault/evidence-manifest.json for generatedAt, scanned counts, and warnings. Quality gates (from architecture + evidence README): no unsupported claims; hands-on required where files say "in-progress".</p>
       <div style="margin-top:16px;">
         <a class="ncr-btn ncr-btn-primary" href="#evidence-library">Open Evidence Library</a>
         <a class="ncr-btn ncr-btn-secondary" href="#methodology" style="margin-left:8px;">Read Methodology</a>
+        <a class="ncr-btn ncr-btn-secondary" href="#reviews" style="margin-left:8px;">See Reviews</a>
       </div>
     </div>
   </div>`;
@@ -8441,6 +8444,7 @@ function ncrAboutPage() {
 }
 function ncrSubmitPage() { return ncrPlaceholder('Submit a Microsite', 'Submit your AI-built or no-code microsite for evidence-backed review. The process starts with the free Vibe Auditor, followed by optional deep audit and microsite publication.', '<p>Full submission form and intake pipeline coming in a later phase. For now, run the auditor and export your results via the Chat Intelligence Vault.</p>'); }
 function ncrEvidenceLibraryPage() { 
+  const evList = (typeof evidenceFileIndex !== 'undefined' ? evidenceFileIndex.slice(0,12).map(e => `<li><a href="/${e.file}" target="_blank">${e.file}</a> — ${e.tool} (${e.status})</li>`).join('') : '<li>Evidence index loading...</li>');
   return `
   ${premiumNav('evidence')}
   <div class="ncr-container ncr-placeholder route-enter">
@@ -8450,7 +8454,8 @@ function ncrEvidenceLibraryPage() {
     </div>
     <div class="ncr-glass" style="padding:20px;max-width:720px;margin:0 auto;">
       <p>Evidence system is the credibility layer. Public claims trace to evidence, methodology, or approved records (per AGENTS and architecture/VAULT_DATA_CONTRACT). Quality gates and manifest validators in scripts/.</p>
-      <p style="margin-top:12px;"><a href="#methodology">Methodology</a> • <a href="/tools/vibe-auditor.html">Run Vibe Auditor</a></p>
+      <ul style="font-size:12px;columns:2;margin:12px 0;">${evList}</ul>
+      <p style="margin-top:12px;"><a href="#methodology">Methodology</a> • <a href="/tools/vibe-auditor.html">Run Vibe Auditor</a> • <a href="#reviews">Reviews powered by this</a></p>
     </div>
   </div>`;
 }
