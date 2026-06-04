@@ -5895,6 +5895,33 @@ function readinessPanel() {
 
 function adminPanel() {
   return `
+    <!-- PHASE A2: Universal Admin Intelligence Audit (local-only, no fakes, no content rewrite) -->
+    <div class="ncr-glass" style="padding:20px; margin-bottom:24px; border:1px solid #1e2744;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <div>
+          <p class="eyebrow" style="color:#a78bfa;">LOCAL OPERATIONAL INFRASTRUCTURE</p>
+          <h2 style="margin:4px 0 8px; font-size:22px;">Universal Site Intelligence Audit</h2>
+          <p style="max-width:620px; opacity:0.85; font-size:13px;">Runs entirely locally. Classifies sources (A/B/C/D/E per C1), audits routes/links/evidence/reviews/microsites/assets/unsafe exposure, produces Vault-compatible handoff bundle, and queues for the Vault Ingestion Parser. Nothing is uploaded. Existing pages are never auto-rewritten.</p>
+        </div>
+        <div>
+          <button id="run-universal-audit-btn" class="ncr-btn ncr-btn-primary" style="padding:12px 20px; font-size:14px;">Run Full Site Intelligence Audit</button>
+          <div id="audit-status" style="margin-top:8px; font-size:12px; min-height:18px; opacity:0.8;"></div>
+        </div>
+      </div>
+      <div id="audit-results" style="margin-top:16px; display:none;">
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:8px; margin-bottom:12px;">
+          <div class="ncr-stat" style="padding:8px 10px;"><div style="font-size:11px;opacity:0.6;">Files scanned</div><div id="audit-files" style="font-size:18px;font-weight:700;"></div></div>
+          <div class="ncr-stat" style="padding:8px 10px;"><div style="font-size:11px;opacity:0.6;">Critical issues</div><div id="audit-critical" style="font-size:18px;font-weight:700;color:#f87171;"></div></div>
+          <div class="ncr-stat" style="padding:8px 10px;"><div style="font-size:11px;opacity:0.6;">Parser status</div><div id="audit-parser" style="font-size:14px;font-weight:600;"></div></div>
+        </div>
+        <div id="audit-actions" style="background:#0b0e18; border:1px solid #1e2744; padding:10px; border-radius:6px; font-size:12px;"></div>
+        <div style="margin-top:8px; font-size:11px; opacity:0.6;">
+          Result: <code id="audit-result-path"></code> • Inbox: <code id="audit-inbox-path"></code>
+        </div>
+      </div>
+      <p style="margin-top:8px; font-size:11px; opacity:0.6;">Safety: This audit follows the same C1 classification rules and quarantines adult/NSFW/scraper material. No external calls. No fake success.</p>
+    </div>
+
     <section class="panel roadmap">
       <div class="panel-heading">
         <div><p class="eyebrow">Local admin prototype</p><h2>Evidence capture and content control</h2></div>
@@ -7817,6 +7844,44 @@ function bind() {
   const qualityCheckForm = document.querySelector("#quality-check-form");
   if (qualityCheckForm) {
     qualityCheckForm.addEventListener("submit", saveQualityCheck);
+  }
+
+  // PHASE A2: Universal audit button wiring (local-only, status machine, no fakes)
+  const auditBtn = document.querySelector("#run-universal-audit-btn");
+  const auditStatus = document.querySelector("#audit-status");
+  const auditResults = document.querySelector("#audit-results");
+  if (auditBtn) {
+    auditBtn.addEventListener("click", async () => {
+      auditBtn.disabled = true;
+      auditBtn.textContent = "Running local audit...";
+      if (auditStatus) auditStatus.textContent = "Starting inventory + classification...";
+      if (auditResults) auditResults.style.display = "none";
+      try {
+        const res = await fetch("/api/admin/run-universal-audit", { method: "POST" });
+        const data = await res.json();
+        if (!res.ok || data.ok === false) throw new Error(data.error || "Audit endpoint error");
+        if (auditStatus) auditStatus.textContent = "Audit complete. Parser handoff: " + (data.parserStatus || "queued");
+        if (auditResults) {
+          auditResults.style.display = "block";
+          const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+          set("audit-files", data.summary?.filesScanned ?? "?");
+          set("audit-critical", data.summary?.criticalIssues ?? "0");
+          set("audit-parser", data.parserStatus || "queued");
+          set("audit-result-path", data.auditResultPath || "");
+          set("audit-inbox-path", data.parserInboxPath || "");
+          const actEl = document.getElementById("audit-actions");
+          if (actEl) {
+            const acts = (data.topRecommendedActions || []).map(a => `• [${a.priority}] ${a.action} — ${a.reason}`).join("<br>");
+            actEl.innerHTML = acts ? `<strong>Top recommended actions</strong><br>${acts}` : "No critical actions. Re-run after changes.";
+          }
+        }
+      } catch (e) {
+        if (auditStatus) auditStatus.textContent = "Error: " + (e.message || e) + " (Is the local server running with npm run dev?)";
+      } finally {
+        auditBtn.disabled = false;
+        auditBtn.textContent = "Run Full Site Intelligence Audit";
+      }
+    });
   }
 }
 

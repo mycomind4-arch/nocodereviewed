@@ -400,3 +400,72 @@ No changes to: index.html, server.mjs, tools/vibe-auditor.html, tools/chat-intel
 - Recommended next batch (per query): after hands-on evidence capture phase (real benchmarks for the 9), next could be remaining indexed tools with files (Base44 02, Claude 07/13, OpenAI Codex 08/14, FlutterFlow 17, Glide 20, Softr 21, Adalo 22, Retool 23, Thunkable 24, Appsmith 25, WeWeb 26, Builder 27) or new evidence files for missing 10/11/28 or Shopify group, plus more blog from safe copies, or Vibe Auditor incremental improvements from reviewed sources. Do not expand without new verified evidence.
 
 R2 complete per spec. Nucleus clearer and more useful.
+
+# PHASE A2 — Universal Admin Intelligence Audit Button (added on top of C1 foundation)
+Date: 2026-06 (this session)
+
+## Summary
+- Added `#admin` universal audit button + full local intelligence audit engine.
+- Core: `scripts/run-universal-site-audit.mjs` (13 modules, C1 classification, Vault handoff records, parser inbox queue).
+- Endpoint: `POST /api/admin/run-universal-audit` in server.mjs (local-only, dynamic import of script for CLI+server reuse).
+- UI: prominent glass module in existing adminPanel() (premium dark, status machine, results with critical/recommended actions/paths; no redesign of capture forms).
+- Handoff: always honest "queued" to `data/intelligence-vault/parser-inbox/site-audits/<id>/` (README + bundle). Never fakes "parsed" or direct success (parser not mutated; site-audit is custom artifact).
+- Outputs: runtime only (gitignored except .gitkeep).
+- Docs: new ADMIN_UNIVERSAL_AUDIT.md + A2 section here.
+- No external calls, no content rewrite, no fake claims, quarantined unsafe stay quarantined, existing pages untouched.
+
+## What the audit covers (modules)
+1. Project Inventory + C1 classification (A/B/C/D/E).
+2. Source Safety (explicit D for adult/nsfw/xvideos/scraper/structured/kimi/components/prototypes).
+3. Route Integrity (all spec-listed #home/#reviews/#tools/#evidence/#methodology/#admin + dynamic #tool/#review/* + tutorials).
+4. Link Integrity (href scan in static-app + index; flags unsafe, counts evidence links).
+5. Evidence Coverage (manifest + readdir docs/evidence/; missing numbers).
+6. Review Completion (priority 8 + v0; labels complete / evidence_backed_with_gaps / placeholder using R2 markers + ev presence).
+7. Microsite Funnel (real files + links; complete/pending).
+8. Vibe Auditor Gate (page + review links; "criteria detected", never "executed" unless it ran).
+9. Asset Integrity (public/images subdirs; 0-byte, counts).
+10. Unsafe Exposure (grep public surfaces for quarantined patterns; critical flag).
+11. Blog/Article (route + placeholder discipline).
+12. Parser Handoff Readiness (inbox bundle + vault_records per contract style).
+13. Recommended Actions (prioritized from findings).
+
+## Parser Handoff Mode
+- Queue (inbox + README with example `npm run ingest` command from parser dir).
+- parserStatus: "queued" (honest).
+- Direct execution not used for custom site-audit JSON (would require new adapter or generic; queue is safe and per spec allowance).
+- No parser code changed.
+
+## Files Modified / Created (only these)
+- src/static-app.js (admin UI module + button + client fetch/status/results + attach; existing forms untouched).
+- server.mjs (new endpoint in handleApi; calls script via dynamic import).
+- scripts/run-universal-site-audit.mjs (new; full engine + export for server + CLI main).
+- package.json (added "audit:site").
+- .gitignore (appended audit-runs/ + parser-inbox/site-audits/ — runtime only).
+- data/.../audit-runs/.gitkeep + parser-inbox/.../.gitkeep (structure tracked).
+- docs/architecture/ADMIN_UNIVERSAL_AUDIT.md (new, full spec).
+- docs/architecture/SOURCE_UTILIZATION_REPORT.md (this A2 section).
+
+## Validation (executed)
+- npm run build + node --check (src/static-app.js, server.mjs, new script): PASS.
+- npm run audit:site: runs, produces bundle + inbox + vault records, "queued".
+- inventory:evidence / validate:evidence: PASS (manifest timestamp-only restored before any stage).
+- Manual (npm run dev + #admin): button works, status updates, results appear with paths/actions, no console errors, existing #reviews/#tools/#review/lovable /vibe-auditor.html /chat-intelligence-vault.html still fully functional.
+- No unsafe exposure, no fakes, local only.
+
+## Runtime Paths (gitignored)
+- data/intelligence-vault/audit-runs/<id>/{universal-site-audit.json, manifest.json}
+- data/intelligence-vault/parser-inbox/site-audits/<id>/{same + README.md}
+
+## Safety Notes (enforced)
+- Follows AGENTS.md + C1 + all hard constraints exactly.
+- Quarantine list from spec is hardcoded and enforced.
+- No content pages modified by button.
+- Vault records use contract conventions (id, record_type, privacy_level:"local_private", etc) without editing the contract file.
+
+## Recommended Next
+- Secondary scoped audit buttons.
+- Real site-audit adapter in parser (future phase).
+- Wire findings into admin capture forms (read-only suggestions).
+- Expand to full "recommended build prompts" generator from the audit result.
+
+This completes the universal admin audit as the master local intelligence workflow on top of the C1 nucleus.

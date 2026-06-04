@@ -8,7 +8,8 @@
     "build": "node scripts/verify-static-app.mjs",
     "preview": "node server.mjs",
     "inventory:evidence": "node scripts/inventory-evidence.mjs --write data/intelligence-vault/evidence-manifest.json",
-    "validate:evidence": "node scripts/validate-evidence-manifest.mjs"
+    "validate:evidence": "node scripts/validate-evidence-manifest.mjs",
+    "audit:site": "node scripts/run-universal-site-audit.mjs"
   },
   "dependencies": {},
   "devDependencies": {}

@@ -237,6 +237,18 @@ async function handleApi(request, response) {
     sendJson(response, 201, check);
     return true;
   }
+  // PHASE A2: Universal local-only admin site intelligence audit
+  if (url.pathname === "/api/admin/run-universal-audit" && request.method === "POST") {
+    try {
+      // Dynamic import so the heavy audit logic stays in the script (CLI + server reuse, no parser mutation)
+      const { runUniversalSiteAudit } = await import('./scripts/run-universal-site-audit.mjs');
+      const result = await runUniversalSiteAudit();
+      sendJson(response, 200, result);
+    } catch (e) {
+      sendJson(response, 500, { ok: false, error: 'Audit failed: ' + (e.message || e), parserStatus: 'error' });
+    }
+    return true;
+  }
   return false;
 }
 
