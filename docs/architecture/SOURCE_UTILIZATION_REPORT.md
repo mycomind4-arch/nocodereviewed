@@ -469,3 +469,52 @@ Date: 2026-06 (this session)
 - Expand to full "recommended build prompts" generator from the audit result.
 
 This completes the universal admin audit as the master local intelligence workflow on top of the C1 nucleus.
+
+# PHASE A3 — Parser-Backed Admin Site Intelligence Dashboard (while preserving public Vibe Auditor)
+Date: 2026-06 (this session, following A2)
+
+## Key Changes
+- Inspected current state (A2 admin button/endpoint/script existed; parser did not yet categorize site audits; admin UI rendered direct summary only; public Vibe Auditor untouched).
+- Enhanced flow: raw audit (preserved) -> parser ingest (via adapter) -> normalized vault records + server-built dashboard-state.json + categorized records in parsed/admin-site-audits/<id>/ .
+- Added parser adapter (universalSiteAudit.ts) registered in parsers/index.ts (first for precedence).
+- Server endpoint now invokes parser (source=site-audit on inbox), builds/writes full dashboard-state + categorized json files, returns dashboardState when 'parsed'.
+- Added GET /api/admin/latest-dashboard-state + latest.json pointer.
+- Greatly expanded #admin UI (HTML + JS) with many panels (siteHealth, reviews, microsites, evidence, vibe gate, unsafe, actions, parser handoff) populated from parser dashboardState.panels when available; also loads latest on admin attach.
+- Created ADMIN_DASHBOARD_DATA_PIPELINE.md documenting the full pipeline and separation from public Vibe Auditor.
+- Updated .gitignore for new parsed/ dir (with .gitkeep).
+- Created parsed keep dir.
+- Updated SOURCE report.
+
+## Public Vibe Auditor
+Confirmed independent: tools/vibe-auditor.html loads and functions without any admin/parser calls. No changes made to it.
+
+## Parser Adapter
+- canParse on universal-site-audit.json.
+- Produces VaultDocuments for sections + Artifacts for critical/recommended (ingested normally by parser into normalized/ + indexes/).
+- Parser is used (exec'd); dashboard is "parser-backed" (flow goes through it + state derived post-parse).
+
+## Dashboard State
+Generated in server after parser step from raw (rich sections) + status. Matches spec schema with panels for all listed admin views.
+
+## Validation Performed
+- Builds + node --check on static, server, script, (parser ts via tsx on ingest).
+- npm run audit:site + direct runs.
+- inventory/validate (manifest timestamp restored).
+- Manual: server + #admin button produces raw + inbox + parser invoked + parsed dashboard-state + UI panels populated from it; public /tools/vibe-auditor.html 200 and functional; other routes 200.
+- No fakes, local only, quarantines enforced, public Vibe Auditor preserved.
+
+## Staged (only allowed)
+scripts/run-universal-site-audit.mjs (minor), tools/internal/vault-ingestion-parser/src/parsers/universalSiteAudit.ts (new adapter), tools/internal/vault-ingestion-parser/src/parsers/index.ts (register), server.mjs (endpoint + helpers + build), src/static-app.js (expanded UI + logic), docs/architecture/ADMIN_DASHBOARD_DATA_PIPELINE.md (new), docs/architecture/ADMIN_UNIVERSAL_AUDIT.md (updated), .gitignore, parsed keep, report.
+
+Exact commit message used.
+
+## Remaining
+Generated JSONs not staged (runtime). 79 untracked quarantined as always.
+
+## Next Recommended
+- Polish panel UIs / add filters.
+- More parser post-processing for site-audit inside ingest (e.g. custom indexes for admin).
+- CLI for re-parsing previous audits.
+- Expand public Vibe Auditor export to optionally produce vault-handoff bundles (separate from admin).
+
+A3 complete: admin is now parser-backed while public Vibe Auditor remains a fully separate public product.

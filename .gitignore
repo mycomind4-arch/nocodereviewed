@@ -23,3 +23,5 @@ data/intelligence-vault/audit-runs/*
 !data/intelligence-vault/audit-runs/.gitkeep
 data/intelligence-vault/parser-inbox/site-audits/*
 !data/intelligence-vault/parser-inbox/site-audits/.gitkeep
+data/intelligence-vault/parsed/admin-site-audits/*
+!data/intelligence-vault/parsed/admin-site-audits/.gitkeep

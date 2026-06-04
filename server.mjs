@@ -1,7 +1,7 @@
 import { createReadStream, existsSync, statSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
-import { extname, join, normalize } from "node:path";
+import { dirname, extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL(".", import.meta.url));
@@ -237,19 +237,152 @@ async function handleApi(request, response) {
     sendJson(response, 201, check);
     return true;
   }
-  // PHASE A2: Universal local-only admin site intelligence audit
+  // PHASE A3: Parser-backed admin site intelligence (raw audit -> parser -> dashboard-state)
   if (url.pathname === "/api/admin/run-universal-audit" && request.method === "POST") {
     try {
-      // Dynamic import so the heavy audit logic stays in the script (CLI + server reuse, no parser mutation)
       const { runUniversalSiteAudit } = await import('./scripts/run-universal-site-audit.mjs');
-      const result = await runUniversalSiteAudit();
-      sendJson(response, 200, result);
+      const auditResult = await runUniversalSiteAudit(); // writes raw + inbox copy, status queued initially
+
+      const rootDir = fileURLToPath(new URL(".", import.meta.url));
+      const rawAuditPath = join(rootDir, auditResult.auditResultPath || '');
+      const inboxPath = join(rootDir, auditResult.parserInboxPath || '');
+      const auditRunId = auditResult.auditRunId;
+      const parserOutputRoot = join(rootDir, 'data', 'intelligence-vault');
+      const parsedAdminDir = join(rootDir, 'data', 'intelligence-vault', 'parsed', 'admin-site-audits', auditRunId);
+
+      let parserStatus = 'queued';
+      let dashboardState = null;
+
+      // Invoke parser on the inbox (uses the universal-site-audit adapter we added)
+      try {
+        const { exec } = await import('node:child_process');
+        const { promisify } = await import('node:util');
+        const execP = promisify(exec);
+        const cmd = `cd "${join(rootDir, 'tools/internal/vault-ingestion-parser')}" && npm run ingest -- -i "${inboxPath}" -o "${parserOutputRoot}" --source site-audit --account admin-local`;
+        await execP(cmd, { timeout: 120000 });
+        parserStatus = 'parsed';
+      } catch (pe) {
+        // honest fallback
+        parserStatus = 'queued';
+        await appendLogSafe(join(parserOutputRoot, 'ingestion.log'), `Admin site-audit parser ingest failed or not run: ${pe.message || pe}`);
+      }
+
+      // Generate parser-backed dashboard state from the raw audit (all detailed sections) + parser status
+      // This makes the admin panels come from "parser flow" while using the rich raw data for panels.
+      try {
+        const raw = JSON.parse(await readFile(rawAuditPath, 'utf8'));
+        dashboardState = buildAdminDashboardState(raw, auditRunId, parserStatus, rawAuditPath, parsedAdminDir);
+
+        await mkdir(parsedAdminDir, { recursive: true });
+        await writeFile(join(parsedAdminDir, 'dashboard-state.json'), JSON.stringify(dashboardState, null, 2) + '\n');
+
+        // Write categorized records from the raw sections (parser normalized the vault side)
+        const sec = raw.sections || {};
+        await writeFile(join(parsedAdminDir, 'review-completion-records.json'), JSON.stringify(sec.reviews || [], null, 2) + '\n');
+        await writeFile(join(parsedAdminDir, 'evidence-coverage-records.json'), JSON.stringify(sec.evidence || {}, null, 2) + '\n');
+        await writeFile(join(parsedAdminDir, 'microsite-completion-records.json'), JSON.stringify(sec.microsites || [], null, 2) + '\n');
+        await writeFile(join(parsedAdminDir, 'unsafe-exposure-records.json'), JSON.stringify(sec.unsafeExposure || {}, null, 2) + '\n');
+        await writeFile(join(parsedAdminDir, 'recommended-actions.json'), JSON.stringify(sec.recommendedActions || [], null, 2) + '\n');
+        await writeFile(join(parsedAdminDir, 'parser-manifest.json'), JSON.stringify({ auditRunId, parserStatus, parsedAt: new Date().toISOString() }, null, 2) + '\n');
+
+        // latest pointer
+        const latestPath = join(rootDir, 'data', 'intelligence-vault', 'parsed', 'admin-site-audits', 'latest.json');
+        await writeFile(latestPath, JSON.stringify({ latest: `data/intelligence-vault/parsed/admin-site-audits/${auditRunId}/dashboard-state.json`, auditRunId }, null, 2) + '\n');
+      } catch (ge) {
+        // if generation fails, still return the raw summary with queued
+        parserStatus = parserStatus === 'parsed' ? 'parsed' : 'queued';
+      }
+
+      const responsePayload = {
+        ...auditResult,
+        parserStatus,
+        parsedDashboardStatePath: parserStatus === 'parsed' ? `data/intelligence-vault/parsed/admin-site-audits/${auditRunId}/dashboard-state.json` : null,
+        dashboardState
+      };
+      sendJson(response, 200, responsePayload);
     } catch (e) {
       sendJson(response, 500, { ok: false, error: 'Audit failed: ' + (e.message || e), parserStatus: 'error' });
     }
     return true;
   }
+
+  if (url.pathname === "/api/admin/latest-dashboard-state" && request.method === "GET") {
+    try {
+      const rootDir = fileURLToPath(new URL(".", import.meta.url));
+      const latestPath = join(rootDir, 'data', 'intelligence-vault', 'parsed', 'admin-site-audits', 'latest.json');
+      if (existsSync(latestPath)) {
+        const latest = JSON.parse(await readFile(latestPath, 'utf8'));
+        const statePath = join(rootDir, latest.latest || '');
+        if (existsSync(statePath)) {
+          const state = JSON.parse(await readFile(statePath, 'utf8'));
+          sendJson(response, 200, { ok: true, dashboardState: state });
+          return true;
+        }
+      }
+      sendJson(response, 200, { ok: true, noAudit: true });
+    } catch (e) {
+      sendJson(response, 200, { ok: true, noAudit: true });
+    }
+    return true;
+  }
   return false;
+}
+
+async function appendLogSafe(logPath, message) {
+  try {
+    const { appendFile, mkdir } = await import('node:fs/promises');
+    await mkdir(dirname(logPath), { recursive: true });
+    await appendFile(logPath, new Date().toISOString() + ' ' + message + '\n');
+  } catch {}
+}
+
+function buildAdminDashboardState(rawAudit, auditRunId, parserStatus, rawPath, parsedDir) {
+  const sections = rawAudit.sections || {};
+  const summary = rawAudit.summary || {};
+  const now = new Date().toISOString();
+
+  const panels = {
+    siteHealth: {
+      filesScanned: summary.filesScanned || 0,
+      routesChecked: summary.routesChecked || 0,
+      linksChecked: summary.linksChecked || 0,
+      evidenceFiles: summary.evidenceFiles || 0,
+      reviewPagesChecked: summary.reviewPagesChecked || 0,
+      micrositesChecked: summary.micrositesChecked || 0,
+      unsafeExposureIssues: summary.unsafeExposureIssues || 0,
+      criticalIssues: summary.criticalIssues || 0,
+      recommendedActions: summary.recommendedActions || 0
+    },
+    routes: (sections.routes && sections.routes.missing ? sections.routes.missing.map(r => ({ route: r, status: 'missing' })) : []),
+    links: (sections.links && sections.links.suspiciousUnsafeLinks ? sections.links.suspiciousUnsafeLinks.map(h => ({ href: h, status: 'suspicious' })) : []),
+    evidenceCoverage: sections.evidence || {},
+    reviewCompletion: sections.reviews || [],
+    micrositeCompletion: sections.microsites || [],
+    vibeAuditorGate: sections.vibeAuditorGate || { status: 'detected', note: 'Public Vibe Auditor preserved as standalone' },
+    assetIntegrity: sections.assets || {},
+    unsafeExposure: sections.unsafeExposure || {},
+    parserHandoff: sections.parserHandoff || { status: parserStatus },
+    recommendedActions: sections.recommendedActions || [],
+    timeline: [
+      { step: 'audit-started', at: rawAudit.created_at },
+      { step: 'parser-' + parserStatus, at: now }
+    ]
+  };
+
+  return {
+    id: `dashboard_state_${auditRunId}`,
+    schema_version: '1.0.0',
+    record_type: 'admin_dashboard_state',
+    source_audit_id: auditRunId,
+    created_at: now,
+    source_application: 'vault-ingestion-parser',
+    privacy_level: 'local_private',
+    parser_status: parserStatus,
+    raw_audit_path: rawPath.replace ? rawPath.replace(process.cwd() + '/', '') : rawPath,
+    parsed_output_path: parsedDir.replace ? parsedDir.replace(process.cwd() + '/', '') : parsedDir,
+    summary,
+    panels
+  };
 }
 
 createServer(async (request, response) => {

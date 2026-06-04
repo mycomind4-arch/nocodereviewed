@@ -5918,8 +5918,35 @@ function adminPanel() {
         <div style="margin-top:8px; font-size:11px; opacity:0.6;">
           Result: <code id="audit-result-path"></code> • Inbox: <code id="audit-inbox-path"></code>
         </div>
+
+        <!-- A3 expanded parser-backed panels (populated when dashboardState present) -->
+        <div id="admin-panels" style="margin-top:16px; display:none;">
+          <h3 style="font-size:14px; margin:8px 0;">Site Health Summary (from parser)</h3>
+          <div id="panel-site-health" style="font-size:12px; background:#0b0e18; padding:8px; border-radius:4px;"></div>
+
+          <h3 style="font-size:14px; margin:8px 0;">Review Completion (parser categorized)</h3>
+          <div id="panel-reviews" style="font-size:11px; max-height:120px; overflow:auto; background:#0b0e18; padding:6px; border-radius:4px;"></div>
+
+          <h3 style="font-size:14px; margin:8px 0;">Microsite Completion</h3>
+          <div id="panel-microsites" style="font-size:11px; max-height:100px; overflow:auto; background:#0b0e18; padding:6px; border-radius:4px;"></div>
+
+          <h3 style="font-size:14px; margin:8px 0;">Evidence Coverage</h3>
+          <div id="panel-evidence" style="font-size:11px; background:#0b0e18; padding:6px; border-radius:4px;"></div>
+
+          <h3 style="font-size:14px; margin:8px 0;">Vibe Auditor Gate (public preserved)</h3>
+          <div id="panel-vibe" style="font-size:11px; background:#0b0e18; padding:6px; border-radius:4px;"></div>
+
+          <h3 style="font-size:14px; margin:8px 0;">Unsafe Exposure</h3>
+          <div id="panel-unsafe" style="font-size:11px; background:#0b0e18; padding:6px; border-radius:4px;"></div>
+
+          <h3 style="font-size:14px; margin:8px 0;">Recommended Actions</h3>
+          <div id="panel-actions" style="font-size:11px; background:#0b0e18; padding:6px; border-radius:4px;"></div>
+
+          <h3 style="font-size:14px; margin:8px 0;">Parser Handoff</h3>
+          <div id="panel-parser" style="font-size:11px; background:#0b0e18; padding:6px; border-radius:4px;"></div>
+        </div>
       </div>
-      <p style="margin-top:8px; font-size:11px; opacity:0.6;">Safety: This audit follows the same C1 classification rules and quarantines adult/NSFW/scraper material. No external calls. No fake success.</p>
+      <p style="margin-top:8px; font-size:11px; opacity:0.6;">Safety: This audit follows the same C1 classification rules and quarantines adult/NSFW/scraper material. No external calls. No fake success. Public Vibe Auditor at /tools/vibe-auditor.html is untouched.</p>
     </div>
 
     <section class="panel roadmap">
@@ -7850,29 +7877,76 @@ function bind() {
   const auditBtn = document.querySelector("#run-universal-audit-btn");
   const auditStatus = document.querySelector("#audit-status");
   const auditResults = document.querySelector("#audit-results");
+  const panelsContainer = document.querySelector("#admin-panels");
+
+  async function loadLatestDashboard() {
+    try {
+      const r = await fetch('/api/admin/latest-dashboard-state');
+      const d = await r.json();
+      if (d && d.dashboardState && auditResults) {
+        auditResults.style.display = 'block';
+        if (panelsContainer) panelsContainer.style.display = 'block';
+        renderFullAdminPanels(d.dashboardState);
+        if (auditStatus) auditStatus.textContent = 'Loaded latest parser-backed dashboard state.';
+      }
+    } catch {}
+  }
+
+  function renderFullAdminPanels(ds) {
+    if (!ds || !ds.panels) return;
+    const p = ds.panels;
+    const setHTML = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+
+    // summary
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('audit-files', ds.summary?.filesScanned ?? '?');
+    set('audit-critical', ds.summary?.criticalIssues ?? '0');
+    set('audit-parser', ds.parser_status || 'parsed');
+    set('audit-result-path', ds.raw_audit_path || '');
+    set('audit-inbox-path', (p.parserHandoff && p.parserHandoff.inbox) || '');
+
+    // panels
+    setHTML('panel-site-health', `<pre style="margin:0;font-size:10px;">${JSON.stringify(p.siteHealth || {}, null, 2)}</pre>`);
+    setHTML('panel-reviews', (p.reviewCompletion || []).map(r => `• ${r.slug || r.tool || ''}: ${r.label || r.status || ''}`).join('<br>') || 'No data');
+    setHTML('panel-microsites', (p.micrositeCompletion || []).map(m => `• ${m.slug || ''}: ${m.status || ''}`).join('<br>') || 'No data');
+    setHTML('panel-evidence', `<pre style="margin:0;font-size:10px;">${JSON.stringify(p.evidenceCoverage || {}, null, 2).slice(0,600)}</pre>`);
+    setHTML('panel-vibe', `Public Vibe Auditor preserved: ${p.vibeAuditorGate?.note || p.vibeAuditorGate?.status || 'standalone'}`);
+    setHTML('panel-unsafe', `Critical: ${(p.unsafeExposure && p.unsafeExposure.critical) || 0} ${p.unsafeExposure && p.unsafeExposure.hits ? JSON.stringify(p.unsafeExposure.hits) : ''}`);
+    setHTML('panel-actions', (p.recommendedActions || []).map(a => `• [${a.priority}] ${a.action || a.title} — ${a.reason || ''}`).join('<br>') || 'None');
+    setHTML('panel-parser', `Status: ${p.parserHandoff?.status || ds.parser_status} | Inbox: ${p.parserHandoff?.inbox || ''}`);
+  }
+
   if (auditBtn) {
+    // try load latest on attach
+    loadLatestDashboard();
+
     auditBtn.addEventListener("click", async () => {
       auditBtn.disabled = true;
       auditBtn.textContent = "Running local audit...";
       if (auditStatus) auditStatus.textContent = "Starting inventory + classification...";
       if (auditResults) auditResults.style.display = "none";
+      if (panelsContainer) panelsContainer.style.display = "none";
       try {
         const res = await fetch("/api/admin/run-universal-audit", { method: "POST" });
         const data = await res.json();
         if (!res.ok || data.ok === false) throw new Error(data.error || "Audit endpoint error");
-        if (auditStatus) auditStatus.textContent = "Audit complete. Parser handoff: " + (data.parserStatus || "queued");
+        if (auditStatus) auditStatus.textContent = "Audit complete. Parser: " + (data.parserStatus || "queued");
         if (auditResults) {
           auditResults.style.display = "block";
           const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
           set("audit-files", data.summary?.filesScanned ?? "?");
           set("audit-critical", data.summary?.criticalIssues ?? "0");
           set("audit-parser", data.parserStatus || "queued");
-          set("audit-result-path", data.auditResultPath || "");
+          set("audit-result-path", data.auditResultPath || data.rawAuditPath || "");
           set("audit-inbox-path", data.parserInboxPath || "");
           const actEl = document.getElementById("audit-actions");
           if (actEl) {
-            const acts = (data.topRecommendedActions || []).map(a => `• [${a.priority}] ${a.action} — ${a.reason}`).join("<br>");
-            actEl.innerHTML = acts ? `<strong>Top recommended actions</strong><br>${acts}` : "No critical actions. Re-run after changes.";
+            const acts = (data.topRecommendedActions || (data.dashboardState && data.dashboardState.panels && data.dashboardState.panels.recommendedActions) || []).map(a => `• [${a.priority}] ${a.action || a.title} — ${a.reason || ''}`).join("<br>");
+            actEl.innerHTML = acts ? `<strong>Top recommended actions</strong><br>${acts}` : "No critical actions.";
+          }
+          if (data.dashboardState && data.parserStatus === 'parsed') {
+            if (panelsContainer) panelsContainer.style.display = 'block';
+            renderFullAdminPanels(data.dashboardState);
           }
         }
       } catch (e) {
