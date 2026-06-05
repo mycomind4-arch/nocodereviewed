@@ -38,3 +38,7 @@ data/ai-forge/*
 # agent-swarm-coder run packages (local durable artifacts, always review before commit)
 outputs/coding-agent-runs/*
 !outputs/coding-agent-runs/.gitkeep
+
+# agent-swarm-coder generated run outputs
+tools/internal/agent-swarm-coder/outputs/coding-agent-runs/*
+!tools/internal/agent-swarm-coder/outputs/coding-agent-runs/.gitkeep
