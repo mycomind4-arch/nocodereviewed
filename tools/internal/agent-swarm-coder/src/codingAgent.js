@@ -74,7 +74,7 @@ export async function runAgent({
     executionPlan = planPackageExecution(parseRes, projectPath, {
       allowDeletes,
       allowSecretEdits,
-      forceApply: !dryRun
+      applyMode: !dryRun
     });
 
     const dirInfo = makePackageExecutionDir(outputsBase, packageRef);
@@ -114,6 +114,13 @@ export async function runAgent({
       commandResults.push(git);
     } catch (e) { /* ignore */ }
 
+    // Hard gate: never apply package file ops when the planner marked apply unsafe.
+    if (!dryRun && executionPlan.safety?.applyAllowed === false) {
+      throw new Error(
+        `Package apply blocked by execution planner: ${(executionPlan.safety.blockedActions || []).join(', ')}`
+      );
+    }
+
     // Execute file ops from plan (scoped, with safety)
     for (const fop of executionPlan.fileOps || []) {
       try {
@@ -137,7 +144,12 @@ export async function runAgent({
         assertDryRunAllows('write', false); // will not throw since !dry
 
         if (fop.action === 'create' || fop.action === 'write' || fop.action === 'modify') {
-          const content = fop.content || (fop.replace ? fop.replace : '');
+          const hasContent = typeof fop.content === 'string' && fop.content.length > 0;
+          const hasReplace = typeof fop.replace === 'string' && fop.replace.length > 0;
+          if (!hasContent && !hasReplace) {
+            throw new Error(`No executable payload for ${fop.action} ${fop.path}`);
+          }
+          const content = hasContent ? fop.content : fop.replace;
           fileOps.write(fop.path, content, { createIfMissing: true });
           decisionLog.push(`applied: write ${fop.path}`);
         } else if (fop.action === 'patch') {

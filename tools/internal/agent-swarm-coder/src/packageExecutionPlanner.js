@@ -37,12 +37,20 @@ export function planPackageExecution(parsedPackage, projectRoot, opts = {}) {
     const isDelete = action === 'delete';
     const isSecretTarget = isEnvFile(rel) || /secret|credential|key|token|private|auth/i.test(rel);
 
+    const hasContent = typeof f.content === 'string' && f.content.length > 0;
+    const hasSearchReplace = typeof f.search === 'string' && f.search.length > 0 && typeof f.replace === 'string';
+    const hasPatchPayload = typeof f.patch === 'string' && f.patch.length > 0;
+    const hasExecutablePayload = hasContent || hasSearchReplace || hasPatchPayload;
+
     const op = {
       path: rel,
       absPath: abs,
       action,
       description: f.description || '',
-      hasContent: !!(f.content || f.search || f.replace),
+      hasContent,
+      hasSearchReplace,
+      hasPatchPayload,
+      hasExecutablePayload,
       isSecretTarget,
       isDelete
     };
@@ -65,8 +73,12 @@ export function planPackageExecution(parsedPackage, projectRoot, opts = {}) {
       }
     }
 
-    if (!op.hasContent && (action === 'create' || action === 'modify' || action === 'patch')) {
-      warnings.push(`File ${rel} has no content/search provided in package; will be manual or no-op in apply`);
+    if (!op.hasExecutablePayload && (action === 'create' || action === 'modify' || action === 'patch' || action === 'write')) {
+      const msg = `File ${rel} has no executable payload; dry-run may record intent, but apply must block this operation`;
+      warnings.push(msg);
+      if (opts.applyMode || opts.apply || opts.blockNoPayload !== false) {
+        blocked.push(`no-payload:${rel}`);
+      }
     }
 
     fileOpsPlan.push(op);
@@ -141,7 +153,7 @@ export function planPackageExecution(parsedPackage, projectRoot, opts = {}) {
       blockedActions: blocked,
       requiresApproval,
       dryRunDefault: true,
-      applyAllowed: !blocked.length || opts.forceApply === true
+      applyAllowed: blocked.length === 0
     },
     testCommands: pkg.testCommands || [],
     rollbackNotes: pkg.rollbackNotes || 'Backups created by FileOps before any write. See .bak files and rollback-plan.md',
