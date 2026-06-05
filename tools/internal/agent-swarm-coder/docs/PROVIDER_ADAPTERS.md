@@ -51,6 +51,52 @@ registerProvider('my-llm', new MyProvider(process.env.MY_API_KEY));
 
 3. Pass provider name or instance into runAgent / repairLoop when you want to use it.
 
+## Gemini Provider
+
+`gemini` is an optional cloud provider for agent-swarm-coder. The default provider remains `simulated`, which is local-first, deterministic, zero-cost, and requires no network or credentials.
+
+Gemini is only used when explicitly selected with `--provider gemini` or the REPL `provider gemini` command.
+
+### Configuration
+
+- API key: `GEMINI_API_KEY` or `GOOGLE_API_KEY`
+- Default model: `gemini-2.0-flash`
+- Optional model override: `GEMINI_MODEL` or `--gemini-model`
+- Tests use injected mocked fetch and do not call the real Gemini API.
+- `generateFilePatch` remains suggestion-only and does not return executable patches.
+
+### Examples
+
+Default simulated mode:
+
+```bash
+npm run agent -- --project "." --goal "inspect project" --dry-run
+```
+
+Gemini mode with GEMINI_API_KEY:
+
+```bash
+GEMINI_API_KEY=your_key_here npm run agent -- --project "." --goal "inspect project" --provider gemini --dry-run
+```
+
+Gemini mode with GOOGLE_API_KEY:
+
+```bash
+GOOGLE_API_KEY=your_key_here npm run agent -- --project "." --goal "inspect project" --provider gemini --dry-run
+```
+
+Gemini mode with GEMINI_MODEL:
+
+```bash
+GEMINI_MODEL=gemini-2.0-flash npm run agent -- --project "." --goal "inspect project" --provider gemini --dry-run
+```
+
+Gemini mode with --gemini-model flag:
+
+```bash
+GEMINI_API_KEY=your_key_here npm run agent -- --project "." --goal "inspect project" --provider gemini --gemini-model gemini-2.0-flash --dry-run
+```
+
 ## Rules for All Adapters
 
 - Must not be instantiated or called unless the operator explicitly selects the provider for that run.

@@ -37,10 +37,11 @@ export async function runAgent({
   planPath = null,
   vaultHandoff = false,
   contextPacket = false,
-  taskPath = null
+  taskPath = null,
+  providerId = 'simulated'
 }) {
   const startedAt = new Date().toISOString();
-  const provider = getProvider('simulated');
+  const provider = getProvider(providerId);
   const isPackageMode = !!packagePath;
   const isPlanImportMode = !!planPath;
 
@@ -95,7 +96,7 @@ export async function runAgent({
       `run_id: ${runId}`,
       `package: ${packageRef}`,
       `dryRun: ${dryRun}`,
-      `provider: simulated`,
+      `provider: ${providerId}`,
       `started: ${startedAt}`,
       `objective: ${executionPlan.objective}`
     ];
@@ -282,7 +283,7 @@ export async function runAgent({
       `run_id: ${runId}`,
       `goal: ${goal}`,
       `dryRun: ${dryRun}`,
-      `provider: simulated`,
+      `provider: ${providerId}`,
       `started: ${startedAt}`
     ];
 
@@ -394,7 +395,8 @@ export async function runAgent({
         packagePath: genJsonPath,
         dryRun: innerDry,
         allowDeletes: false,
-        allowSecretEdits: false
+        allowSecretEdits: false,
+        providerId
         // do not pass compilePackage to avoid re-entry
       });
 
@@ -444,7 +446,8 @@ export async function runAgent({
       dryRun: true,
       allowDeletes: false,
       allowSecretEdits: false,
-      vaultHandoff: !!vaultHandoff
+      vaultHandoff: !!vaultHandoff,
+      providerId
     });
 
     // Also drop a copy of the compiled into the exec run dir for traceability

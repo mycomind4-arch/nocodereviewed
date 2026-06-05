@@ -25,7 +25,9 @@ export function createSession(initialOpts = {}) {
       compilePackage: initialOpts.compilePackage || false,
       allowRepairApply: initialOpts.allowRepairApply || false,
       allowDeletes: initialOpts.allowDeletes || false,
-      allowSecretEdits: initialOpts.allowSecretEdits || false
+      allowSecretEdits: initialOpts.allowSecretEdits || false,
+      provider: initialOpts.provider || 'simulated',
+      geminiModel: initialOpts.geminiModel || null
     }
   };
 }
@@ -93,6 +95,26 @@ export async function processCommand(session, line, { ask, confirm }) {
         console.log(`Summary:     ${session.lastResult.summaryPath}`);
       } else {
         console.log('No runs recorded in this session.');
+      }
+    } else if (cmd === 'provider') {
+      if (args) {
+        session.options.provider = args;
+        if (session.options.provider === 'gemini') {
+          const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+          if (!apiKey) {
+            console.log('WARNING: GEMINI_API_KEY or GOOGLE_API_KEY not found in environment.');
+          } else {
+            const { GeminiProvider } = await import('./providers/geminiProvider.js');
+            const { registerProvider } = await import('./providerRegistry.js');
+            registerProvider('gemini', new GeminiProvider({ 
+              apiKey, 
+              model: session.options.geminiModel 
+            }));
+          }
+        }
+        console.log(`Provider set: ${session.options.provider}`);
+      } else {
+        console.log(`Current provider: ${session.options.provider || 'simulated'}`);
       }
     } else if (cmd === 'handoff') {
       if (session.lastResult && session.lastResult.runDir) {
@@ -181,7 +203,8 @@ async function executeRun(session, opts = {}, { confirm }) {
     contextPacket: session.options.contextPacket,
     allowRepairApply: session.options.allowRepairApply,
     allowDeletes: session.options.allowDeletes,
-    allowSecretEdits: session.options.allowSecretEdits
+    allowSecretEdits: session.options.allowSecretEdits,
+    providerId: session.options.provider
   });
 
   session.lastResult = result;
@@ -202,6 +225,7 @@ Commands:
   inspect     - Inspect the project
   goal [text] - Set or show current goal
   package [p] - Set or show implementation package path
+  provider [id] - Set or show LLM provider (simulated, gemini)
   plan        - Run goal mode in dry-run to generate a plan
   compile     - Run goal mode + compile-package in dry-run
   dry-run     - Set mode to DRY-RUN (default)
@@ -223,6 +247,7 @@ function printStatus(session) {
   console.log(`Project:  ${path.resolve(session.projectPath)}`);
   console.log(`Goal:     ${session.goal || '(none)'}`);
   console.log(`Package:  ${session.packagePath || '(none)'}`);
+  console.log(`Provider: ${session.options.provider || 'simulated'}`);
   console.log(`Mode:     ${session.dryRun ? 'DRY-RUN' : 'APPLY (ARMED)'}`);
   console.log(`Options:  handoff=${session.options.vaultHandoff}, context=${session.options.contextPacket}, compile=${session.options.compilePackage}`);
   if (session.lastResult) {

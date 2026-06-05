@@ -27,7 +27,9 @@ function parseArgs(argv) {
     backfillHandoffPath: null,
     contextPacket: false,
     taskPath: null,
-    interactive: false
+    interactive: false,
+    provider: 'simulated',
+    geminiModel: null
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -64,6 +66,10 @@ function parseArgs(argv) {
       out.vaultHandoff = true;
     } else if (a === '--task' || a === '--task-path') {
       out.taskPath = args[++i] || null;
+    } else if (a === '--provider') {
+      out.provider = args[++i] || 'simulated';
+    } else if (a === '--gemini-model') {
+      out.geminiModel = args[++i] || null;
     } else if (a === '--help' || a === '-h') {
       printHelp();
       process.exit(0);
@@ -131,6 +137,8 @@ Options:
   --allow-repair-apply  Allow the repair loop to apply a pre-approved narrow patch on failure (advanced)
   --allow-deletes   Permit delete operations declared in package (still gated)
   --allow-secret-edits  Permit edits to .env / credential files declared in package (still gated + redacted)
+  --provider <id>   LLM provider (simulated, gemini). Default: simulated.
+  --gemini-model <m> Gemini model string (overrides default or GEMINI_MODEL env)
   --help            This help
 
 Safety:
@@ -221,10 +229,28 @@ async function main() {
     console.log(`  task:    ${opts.taskPath}`);
   }
   console.log(`  mode:    ${opts.dryRun ? 'DRY-RUN (safe, no writes)' : 'APPLY (writes + backups enabled)'}`);
+  if (opts.provider !== 'simulated') {
+    console.log(`  provider: ${opts.provider}`);
+  }
   if (opts.allowDeletes || opts.allowSecretEdits) {
     console.log(`  extra approvals: ${opts.allowDeletes ? 'deletes ' : ''}${opts.allowSecretEdits ? 'secrets' : ''}`);
   }
   console.log('');
+
+  // Register provider if requested
+  if (opts.provider === 'gemini') {
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    if (!apiKey) {
+      console.error('ERROR: GEMINI_API_KEY or GOOGLE_API_KEY is required for gemini provider.');
+      process.exit(1);
+    }
+    const { GeminiProvider } = await import('./providers/geminiProvider.js');
+    const { registerProvider } = await import('./providerRegistry.js');
+    registerProvider('gemini', new GeminiProvider({ 
+      apiKey, 
+      model: opts.geminiModel 
+    }));
+  }
 
   // Normalize for task mode (used by ai-chat-command-bridge)
   let runProject = opts.project;
@@ -233,6 +259,7 @@ async function main() {
   let runVaultHandoff = opts.vaultHandoff;
   let runContextPacket = opts.contextPacket;
   let runCompilePackage = opts.compilePackage;
+  let runProviderId = opts.provider;
   let taskData = null;
   if (hasTask) {
     const taskAbs = path.resolve(opts.taskPath);
@@ -252,6 +279,7 @@ async function main() {
       if (typeof taskData.options.vault_handoff === 'boolean') runVaultHandoff = taskData.options.vault_handoff;
       if (typeof taskData.options.context_packet === 'boolean') runContextPacket = taskData.options.context_packet;
       if (typeof taskData.options.compile_package === 'boolean') runCompilePackage = taskData.options.compile_package;
+      if (taskData.options.provider) runProviderId = taskData.options.provider;
     }
   }
 
@@ -287,7 +315,8 @@ async function main() {
       planPath: opts.planPath,
       vaultHandoff: runVaultHandoff,
       contextPacket: runContextPacket,
-      taskPath: opts.taskPath
+      taskPath: opts.taskPath,
+      providerId: runProviderId
     });
 
     console.log('=== RUN COMPLETE ===');
