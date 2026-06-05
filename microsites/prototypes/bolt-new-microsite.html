@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bolt.new • Full Review Microsite (Prototype)</title>
+  <style>
+    :root {
+      --accent: #00d4ff;
+      --accent-dim: #0099bb;
+      --text: #e8f4f8;
+      --card: #111820;
+      --bg: #0a0e14;
+      --muted: #6a8a9a;
+      --border: #1e2d3d;
+      --good: #00e5a0;
+      --warn: #ff6b4a;
+      --good-bg: #001a12;
+      --warn-bg: #1a0900;
+    }
+    body { margin:0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); }
+    .header { position:sticky; top:0; background:#0f1624; border-bottom:1px solid var(--border); padding:0 24px; height:60px; display:flex; align-items:center; }
+    .nav { display:flex; gap:4px; padding:0 24px; background:#0f1624; border-bottom:1px solid var(--border); overflow-x:auto; }
+    .nav button { padding:10px 16px; font-size:13px; background:none; border:none; color:var(--muted); cursor:pointer; white-space:nowrap; border-bottom:3px solid transparent; }
+    .nav button.active { color:var(--accent); border-bottom-color:var(--accent); font-weight:600; }
+    .hero { background:#111820; padding:60px 40px; position:relative; }
+    .container { max-width:860px; margin:0 auto; padding:40px 20px; }
+    .card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:22px 24px; margin-bottom:16px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; }
+    .eyebrow { font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:8px; }
+    .section { margin-bottom:48px; }
+    .badge { font-size:10px; padding:2px 8px; border-radius:99px; display:inline-block; }
+    .prose { font-size:15px; line-height:1.7; }
+    .alert { border-left:4px solid; padding:16px 20px; border-radius:0 12px 12px 0; margin:16px 0; }
+    .alert.good { border-color:var(--good); background:var(--good-bg); }
+    .alert.warn { border-color:var(--warn); background:var(--warn-bg); }
+    .content-page { display:none; }
+    .content-page.active { display:block; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <strong>Bolt.new Review</strong>
+    <span style="margin-left:auto;font-size:12px;opacity:.6;">Prototype • from src/components/bolt-new-microsite.jsx</span>
+  </div>
+
+  <div class="nav" id="nav"></div>
+
+  <div class="hero">
+    <div class="container" style="padding-top:0;padding-bottom:0;">
+      <div class="eyebrow">No-Code Reviewed</div>
+      <h1 style="font-size:42px;font-weight:800;margin:8px 0 16px;">Bolt.new — AI Website &amp; App Builder</h1>
+      <p style="max-width:620px;opacity:.8;">Browser-based prompt-to-app with WebContainers. Inspect code, use built-in hosting &amp; databases.</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Overview -->
+    <div id="page-overview" class="content-page active">
+      <div class="section">
+        <h2 style="font-size:28px;margin-bottom:12px;">Overview</h2>
+        <div class="prose">
+          Bolt.new lets you build websites, apps, and prototypes using natural language. Powered by StackBlitz WebContainers for in-browser development.
+        </div>
+      </div>
+      <div class="grid">
+        <div class="card">
+          <strong>Strengths</strong><br>
+          • Clear prompt-to-app positioning<br>
+          • WebContainers for real dev environment<br>
+          • Built-in hosting, DB, custom domains
+        </div>
+        <div class="card">
+          <strong>Limitations</strong><br>
+          • Token costs can add up<br>
+          • Generated code quality needs testing<br>
+          • RLS/database security not automatic
+        </div>
+      </div>
+    </div>
+
+    <div id="page-features" class="content-page">
+      <div class="section">
+        <h2>Key Features (from prototype)</h2>
+        <div class="grid">
+          <div class="card">Prompt-to-code with live preview</div>
+          <div class="card">Database with security audit tools</div>
+          <div class="card">Token-based pricing with rollovers</div>
+          <div class="card">GitHub export &amp; local build support</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-security" class="content-page">
+      <div class="section">
+        <h2>Security Notes</h2>
+        <div class="alert warn">
+          WebContainers isolate the dev environment, not the generated app. Always review RLS policies and secrets.
+        </div>
+      </div>
+    </div>
+
+    <div id="page-verdict" class="content-page">
+      <div class="section">
+        <h2>Verdict (Prototype)</h2>
+        <p>Strong for fast browser-based prototyping and frontend-heavy apps. Excellent code visibility. Production readiness requires testing generated code, RLS, secrets, and token usage.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TABS = [
+      {id:'overview', label:'Overview'},
+      {id:'features', label:'Features'},
+      {id:'security', label:'Security'},
+      {id:'verdict', label:'Verdict'}
+    ];
+
+    function init() {
+      const nav = document.getElementById('nav');
+      TABS.forEach(t => {
+        const b = document.createElement('button');
+        b.textContent = t.label;
+        b.onclick = () => switchTab(t.id, b);
+        nav.appendChild(b);
+      });
+      document.querySelector('#nav button').classList.add('active');
+    }
+
+    function switchTab(id, btn) {
+      document.querySelectorAll('.content-page').forEach(p => p.classList.remove('active'));
+      document.getElementById('page-' + id).classList.add('active');
+      document.querySelectorAll('#nav button').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

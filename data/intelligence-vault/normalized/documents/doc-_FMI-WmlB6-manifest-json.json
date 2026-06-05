@@ -1,0 +1,15 @@
+{
+  "id": "doc-_FMI-WmlB6",
+  "source": "site-audit",
+  "source_account": "admin-local",
+  "title": "manifest.json",
+  "path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z/manifest.json",
+  "imported_at": "2026-06-04T04:00:42.704Z",
+  "content_type": "json",
+  "content": "{\n  \"auditRunId\": \"universal_audit_2026-06-04_03-45-55Z\",\n  \"resultPath\": \"data/intelligence-vault/audit-runs/universal_audit_2026-06-04_03-45-55Z/universal-site-audit.json\",\n  \"parserInbox\": \"data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z\",\n  \"parserStatus\": \"queued\",\n  \"createdAt\": \"2026-06-04T03:45:56.073Z\"\n}",
+  "tags": [
+    "site-audit",
+    "document"
+  ],
+  "artifacts": []
+}

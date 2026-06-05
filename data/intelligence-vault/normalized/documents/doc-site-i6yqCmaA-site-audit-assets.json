@@ -1,0 +1,16 @@
+{
+  "id": "doc-site-i6yqCmaA",
+  "source": "site-audit",
+  "source_account": "admin-local",
+  "title": "Site Audit: assets",
+  "path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z/universal-site-audit.json",
+  "imported_at": "2026-06-04T04:00:42.708Z",
+  "content_type": "json",
+  "content": "{\n  \"tool-logos\": {\n    \"files\": 3,\n    \"zeroByte\": 0\n  },\n  \"tool-backgrounds\": {\n    \"files\": 10,\n    \"zeroByte\": 0\n  },\n  \"tool-visuals\": {\n    \"files\": 9,\n    \"zeroByte\": 0\n  },\n  \"homepage\": {\n    \"files\": 12,\n    \"zeroByte\": 0\n  }\n}",
+  "tags": [
+    "site-audit",
+    "assets",
+    "admin"
+  ],
+  "artifacts": []
+}

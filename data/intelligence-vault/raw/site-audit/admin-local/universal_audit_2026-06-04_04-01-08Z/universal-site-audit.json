@@ -1,0 +1,411 @@
+{
+  "id": "universal_audit_2026-06-04_04-01-08Z",
+  "schema_version": "1.0.0",
+  "record_type": "vault_universal_site_audit",
+  "created_at": "2026-06-04T04:01:08.819Z",
+  "source_application": "nocodereviewed-admin",
+  "privacy_level": "local_private",
+  "audit_mode": "universal_site_intelligence",
+  "summary": {
+    "filesScanned": 992,
+    "routesChecked": 44,
+    "linksChecked": 171,
+    "evidenceFiles": 26,
+    "reviewPagesChecked": 10,
+    "micrositesChecked": 10,
+    "unsafeExposureIssues": 1,
+    "criticalIssues": 1,
+    "recommendedActions": 3
+  },
+  "sections": {
+    "inventory": {
+      "totalFilesScanned": 992,
+      "byCategory": {
+        "ignored": 438,
+        "operational_infrastructure": 223,
+        "production_core": 33,
+        "evidence_sources": 27,
+        "needs_human_review": 4,
+        "microsite_sources": 15,
+        "review_prototypes": 190,
+        "tool_assets": 34,
+        "unsafe_quarantine": 15,
+        "utility_tools": 13
+      },
+      "safetySummary": {
+        "A": 151,
+        "B": 36,
+        "C": 17,
+        "D": 346,
+        "E": 442
+      },
+      "quarantinedCount": 346
+    },
+    "sourceSafety": {
+      "totalClassified": 992,
+      "quarantined": 346,
+      "issues": [
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/.DS_Store",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/.env.example",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/affiliate-links/create/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/affiliate-links/delete/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/affiliate-links/toggle/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/affiliate-links/update/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/article-brief/create/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/article-brief/delete/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/article-brief/update/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/article-quality-score/create/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/articles/delete/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/articles/update/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/audit-log/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/backup/create/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/backup/restore/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/benchmark/complete/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/benchmark/fail/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/benchmark/run/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/bulk-publish/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        },
+        {
+          "path": "_INBOX_NEW_FILES/nocodereviewed-structured/app/api/admin/bulk-unpublish/route.ts",
+          "classification": "D",
+          "action": "quarantined - never link or stage"
+        }
+      ]
+    },
+    "routes": {
+      "expected": 44,
+      "handled": 25,
+      "missing": [],
+      "status": "ok"
+    },
+    "links": {
+      "evidenceLinks": 0,
+      "apiLinks": 0,
+      "suspiciousUnsafeLinks": [],
+      "status": "ok"
+    },
+    "evidence": {
+      "filesOnDisk": 26,
+      "manifestMissing": [
+        10,
+        11,
+        28
+      ],
+      "canonical": 22,
+      "toolsCoveredApprox": 23,
+      "status": "gaps"
+    },
+    "reviews": {
+      "checked": 10,
+      "results": [
+        {
+          "slug": "lovable",
+          "routePresent": true,
+          "label": "complete_review",
+          "note": "R2 complete marker present"
+        },
+        {
+          "slug": "bolt-new",
+          "routePresent": true,
+          "label": "complete_review",
+          "note": "R2 complete marker present"
+        },
+        {
+          "slug": "replit",
+          "routePresent": true,
+          "label": "complete_review",
+          "note": "R2 complete marker present"
+        },
+        {
+          "slug": "cursor",
+          "routePresent": false,
+          "label": "complete_review",
+          "note": "R2 complete marker present"
+        },
+        {
+          "slug": "windsurf",
+          "routePresent": false,
+          "label": "complete_review",
+          "note": "R2 complete marker present"
+        },
+        {
+          "slug": "webflow",
+          "routePresent": false,
+          "label": "complete_review",
+          "note": "R2 complete marker present"
+        },
+        {
+          "slug": "bubble",
+          "routePresent": false,
+          "label": "complete_review",
+          "note": "R2 complete marker present"
+        },
+        {
+          "slug": "framer",
+          "routePresent": false,
+          "label": "complete_review",
+          "note": "R2 complete marker present"
+        },
+        {
+          "slug": "v0",
+          "routePresent": true,
+          "label": "complete_review",
+          "note": "R2 complete marker present"
+        },
+        {
+          "slug": "shopify",
+          "routePresent": false,
+          "label": "complete_review",
+          "note": "R2 complete marker present"
+        }
+      ]
+    },
+    "microsites": {
+      "checked": 10,
+      "results": [
+        {
+          "slug": "lovable",
+          "fileExists": true,
+          "status": "complete_funnel"
+        },
+        {
+          "slug": "bolt-new",
+          "fileExists": true,
+          "status": "complete_funnel"
+        },
+        {
+          "slug": "replit",
+          "fileExists": true,
+          "status": "complete_funnel"
+        },
+        {
+          "slug": "cursor",
+          "fileExists": false,
+          "status": "pending_funnel"
+        },
+        {
+          "slug": "windsurf",
+          "fileExists": false,
+          "status": "pending_funnel"
+        },
+        {
+          "slug": "webflow",
+          "fileExists": false,
+          "status": "pending_funnel"
+        },
+        {
+          "slug": "bubble",
+          "fileExists": false,
+          "status": "pending_funnel"
+        },
+        {
+          "slug": "framer",
+          "fileExists": false,
+          "status": "pending_funnel"
+        },
+        {
+          "slug": "v0",
+          "fileExists": false,
+          "status": "pending_funnel"
+        },
+        {
+          "slug": "shopify",
+          "fileExists": false,
+          "status": "pending_funnel"
+        }
+      ]
+    },
+    "vibeAuditorGate": {
+      "auditorPageExists": true,
+      "linksFromReviews": true,
+      "note": "Vibe Auditor criteria/links detected in review templates (not executed by this audit)",
+      "status": "detected"
+    },
+    "assets": {
+      "tool-logos": {
+        "files": 3,
+        "zeroByte": 0
+      },
+      "tool-backgrounds": {
+        "files": 10,
+        "zeroByte": 0
+      },
+      "tool-visuals": {
+        "files": 9,
+        "zeroByte": 0
+      },
+      "homepage": {
+        "files": 12,
+        "zeroByte": 0
+      }
+    },
+    "unsafeExposure": {
+      "critical": 1,
+      "hits": [
+        "scraper"
+      ]
+    },
+    "blog": {
+      "blogRoute": true,
+      "status": "present_with_placeholders"
+    },
+    "parserHandoff": {
+      "status": "queued",
+      "inboxPath": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_04-01-08Z",
+      "readme": "README.md written"
+    },
+    "recommendedActions": [
+      {
+        "priority": "critical",
+        "action": "Remove or confirm no links to quarantined unsafe files",
+        "reason": "Unsafe exposure audit"
+      },
+      {
+        "priority": "high",
+        "action": "Capture evidence files for missing numbers",
+        "reason": "Evidence coverage"
+      },
+      {
+        "priority": "low",
+        "action": "Re-run audit after fixes and ingest inbox to Vault",
+        "reason": "Parser handoff"
+      }
+    ]
+  },
+  "vault_records": {
+    "audit_handoffs": [
+      {
+        "id": "vault.audit.site.universal_audit_2026-06-04_04-01-08Z",
+        "record_type": "vault.audit.handoff",
+        "created_at": "2026-06-04T04:01:08.819Z",
+        "privacy_level": "local_private",
+        "source_application": "nocodereviewed-admin-universal-audit",
+        "summary": {
+          "filesScanned": 992,
+          "routesChecked": 44,
+          "linksChecked": 171,
+          "evidenceFiles": 26,
+          "reviewPagesChecked": 10,
+          "micrositesChecked": 10,
+          "unsafeExposureIssues": 1,
+          "criticalIssues": 1,
+          "recommendedActions": 3
+        },
+        "sections_keys": [
+          "inventory",
+          "sourceSafety",
+          "routes",
+          "links",
+          "evidence",
+          "reviews",
+          "microsites",
+          "vibeAuditorGate",
+          "assets",
+          "unsafeExposure",
+          "blog",
+          "parserHandoff",
+          "recommendedActions"
+        ],
+        "recommended_actions_count": 3
+      }
+    ],
+    "artifacts": [
+      {
+        "id": "vault.artifact.audit.universal_audit_2026-06-04_04-01-08Z",
+        "record_type": "vault.artifact",
+        "created_at": "2026-06-04T04:01:08.819Z",
+        "privacy_level": "local_private",
+        "title": "Universal Site Intelligence Audit Bundle",
+        "path": "data/intelligence-vault/audit-runs/universal_audit_2026-06-04_04-01-08Z/universal-site-audit.json"
+      }
+    ],
+    "commands": [
+      {
+        "id": "vault.command.audit.universal_audit_2026-06-04_04-01-08Z",
+        "record_type": "vault.command",
+        "created_at": "2026-06-04T04:01:08.819Z",
+        "privacy_level": "local_private",
+        "command": "ingest-site-audit-inbox",
+        "args": {
+          "inbox": "data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_04-01-08Z"
+        }
+      }
+    ],
+    "evidence_candidates": []
+  }
+}

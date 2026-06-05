@@ -1,0 +1,16 @@
+{
+  "id": "doc-site-QNqHp6AV",
+  "source": "site-audit",
+  "source_account": "admin-local",
+  "title": "Site Audit: routes",
+  "path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_04-36-29Z/universal-site-audit.json",
+  "imported_at": "2026-06-04T04:36:48.239Z",
+  "content_type": "json",
+  "content": "{\n  \"expected\": 44,\n  \"handled\": 25,\n  \"missing\": [],\n  \"status\": \"ok\"\n}",
+  "tags": [
+    "site-audit",
+    "routes",
+    "admin"
+  ],
+  "artifacts": []
+}

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kimi Agent Build Source • Review Index | NoCodeReviewed</title>
+  <meta name="description" content="Interactive review index of the imported Kimi/React reference frontend in imports/kimi-agent-build-source/. For exploration and future planning only (reference material per AGENTS.md).">
+  <link rel="stylesheet" href="/src/styles.css">
+  <style>
+    body { background: #07090d; color: #eef3f8; font-family: Inter, system-ui, sans-serif; }
+    .ki-header { position: sticky; top: 0; z-index: 50; background: rgba(7,9,13,0.95); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 16px 24px; backdrop-filter: blur(8px); }
+    .ki-notice { max-width: 1200px; margin: 20px auto; padding: 14px 20px; background: rgba(255,191,87,0.1); border: 1px solid rgba(255,191,87,0.3); border-radius: 10px; font-size: 0.9rem; }
+    .ki-controls { max-width: 1200px; margin: 0 auto 20px; padding: 0 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .ki-search { flex: 1; min-width: 260px; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #eef3f8; font-size: 0.95rem; }
+    .ki-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ki-filter { padding: 6px 12px; font-size: 0.82rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; cursor: pointer; transition: all 0.1s; }
+    .ki-filter.active, .ki-filter:hover { background: rgba(232,84,26,0.15); border-color: #e8541a; color: #fff; }
+    .ki-grid { max-width: 1200px; margin: 0 auto; padding: 0 24px 60px; display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+    .ki-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+    .ki-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .ki-card-title { font-weight: 600; font-size: 1.02rem; line-height: 1.3; }
+    .ki-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+    .ki-desc { font-size: 0.9rem; opacity: 0.85; line-height: 1.45; flex: 1; }
+    .ki-meta { font-size: 0.75rem; opacity: 0.6; }
+    .ki-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+    .ki-tag { font-size: 0.7rem; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 4px; }
+    .ki-actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .ki-actions a, .ki-actions button { font-size: 0.8rem; padding: 6px 10px; border-radius: 6px; text-decoration: none; }
+    .ki-actions .primary { background: #e8541a; color: white; border: none; }
+    .ki-actions .secondary { background: rgba(255,255,255,0.06); color: #eef3f8; border: 1px solid rgba(255,255,255,0.15); }
+    .ki-stats { max-width: 1200px; margin: 0 auto 16px; padding: 0 24px; font-size: 0.85rem; opacity: 0.7; }
+    .ki-section { max-width: 1200px; margin: 0 auto 32px; padding: 0 24px; }
+    .ki-assets { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+    .ki-asset { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; }
+    .ki-asset img { max-width: 100%; height: 80px; object-fit: cover; border-radius: 4px; margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <header class="ki-header">
+    <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:1.35rem;font-weight:600;letter-spacing:-0.02em;">Kimi Agent Build Source • Review Index</div>
+        <div style="font-size:0.85rem;opacity:0.65;">imports/kimi-agent-build-source/ — Full React/Vite reference frontend</div>
+      </div>
+      <a href="/" style="font-size:0.9rem;opacity:0.8;text-decoration:none;">← Back to NoCodeReviewed</a>
+    </div>
+  </header>
+
+  <div class="ki-notice">
+    <strong>Reference material only (per AGENTS.md &amp; SOURCE_OF_TRUTH_MAP.md).</strong> 
+    This is a Vite + React 18 + TypeScript + Tailwind + shadcn/ui + heavy animation (GSAP, R3F, Framer, Lenis) reference app generated as a modern frontend for a no-code review platform. 
+    <strong>Do not merge directly into production.</strong> Useful for UI patterns, component ideas, mock data structure, page layouts, and future migration planning when the nucleus is stable. Production base remains the static vanilla app.
+  </div>
+
+  <div class="ki-controls">
+    <input type="text" id="search" class="ki-search" placeholder="Search files, pages, components..." oninput="filterItems()">
+    <div class="ki-filters" id="filters">
+      <button class="ki-filter active" data-cat="all" onclick="setFilter('all', this)">All</button>
+      <button class="ki-filter" data-cat="ui" onclick="setFilter('ui', this)">UI / shadcn</button>
+      <button class="ki-filter" data-cat="custom" onclick="setFilter('custom', this)">Custom Components</button>
+      <button class="ki-filter" data-cat="pages" onclick="setFilter('pages', this)">Pages &amp; Routes</button>
+      <button class="ki-filter" data-cat="sections" onclick="setFilter('sections', this)">Sections</button>
+      <button class="ki-filter" data-cat="data" onclick="setFilter('data', this)">Data &amp; Mock</button>
+      <button class="ki-filter" data-cat="config" onclick="setFilter('config', this)">Config &amp; Assets</button>
+    </div>
+  </div>
+
+  <div class="ki-stats" id="stats"></div>
+
+  <div class="ki-grid" id="grid"></div>
+
+  <div class="ki-section">
+    <h3 style="margin-bottom:12px;font-size:1.1rem;">Public Image Assets (useful for tool cards/reviews)</h3>
+    <div class="ki-assets">
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/tool-lovable.jpg" alt="Lovable"><div>tool-lovable.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/tool-bubble.jpg" alt="Bubble"><div>tool-bubble.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/tool-webflow.jpg" alt="Webflow"><div>tool-webflow.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/tool-framer.jpg" alt="Framer"><div>tool-framer.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/tool-airtable.jpg" alt="Airtable"><div>tool-airtable.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/tool-zapier.jpg" alt="Zapier"><div>tool-zapier.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/tool-shopify.jpg" alt="Shopify"><div>tool-shopify.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/tool-make.jpg" alt="Make"><div>tool-make.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/tool-notion.jpg" alt="Notion"><div>tool-notion.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/hero-3d.jpg" alt="Hero 3D"><div>hero-3d.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/guide-ai-builders.jpg" alt="Guide"><div>guide-ai-builders.jpg</div></div>
+      <div class="ki-asset"><img src="/imports/kimi-agent-build-source/app/public/images/tutorial-framer.jpg" alt="Tutorial"><div>tutorial-framer.jpg</div></div>
+    </div>
+    <p style="font-size:0.8rem;opacity:0.6;margin-top:8px;">These images are already in the public folder via the import. Great reference assets for tool visuals.</p>
+  </div>
+
+  <div class="ki-section" style="border-top:1px solid rgba(255,255,255,0.08);padding-top:24px;font-size:0.85rem;opacity:0.7;">
+    <strong>Key Takeaways for Integration (reference only):</strong><br>
+    • <strong>Mock data structure</strong> (src/data/mockData.ts) is excellent — detailed Tool schema with ratings, pros/cons, pricingTiers, reviewBody. Could inform evidence-backed data model or static-app tools[].<br>
+    • <strong>Page structure &amp; UX patterns</strong>: Tools list with filters/search, Compare, ToolDetail, Blog/Article, Submit — good inspiration for main app sections without copying React.<br>
+    • <strong>shadcn/ui primitives</strong>: 40+ accessible components. For future if we ever move to a component system (not now).<br>
+    • <strong>Heavy animation stack</strong> (GSAP + R3F + Lenis + Framer) — reference for what "premium" could feel like; keep simple for current static nucleus.<br>
+    • <strong>Public images</strong>: High-quality tool and guide visuals — already useful.<br>
+    • <strong>State management</strong> (Zustand) and routing (HashRouter) — interesting for future SPA evolution.<br><br>
+    Per AGENTS.md: Strengthen nucleus (static app + evidence + vault + auditor) first. This stays in reference/docs for planning.
+  </div>
+
+  <script>
+    const ITEMS = [
+      { file: "app/src/App.tsx", name: "App.tsx (Router)", cat: "pages", desc: "HashRouter setup with Layout, all main routes: /tools, /compare, /blog, /admin, etc. Uses Navbar + Footer wrapper.", tags: ["router", "layout"], notes: "HashRouter good for static. Layout pattern useful." },
+      { file: "app/src/pages/ToolsPage.tsx", name: "ToolsPage", cat: "pages", desc: "Main tools directory with category filters, search, sort (rating/price), ToolCard grid. Uses mockData.", tags: ["tools", "filter", "search"], notes: "Strong pattern for main app reviews/tools section." },
+      { file: "app/src/pages/ToolDetailPage.tsx", name: "ToolDetailPage", cat: "pages", desc: "Detailed tool review page with hero, ratings, verdict, pros/cons, pricing, etc.", tags: ["detail", "review"], notes: "Matches our current reviewDetailPanel intent." },
+      { file: "app/src/pages/ComparePage.tsx", name: "ComparePage", cat: "pages", desc: "Compare builder and matrix view.", tags: ["compare"], notes: "Good for expanding #compare route." },
+      { file: "app/src/pages/HomePage.tsx", name: "HomePage", cat: "pages", desc: "Homepage composing Hero, ReviewsSection, Guides, Compare3D, Tutorials, etc.", tags: ["home", "sections"], notes: "Section composition ideas." },
+      { file: "app/src/data/mockData.ts", name: "mockData.ts", cat: "data", desc: "Rich mock data: tools with full schema (ratings, verdict, pros/cons, pricingTiers, reviewBody, bestFor), categories, articles, etc.", tags: ["data", "schema", "tools"], notes: "Extremely useful reference for structuring evidence or static data. Matches evidence style well." },
+      { file: "app/src/components/shared/ToolCard.tsx", name: "ToolCard", cat: "custom", desc: "Card for tool list: logo, name, tagline, rating, badges, category.", tags: ["card", "tool"], notes: "Clean card pattern." },
+      { file: "app/src/components/shared/ComparisonCard.tsx", name: "ComparisonCard", cat: "custom", desc: "Side-by-side comparison preview card.", tags: ["compare"], notes: "Useful for compare UI." },
+      { file: "app/src/components/sections/HeroSection.tsx", name: "HeroSection", cat: "sections", desc: "Homepage hero with floating nodes, scramble text effect (GSAP).", tags: ["hero", "animation"], notes: "Premium hero inspiration." },
+      { file: "app/src/components/sections/ReviewsSection.tsx", name: "ReviewsSection", cat: "sections", desc: "Split layout sticky image + review cards.", tags: ["reviews"], notes: "Good review presentation pattern." },
+      { file: "app/src/components/layout/Navbar.tsx", name: "Navbar", cat: "custom", desc: "Sticky nav with logo, links, CTA, mobile menu.", tags: ["nav"], notes: "Standard but well done." },
+      { file: "app/src/components/ui/button.tsx", name: "button (shadcn)", cat: "ui", desc: "Core shadcn Button with variants.", tags: ["ui", "button"], notes: "Part of 40+ primitives." },
+      // Add more key ones
+      { file: "app/public/images/", name: "Public Images (12+)", cat: "config", desc: "High quality tool screenshots and guide images (lovable, bubble, webflow, framer, etc.).", tags: ["assets", "images"], notes: "Ready-to-use visual assets." },
+      { file: "app/src/stores/useStore.ts", name: "useStore (Zustand)", cat: "custom", desc: "Global state: theme, mobileMenu, activeSection, tools, articles, admin state.", tags: ["state"], notes: "Lightweight state example." },
+      { file: "app/tailwind.config.js", name: "tailwind.config.js", cat: "config", desc: "Tailwind with shadcn theme, custom colors.", tags: ["config"], notes: "Design token reference." },
+      { file: "app/vite.config.ts", name: "vite.config.ts", cat: "config", desc: "Vite config for React + TS.", tags: ["build"], notes: "Future migration reference." },
+    ];
+
+    let currentFilter = 'all';
+    let currentSearch = '';
+
+    function setFilter(cat, el) {
+      currentFilter = cat;
+      document.querySelectorAll('.ki-filter').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      filterItems();
+    }
+
+    function filterItems() {
+      currentSearch = (document.getElementById('search').value || '').toLowerCase().trim();
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      let visible = 0;
+
+      ITEMS.forEach(item => {
+        const matchesCat = currentFilter === 'all' || item.cat === currentFilter;
+        const hay = (item.name + ' ' + item.desc + ' ' + item.tags.join(' ') + ' ' + item.file).toLowerCase();
+        const matchesSearch = !currentSearch || hay.includes(currentSearch);
+
+        if (matchesCat && matchesSearch) {
+          visible++;
+          const card = document.createElement('div');
+          card.className = 'ki-card';
+          card.innerHTML = `
+            <div class="ki-card-header">
+              <div class="ki-card-title">${item.name}</div>
+              <div class="ki-badge" style="background:rgba(255,255,255,0.1);">${item.cat}</div>
+            </div>
+            <div class="ki-desc">${item.desc}</div>
+            <div class="ki-meta">${item.file}</div>
+            <div class="ki-tags">${item.tags.map(t => `<span class="ki-tag">${t}</span>`).join('')}</div>
+            <div class="ki-actions">
+              <a href="/${item.file}" target="_blank" class="secondary">View source</a>
+              <button onclick="showNotes(this)" class="secondary" data-notes="${item.notes.replace(/"/g, '&quot;')}">Notes</button>
+            </div>
+            ${item.notes ? `<div style="font-size:0.78rem;opacity:0.7;margin-top:6px;">${item.notes}</div>` : ''}
+          `;
+          grid.appendChild(card);
+        }
+      });
+
+      document.getElementById('stats').innerHTML = `Showing <strong>${visible}</strong> of ${ITEMS.length} items`;
+      if (visible === 0) grid.innerHTML = '<div style="padding:40px;text-align:center;opacity:0.6;">No matches.</div>';
+    }
+
+    function showNotes(btn) {
+      const notes = btn.dataset.notes || 'No additional notes.';
+      alert(notes); // Simple for now; could make modal
+    }
+
+    function init() {
+      const grid = document.getElementById('grid');
+      ITEMS.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'ki-card';
+        card.innerHTML = `
+          <div class="ki-card-header">
+            <div class="ki-card-title">${item.name}</div>
+            <div class="ki-badge" style="background:rgba(255,255,255,0.1);">${item.cat}</div>
+          </div>
+          <div class="ki-desc">${item.desc}</div>
+          <div class="ki-meta">${item.file}</div>
+          <div class="ki-tags">${item.tags.map(t => `<span class="ki-tag">${t}</span>`).join('')}</div>
+          <div class="ki-actions">
+            <a href="/${item.file}" target="_blank" class="secondary">View source</a>
+            <button onclick="showNotes(this)" class="secondary" data-notes="${item.notes.replace(/"/g, '&quot;')}">Notes</button>
+          </div>
+          <div style="font-size:0.78rem;opacity:0.7;margin-top:6px;">${item.notes}</div>
+        `;
+        grid.appendChild(card);
+      });
+      document.getElementById('stats').innerHTML = `Showing <strong>${ITEMS.length}</strong> of ${ITEMS.length} items`;
+      const allBtn = document.querySelector('.ki-filter[data-cat="all"]');
+      if (allBtn) allBtn.classList.add('active');
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

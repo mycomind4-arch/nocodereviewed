@@ -7,6 +7,10 @@ import { fileURLToPath } from "node:url";
 const root = fileURLToPath(new URL(".", import.meta.url));
 const port = Number(process.env.PORT || 5173);
 const storePath = join(root, "data", "local-store.json");
+const vibeAuditDir = join(root, "data", "vibe-audits");
+const vibeAuditOrdersPath = join(vibeAuditDir, "orders.json");
+const vibeAuditEventsPath = join(vibeAuditDir, "events.json");
+const vibeAuditReportsDir = join(vibeAuditDir, "reports");
 
 const types = {
   ".html": "text/html; charset=utf-8",
@@ -24,6 +28,7 @@ const types = {
 function resolvePath(url) {
   const clean = normalize(decodeURIComponent(url.split("?")[0])).replace(/^(\.\.[/\\])+/, "");
   const requested = clean === "/" ? "index.html" : clean.replace(/^[/\\]/, "");
+  if (requested.startsWith("data/vibe-audits/")) return join(root, "index.html");
   const full = join(root, requested);
   if (!full.startsWith(root)) return join(root, "index.html");
   if (existsSync(full) && statSync(full).isFile()) return full;
@@ -62,6 +67,218 @@ async function readJsonBody(request) {
   for await (const chunk of request) chunks.push(chunk);
   const raw = Buffer.concat(chunks).toString("utf8");
   return raw ? JSON.parse(raw) : {};
+}
+
+async function readJsonArray(path) {
+  try {
+    const parsed = JSON.parse(await readFile(path, "utf8"));
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+async function writeJsonArray(path, items) {
+  await mkdir(dirname(path), { recursive: true });
+  await writeFile(path, JSON.stringify(items, null, 2) + "\n");
+}
+
+async function appendVibeAuditEvent(event) {
+  const events = await readJsonArray(vibeAuditEventsPath);
+  events.unshift({
+    id: crypto.randomUUID(),
+    createdAt: new Date().toISOString(),
+    ...event,
+  });
+  await writeJsonArray(vibeAuditEventsPath, events.slice(0, 500));
+}
+
+function normalizeToolStack(value) {
+  if (Array.isArray(value)) return value.map((item) => String(item).trim()).filter(Boolean);
+  return String(value || "")
+    .split(/[,;\n]/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function vibeAuditOrderFromBody(body) {
+  const now = new Date().toISOString();
+  const tier = String(body.requestedTier || body.tier || "starter").trim().toLowerCase();
+  return {
+    id: `audit_${now.slice(0, 10).replace(/-/g, "")}_${crypto.randomUUID().slice(0, 8)}`,
+    createdAt: now,
+    updatedAt: now,
+    status: "intake_received",
+    paymentStatus: "manual_pending",
+    tier: ["starter", "standard", "premium"].includes(tier) ? tier : "starter",
+    customer: {
+      name: String(body.name || "").trim(),
+      email: String(body.email || "").trim(),
+    },
+    project: {
+      name: String(body.projectName || "").trim(),
+      description: String(body.projectDescription || "").trim(),
+      url: String(body.projectUrl || "").trim(),
+      toolStack: normalizeToolStack(body.toolStack),
+      buildPlatform: String(body.buildPlatform || "").trim(),
+      launchGoal: String(body.launchGoal || "").trim(),
+      currentStatus: String(body.currentStatus || "").trim(),
+      biggestConcern: String(body.biggestConcern || "").trim(),
+      privacyNotes: String(body.privacyNotes || "").trim(),
+    },
+    operator: {
+      assignedTo: "",
+      timeSpentMinutes: 0,
+      humanApproved: false,
+    },
+    report: {
+      draftPath: "",
+      finalPath: "",
+      deliveredAt: null,
+    },
+    notes: [],
+  };
+}
+
+function validateVibeAuditOrder(order) {
+  const required = [
+    [order.customer.name, "name"],
+    [order.customer.email, "email"],
+    [order.project.name, "projectName"],
+    [order.project.description, "projectDescription"],
+    [order.project.url, "projectUrl"],
+    [order.project.buildPlatform, "buildPlatform"],
+    [order.project.launchGoal, "launchGoal"],
+    [order.project.currentStatus, "currentStatus"],
+    [order.project.biggestConcern, "biggestConcern"],
+  ];
+  const missing = required.filter(([value]) => !value).map(([, field]) => field);
+  if (!order.project.toolStack.length) missing.push("toolStack");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(order.customer.email)) missing.push("validEmail");
+  return missing;
+}
+
+function buildVibeAuditReportMarkdown(order) {
+  const created = new Date().toISOString();
+  const tools = order.project.toolStack.length ? order.project.toolStack.join(", ") : "Not provided";
+  const customerName = order.customer.name || "Customer";
+  const projectName = order.project.name || "Untitled Project";
+  return `# Vibe Launch Audit Draft — ${projectName}
+
+**Order:** ${order.id}  
+**Tier:** ${order.tier}  
+**Generated:** ${created}  
+**Customer:** ${customerName} <${order.customer.email || ""}>  
+**Status:** DRAFT — Human review required before any customer-facing delivery or recommendations.
+
+---
+
+## Summary
+
+${customerName} requested a ${order.tier} launch readiness audit for ${projectName}.
+
+- **Project URL/share link:** ${order.project.url || "Not provided"}
+- **Build platform:** ${order.project.buildPlatform || "Not provided"}
+- **Tool stack:** ${tools}
+- **Current status:** ${order.project.currentStatus || "Not provided"}
+- **Launch goal:** ${order.project.launchGoal || "Not provided"}
+- **Biggest concern:** ${order.project.biggestConcern || "Not provided"}
+
+Project description (excerpt): ${order.project.description ? order.project.description.slice(0, 400) : "Not provided"}${order.project.privacyNotes ? `\n\nPrivacy notes: ${order.project.privacyNotes}` : ""}
+
+---
+
+## Launch Readiness Score (Placeholder / Checklist)
+
+**Draft score: ___ / 100** (to be finalized only after human review of all gates)
+
+Use the existing NoCodeReviewed evidence gates + public Vibe Auditor as baseline. Score each area 0-10 then average. Mark any area without direct evidence or hands-on verification as "evidence pending".
+
+- [ ] Authentication & private routes / data isolation
+- [ ] Secrets, env vars, and client-side exposure
+- [ ] Data model / ownership / export / deletion paths
+- [ ] Core user flows complete and error-handled
+- [ ] Deployment, rollback, and hosting production-readiness
+- [ ] Mobile / accessibility / performance basics
+- [ ] Evidence, claims, and credibility support (no invented pricing, security posture, or capabilities)
+- [ ] Maintainability / handoff / future iteration path
+- [ ] Overall production confidence for the stated launch goal
+
+**Notes on scoring:** This is a draft checklist. Operator must run the free public Vibe Auditor on the project link where possible and cross-reference docs/evidence/ before assigning numbers or removing "pending" flags.
+
+---
+
+## Blockers
+
+List the highest-risk issues that must be resolved before launch. Base only on submitted info + known tool behaviors from evidence. Flag anything unverified.
+
+- [ ] 
+- [ ] 
+- [ ] 
+
+(Operator: expand with concrete examples from the intake and any public share link. Cite tool/version where relevant.)
+
+---
+
+## Quick Wins
+
+Immediate, low-effort improvements that increase launch confidence.
+
+- [ ] 
+- [ ] 
+- [ ] 
+
+---
+
+## Evidence / Credibility Gaps
+
+Items in the project description, claims, or stack that currently lack supporting evidence in the NoCodeReviewed corpus or the submitted materials.
+
+- Claims needing source support or hands-on verification.
+- Pricing, feature, or "production-ready" statements that need current confirmation.
+- Screenshots, exports, or artifacts that should be captured before final report.
+
+---
+
+## Tool-Stack Notes
+
+Review the declared stack (${tools}) against existing evidence files in docs/evidence/ and the public Vibe Auditor methodology. Note version-specific behaviors, common pitfalls, and production considerations observed in reviews. Do not invent capabilities or security claims. Mark any finding "evidence pending" if not directly supported.
+
+---
+
+## Recommended Next Steps
+
+1. Operator runs the public Vibe Auditor (tools/vibe-auditor.html) against the project URL/share and exports key findings.
+2. Cross-check intake against current tool evidence (docs/evidence/* and data/intelligence-vault/evidence-manifest.json).
+3. Fill in the readiness checklist and populate concrete blockers/wins with citations where possible.
+4. Human review: Shane or Casey must approve all customer-facing recommendations, remove unsupported claims, confirm payment/scope, and set humanApproved=true.
+5. Generate final deliverable (copy the approved draft to a final path or export as PDF/Markdown for email).
+6. Deliver only after human approval gate. Send via email + private link if implemented.
+7. Log time spent and any follow-up offer.
+
+---
+
+## Human Review Required Notice
+
+**THIS IS AN INTERNAL DRAFT ONLY.**
+
+No part of this draft may be sent to the customer until:
+- Scope and payment status are confirmed.
+- A human (Shane or Casey) has reviewed every recommendation for accuracy against evidence.
+- Unsupported claims, hype, or guarantees have been removed.
+- The humanApproved flag is set in the order record.
+- The final report is explicitly approved for delivery.
+
+---
+
+## Disclaimer
+
+This audit provides practical, evidence-informed recommendations only. It is not legal, financial, security, compliance, ranking, revenue, or launch-outcome advice. No results are guaranteed. All findings are limited to the information submitted and publicly available evidence at the time of review. Always perform your own due diligence and testing before launch.
+
+---
+
+*End of draft. Operator: edit above sections with specific observations, then mark human approval in admin before delivery.*
+`;
 }
 
 function sendJson(response, status, payload) {
@@ -235,6 +452,91 @@ async function handleApi(request, response) {
     store.qualityChecks = [check, ...(store.qualityChecks || [])];
     await writeStore(store);
     sendJson(response, 201, check);
+    return true;
+  }
+  if (url.pathname === "/api/vibe-audits/orders" && request.method === "GET") {
+    sendJson(response, 200, await readJsonArray(vibeAuditOrdersPath));
+    return true;
+  }
+  if (url.pathname === "/api/vibe-audits/events" && request.method === "GET") {
+    sendJson(response, 200, await readJsonArray(vibeAuditEventsPath));
+    return true;
+  }
+  if (url.pathname === "/api/vibe-audits/intake" && request.method === "POST") {
+    const body = await readJsonBody(request);
+    const order = vibeAuditOrderFromBody(body);
+    const missing = validateVibeAuditOrder(order);
+    if (missing.length) {
+      await appendVibeAuditEvent({ type: "intake_validation_failed", field: "vibe_launch_audit", metadata: { missing } });
+      sendJson(response, 400, { error: "Missing or invalid required fields", missing });
+      return true;
+    }
+    const orders = await readJsonArray(vibeAuditOrdersPath);
+    orders.unshift(order);
+    await writeJsonArray(vibeAuditOrdersPath, orders);
+    await appendVibeAuditEvent({ type: "intake_submitted", orderId: order.id, tier: order.tier });
+    sendJson(response, 201, { order, payment: { status: "manual_pending", message: "Manual payment confirmation required before fulfillment. Stripe Checkout can be enabled later with environment keys." } });
+    return true;
+  }
+  const vibeAuditOrderPatch = url.pathname.match(/^\/api\/vibe-audits\/orders\/([^/]+)$/);
+  if (vibeAuditOrderPatch && request.method === "PATCH") {
+    const orderId = vibeAuditOrderPatch[1];
+    const body = await readJsonBody(request);
+    const allowedStatuses = new Set(["intake_received", "needs_scope_review", "payment_pending", "ready_for_audit", "draft_generated", "human_review", "approved", "delivered", "follow_up_sent", "canceled"]);
+    const allowedPaymentStatuses = new Set(["manual_pending", "payment_pending", "paid", "refunded", "canceled"]);
+    const orders = await readJsonArray(vibeAuditOrdersPath);
+    const index = orders.findIndex((order) => order.id === orderId);
+    if (index === -1) {
+      sendJson(response, 404, { error: "Order not found" });
+      return true;
+    }
+    const order = orders[index];
+    if (body.status && allowedStatuses.has(String(body.status))) order.status = String(body.status);
+    if (body.paymentStatus && allowedPaymentStatuses.has(String(body.paymentStatus))) order.paymentStatus = String(body.paymentStatus);
+    if (body.assignedTo !== undefined) order.operator.assignedTo = String(body.assignedTo || "").trim();
+    if (body.timeSpentMinutes !== undefined) {
+      const minutes = Number(body.timeSpentMinutes);
+      if (Number.isFinite(minutes) && minutes >= 0) order.operator.timeSpentMinutes = Math.round(minutes);
+    }
+    if (body.humanApproved !== undefined) order.operator.humanApproved = Boolean(body.humanApproved);
+    if (body.note) order.notes = [{ at: new Date().toISOString(), text: String(body.note).trim() }, ...(order.notes || [])].slice(0, 20);
+    if (order.status === "delivered" && !order.report.deliveredAt) order.report.deliveredAt = new Date().toISOString();
+    order.updatedAt = new Date().toISOString();
+    orders[index] = order;
+    await writeJsonArray(vibeAuditOrdersPath, orders);
+    await appendVibeAuditEvent({ type: "order_updated", orderId: order.id, status: order.status, paymentStatus: order.paymentStatus });
+    sendJson(response, 200, order);
+    return true;
+  }
+  const vibeAuditDraftRoute = url.pathname.match(/^\/api\/vibe-audits\/orders\/([^/]+)\/report-draft$/);
+  if (vibeAuditDraftRoute && request.method === "POST") {
+    const orderId = vibeAuditDraftRoute[1];
+    const orders = await readJsonArray(vibeAuditOrdersPath);
+    const index = orders.findIndex((order) => order.id === orderId);
+    if (index === -1) {
+      sendJson(response, 404, { error: "Order not found" });
+      return true;
+    }
+    const order = orders[index];
+    const report = buildVibeAuditReportMarkdown(order);
+    await mkdir(vibeAuditReportsDir, { recursive: true });
+    const reportPath = join(vibeAuditReportsDir, `${order.id}-draft.md`);
+    await writeFile(reportPath, report);
+    order.status = "draft_generated";
+    order.report.draftPath = `data/vibe-audits/reports/${order.id}-draft.md`;
+    order.updatedAt = new Date().toISOString();
+    orders[index] = order;
+    await writeJsonArray(vibeAuditOrdersPath, orders);
+    await appendVibeAuditEvent({ type: "draft_generated", orderId: order.id, draftPath: order.report.draftPath });
+    sendJson(response, 201, { order, report });
+    return true;
+  }
+  if (url.pathname === "/api/checkout/vibe-audit" && request.method === "POST") {
+    await appendVibeAuditEvent({ type: "checkout_started", metadata: { mode: "manual_fallback" } });
+    sendJson(response, 200, {
+      status: "manual_fallback",
+      message: "Stripe Checkout is not enabled in this MVP. Confirm scope, then send a manual payment link before fulfillment.",
+    });
     return true;
   }
   // PHASE A3: Parser-backed admin site intelligence (raw audit -> parser -> dashboard-state)

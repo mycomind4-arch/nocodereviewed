@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bubble • Full Review Microsite (Prototype)</title>
+  <style>
+    :root {
+      --accent: #e8541a;
+      --text: #0f0e0d;
+      --card: #faf8f4;
+      --bg: #f0ede7;
+      --muted: #72685f;
+      --border: #e0dbd3;
+      --good: #1a6e3c;
+      --warn: #b83020;
+    }
+    body { margin:0; font-family: system-ui, sans-serif; background:var(--bg); color:var(--text); }
+    .header { position:sticky;top:0;background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center; }
+    .nav { display:flex;gap:4px;padding:0 24px;background:#fff;border-bottom:1px solid var(--border);overflow-x:auto; }
+    .nav button { padding:10px 16px;font-size:13px;background:none;border:none;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap; }
+    .nav button.active { color:var(--accent);border-bottom-color:var(--accent);font-weight:600; }
+    .container { max-width:860px;margin:0 auto;padding:40px 20px; }
+    .hero { background:var(--text);color:#faf8f4;padding:50px 40px;border-radius:0 0 16px 16px; }
+    .card { background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px; }
+    .grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px; }
+    .section { margin-bottom:48px; }
+    .content-page { display:none; }
+    .content-page.active { display:block; }
+    .eyebrow { font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent); }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <strong>Bubble Review</strong> <span style="margin-left:auto;font-size:12px;opacity:.6;">Prototype</span>
+  </div>
+  <div class="nav" id="nav"></div>
+
+  <div class="hero">
+    <div class="container" style="padding:0;">
+      <h1 style="font-size:42px;margin:0 0 12px;">Bubble AI — No-Code App Builder</h1>
+      <p style="max-width:620px;opacity:.8;">Traditional no-code with AI assistance. More control, visual builder, powerful for complex apps.</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="page-overview" class="content-page active">
+      <div class="section">
+        <h2>Overview</h2>
+        <div class="card">
+          Bubble is the incumbent no-code platform. It offers a visual editor for building complex web apps with databases, auth, and workflows. AI features help generate pages and logic.
+        </div>
+      </div>
+    </div>
+
+    <div id="page-features" class="content-page">
+      <div class="section">
+        <h2>Key Features</h2>
+        <div class="grid">
+          <div class="card">Visual drag-and-drop builder</div>
+          <div class="card">Powerful database &amp; workflows</div>
+          <div class="card">Native Stripe, API connectors</div>
+          <div class="card">Strong for complex SaaS &amp; marketplaces</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-verdict" class="content-page">
+      <div class="section">
+        <h2>Verdict (Prototype)</h2>
+        <p>Excellent for teams that need full control and are willing to learn a steeper curve. Slower "vibe" iteration compared to pure AI builders like Lovable or Bolt, but more mature for production apps.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const TABS = [{id:'overview',label:'Overview'},{id:'features',label:'Features'},{id:'verdict',label:'Verdict'}];
+    function init() {
+      const n = document.getElementById('nav');
+      TABS.forEach(t => {
+        const b = document.createElement('button');
+        b.textContent = t.label;
+        b.onclick = () => { document.querySelectorAll('.content-page').forEach(p=>p.classList.remove('active')); document.getElementById('page-'+t.id).classList.add('active'); document.querySelectorAll('#nav button').forEach(bb=>bb.classList.remove('active')); b.classList.add('active'); };
+        n.appendChild(b);
+      });
+      n.firstChild.classList.add('active');
+    }
+    window.onload = init;
+  </script>
+</body>
+</html>

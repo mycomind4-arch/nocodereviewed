@@ -1,0 +1,52 @@
+{
+  "id": "doc--yWyutQ4To",
+  "source": "site-audit",
+  "source_account": "admin-local",
+  "title": "README.md",
+  "path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z/README.md",
+  "imported_at": "2026-06-04T04:00:42.695Z",
+  "content_type": "md",
+  "content": "# Site Audit Handoff for Vault Ingestion Parser\n\nThis bundle was produced by the NoCodeReviewed admin universal audit.\n\nTo ingest (example):\ncd tools/internal/vault-ingestion-parser\nnpm run ingest -- -i /Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z -o ../../data/intelligence-vault --source site-audit --account admin\n\nOr use the generic document path for the .json files.\n\nDo not commit the contents of parser-inbox/.\n\nGenerated: 2026-06-04T03:45:56.072Z",
+  "tags": [
+    "site-audit",
+    "document"
+  ],
+  "artifacts": [
+    {
+      "id": "artifact-LAHrMGpi38",
+      "type": "workflow",
+      "source_document_id": "doc--yWyutQ4To",
+      "title": "Detected workflow",
+      "content": "# Site Audit Handoff for Vault Ingestion Parser\n\nThis bundle was produced by the NoCodeReviewed admin universal audit.\n\nTo ingest (example):\ncd tools/internal/vault-ingestion-parser\nnpm run ingest -- -i /Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z -o ../../data/intelligence-vault --source site-audit --account admin\n\nOr use the generic document path for the .json files.\n\nDo not commit the contents of parser-inbox/.\n\nGenerated: 2026-06-04T03:45:56.072Z",
+      "tags": [
+        "detected",
+        "workflow"
+      ],
+      "confidence": 0.6,
+      "created_at": "2026-06-04T04:00:42.695Z",
+      "lineage": {
+        "source_platform": "site-audit",
+        "source_account": "admin-local",
+        "raw_path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z/README.md"
+      }
+    },
+    {
+      "id": "artifact-TSDnIqX-r9",
+      "type": "evidence_claim",
+      "source_document_id": "doc--yWyutQ4To",
+      "title": "Detected evidence claim",
+      "content": "# Site Audit Handoff for Vault Ingestion Parser\n\nThis bundle was produced by the NoCodeReviewed admin universal audit.\n\nTo ingest (example):\ncd tools/internal/vault-ingestion-parser\nnpm run ingest -- -i /Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z -o ../../data/intelligence-vault --source site-audit --account admin\n\nOr use the generic document path for the .json files.\n\nDo not commit the contents of parser-inbox/.\n\nGenerated: 2026-06-04T03:45:56.072Z",
+      "tags": [
+        "detected",
+        "evidence_claim"
+      ],
+      "confidence": 0.64,
+      "created_at": "2026-06-04T04:00:42.695Z",
+      "lineage": {
+        "source_platform": "site-audit",
+        "source_account": "admin-local",
+        "raw_path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z/README.md"
+      }
+    }
+  ]
+}

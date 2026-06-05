@@ -1,0 +1,16 @@
+{
+  "id": "doc-site-d4DouIH3",
+  "source": "site-audit",
+  "source_account": "admin-local",
+  "title": "Site Audit: unsafeExposure",
+  "path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z/universal-site-audit.json",
+  "imported_at": "2026-06-04T04:00:42.708Z",
+  "content_type": "json",
+  "content": "{\n  \"critical\": 1,\n  \"hits\": [\n    \"scraper\"\n  ]\n}",
+  "tags": [
+    "site-audit",
+    "unsafeExposure",
+    "admin"
+  ],
+  "artifacts": []
+}

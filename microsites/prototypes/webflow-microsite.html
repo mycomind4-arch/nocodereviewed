@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webflow • Full Review Microsite (Prototype)</title>
+  <style>
+    body { margin:0; font-family: system-ui, sans-serif; background:#f8f7f4; color:#111; }
+    .header { position:sticky; top:0; background:white; border-bottom:1px solid #ddd; padding:0 24px; height:60px; display:flex; align-items:center; }
+    .nav { display:flex; gap:4px; padding:0 24px; background:white; border-bottom:1px solid #ddd; overflow-x:auto; }
+    .nav button { padding:10px 16px; font-size:13px; background:none; border:none; color:#666; cursor:pointer; border-bottom:3px solid transparent; }
+    .nav button.active { color:#146EF5; border-bottom-color:#146EF5; font-weight:600; }
+    .container { max-width:860px; margin:0 auto; padding:40px 20px; }
+    .hero { background:#06080F; color:#E8EDF5; padding:50px 40px; }
+    .card { background:white; border:1px solid #e4e0da; border-radius:14px; padding:20px; margin-bottom:16px; }
+    .content-page { display:none; }
+    .content-page.active { display:block; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <strong>Webflow Review</strong>
+  </div>
+  <div class="nav" id="nav"></div>
+
+  <div class="hero">
+    <div class="container" style="padding-top:0;">
+      <h1 style="font-size:40px;margin:0 0 12px;">Webflow AI</h1>
+      <p>AI-assisted site design inside a mature website builder. Strong for marketing sites and CMS-driven experiences.</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div id="page-overview" class="content-page active">
+      <h2>Overview</h2>
+      <div class="card">Webflow is the established no-code incumbent responding to AI app building. Excellent design control and exportable clean code.</div>
+    </div>
+    <div id="page-features" class="content-page">
+      <h2>Features</h2>
+      <div class="card">Visual designer + AI assistance for layouts and copy. Strong CMS, interactions, and hosting.</div>
+    </div>
+    <div id="page-verdict" class="content-page">
+      <h2>Verdict</h2>
+      <div class="card">Relevant as the established no-code incumbent. Best for design-heavy sites rather than complex app logic.</div>
+    </div>
+  </div>
+
+  <script>
+    const TABS = [{id:'overview',label:'Overview'},{id:'features',label:'Features'},{id:'verdict',label:'Verdict'}];
+    function init() {
+      const n = document.getElementById('nav');
+      TABS.forEach(t => {
+        const b = document.createElement('button');
+        b.textContent = t.label;
+        b.onclick = () => {
+          document.querySelectorAll('.content-page').forEach(p => p.classList.remove('active'));
+          document.getElementById('page-' + t.id).classList.add('active');
+          document.querySelectorAll('#nav button').forEach(bb => bb.classList.remove('active'));
+          b.classList.add('active');
+        };
+        n.appendChild(b);
+      });
+      n.children[0].classList.add('active');
+    }
+    window.onload = init;
+  </script>
+</body>
+</html>

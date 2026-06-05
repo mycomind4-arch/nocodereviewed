@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Component Library • Review Index | NoCodeReviewed</title>
+  <meta name="description" content="Interactive index of all prototypes, calculators, microsites, and components in src/components/. For review and selective integration planning only.">
+  <link rel="stylesheet" href="/src/styles.css">
+  <!-- Prism for nice JSX syntax highlighting in source previews -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-jsx.min.js"></script>
+  <!-- React + Babel for live component player -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    /* Component Library specific styles - additive, no core redesign */
+    :root { color-scheme: dark; }
+    body { background: #07090d; color: #eef3f8; font-family: Inter, system-ui, sans-serif; line-height: 1.6; }
+    .cl-header { position: sticky; top: 0; z-index: 50; background: rgba(7,9,13,0.95); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 16px 24px; backdrop-filter: blur(8px); }
+    .cl-header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+    .cl-title { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; }
+    .cl-subtitle { font-size: 0.85rem; opacity: 0.65; }
+    .cl-notice { max-width: 1200px; margin: 20px auto; padding: 12px 20px; background: rgba(232,84,26,0.1); border: 1px solid rgba(232,84,26,0.3); border-radius: 10px; font-size: 0.9rem; }
+    .cl-controls { max-width: 1200px; margin: 0 auto 20px; padding: 0 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .cl-search { flex: 1; min-width: 220px; padding: 10px 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #eef3f8; font-size: 0.95rem; }
+    .cl-filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .cl-filter { padding: 6px 12px; font-size: 0.82rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 999px; cursor: pointer; transition: all 0.1s; }
+    .cl-filter.active, .cl-filter:hover { background: rgba(232,84,26,0.15); border-color: #e8541a; color: #fff; }
+    .cl-grid { max-width: 1200px; margin: 0 auto; padding: 0 24px 60px; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; }
+    .cl-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 10px; transition: transform 0.1s, box-shadow 0.1s; }
+    .cl-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.2); }
+    .cl-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .cl-card-title { font-weight: 600; font-size: 1.02rem; line-height: 1.3; }
+    .cl-badge { font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; white-space: nowrap; align-self: flex-start; }
+    .cl-badge.calculator { background: rgba(99, 179, 237, 0.15); color: #63b3ed; border: 1px solid rgba(99,179,237,0.3); }
+    .cl-badge.microsite { background: rgba(232, 84, 26, 0.15); color: #e8541a; border: 1px solid rgba(232,84,26,0.3); }
+    .cl-badge.wizard { background: rgba(159, 122, 234, 0.15); color: #9f7aea; border: 1px solid rgba(159,122,234,0.3); }
+    .cl-badge.matrix { background: rgba(72, 187, 120, 0.15); color: #48bb78; border: 1px solid rgba(72,187,120,0.3); }
+    .cl-badge.library { background: rgba(246, 173, 85, 0.15); color: #f6ad55; border: 1px solid rgba(246,173,85,0.3); }
+    .cl-badge.other { background: rgba(160, 174, 192, 0.15); color: #a0aec0; border: 1px solid rgba(160,174,192,0.3); }
+    .cl-desc { font-size: 0.9rem; opacity: 0.85; line-height: 1.45; flex: 1; }
+    .cl-meta { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.75rem; opacity: 0.6; }
+    .cl-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+    .cl-tag { font-size: 0.7rem; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 4px; }
+    .cl-actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .cl-actions a, .cl-actions button { font-size: 0.8rem; padding: 6px 10px; border-radius: 6px; text-decoration: none; cursor: pointer; }
+    .cl-actions .primary { background: #e8541a; color: white; border: none; }
+    .cl-actions .secondary { background: rgba(255,255,255,0.06); color: #eef3f8; border: 1px solid rgba(255,255,255,0.15); }
+    .cl-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .cl-modal.open { display: flex; }
+    .cl-modal-content { background: #10141d; border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; width: 100%; max-width: 900px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
+    .cl-modal-header { padding: 14px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+    .cl-modal-body { padding: 0; overflow: auto; flex: 1; background: #0a0c12; }
+    .cl-modal-body pre, .cl-modal-body code {
+      margin: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+    .cl-modal-body pre {
+      padding: 20px;
+      white-space: pre;
+      overflow-x: auto;
+      background: #0a0c12;
+    }
+    .cl-modal-body code {
+      display: block;
+    }
+    .cl-stats { max-width: 1200px; margin: 0 auto 16px; padding: 0 24px; font-size: 0.85rem; opacity: 0.7; display: flex; gap: 16px; flex-wrap: wrap; }
+    .cl-footer { max-width: 1200px; margin: 40px auto 60px; padding: 0 24px; font-size: 0.78rem; opacity: 0.55; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; }
+    .cl-empty { text-align: center; padding: 60px 20px; opacity: 0.6; }
+  </style>
+</head>
+<body>
+  <header class="cl-header">
+    <div class="cl-header-inner">
+      <div>
+        <div class="cl-title">Component Library Review Index</div>
+        <div class="cl-subtitle">src/components/ — Prototypes, Microtools &amp; Reference Material</div>
+      </div>
+      <a href="/" style="font-size:0.9rem;opacity:0.8;text-decoration:none;">← Back to NoCodeReviewed</a>
+    </div>
+  </header>
+
+  <div class="cl-notice">
+    <strong>Review-only page.</strong> These files are prototypes and reference material (see AGENTS.md). 
+    Do not merge or replace production code wholesale. Use for inspiration, selective extraction, and planning only after the nucleus (static app + evidence + vault + auditor) is strengthened. Many duplicate functionality now covered by the new evidence-backed microsites.
+  </div>
+
+  <div class="cl-controls">
+    <input type="text" id="search" class="cl-search" placeholder="Search components (name, tags, description)..." oninput="filterComponents()">
+    
+    <div class="cl-filters" id="filters">
+      <button class="cl-filter active" data-cat="all" onclick="setFilter('all', this)">All</button>
+      <button class="cl-filter" data-cat="calculator" onclick="setFilter('calculator', this)">Calculators</button>
+      <button class="cl-filter" data-cat="microsite" onclick="setFilter('microsite', this)">Microsites &amp; Reviews</button>
+      <button class="cl-filter" data-cat="wizard" onclick="setFilter('wizard', this)">Wizards &amp; Finders</button>
+      <button class="cl-filter" data-cat="matrix" onclick="setFilter('matrix', this)">Matrices &amp; Directories</button>
+      <button class="cl-filter" data-cat="library" onclick="setFilter('library', this)">Libraries &amp; DBs</button>
+      <button class="cl-filter" data-cat="other" onclick="setFilter('other', this)">Other / Graveyard</button>
+    </div>
+  </div>
+
+  <div class="cl-stats" id="stats"></div>
+
+  <div class="cl-grid" id="grid"></div>
+
+  <!-- Modal for source preview -->
+  <div class="cl-modal" id="modal" onclick="if (event.target.id === 'modal') closeModal()">
+    <div class="cl-modal-content" onclick="event.stopImmediatePropagation()">
+      <div class="cl-modal-header">
+        <div>
+          <strong id="modal-title"></strong>
+          <span id="modal-file" style="font-size:0.8rem;opacity:0.6;margin-left:8px;"></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <a id="modal-raw" target="_blank" class="cl-actions secondary" style="padding:4px 10px;font-size:0.75rem;">Open raw file →</a>
+          <button id="modal-copy" onclick="copyModalCode()" class="cl-actions secondary" style="padding:4px 10px;font-size:0.75rem;">Copy</button>
+          <button onclick="closeModal()" style="background:none;border:none;color:#eef3f8;font-size:1.4rem;line-height:1;cursor:pointer;">&times;</button>
+        </div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0; height: calc(85vh - 60px);">
+        <!-- Source -->
+        <div style="border-right: 1px solid #333; display: flex; flex-direction: column;">
+          <div style="padding: 8px 12px; background: #111; font-size: 0.75rem; opacity: 0.7; border-bottom: 1px solid #333;">Source (highlighted JSX)</div>
+          <div class="cl-modal-body" id="modal-source-body" style="flex:1; overflow:auto; background:#0a0c12;"></div>
+        </div>
+        <!-- React Player -->
+        <div style="display: flex; flex-direction: column; background: #fff;">
+          <div style="padding: 8px 12px; background: #222; color: #fff; font-size: 0.75rem; display:flex; justify-content:space-between; align-items:center;">
+            <span>React Live Player (experimental)</span>
+            <button onclick="loadReactPreviewInModal()" style="font-size:0.7rem; padding:2px 8px; background:#e8541a; color:white; border:none; border-radius:3px; cursor:pointer;">▶ Render / Re-render</button>
+          </div>
+          <div id="modal-player-container" style="flex:1; overflow:auto; background:#f8f8f8; position:relative; min-height:200px;">
+            <div style="padding:20px; color:#666; font-size:0.9rem;">Click "Render / Re-render" to play the component live with React + JSX.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cl-footer">
+    Total items indexed: <strong id="total-count"></strong>. 
+    This page is for internal review. Integration decisions should reference AGENTS.md, the current evidence system, and new microsites first.
+    <br><br>
+    Tip: Use the source preview to quickly scan logic without leaving the browser. For runnable previews, these components typically require a React environment (see imports/kimi-agent-build-source or reference prototypes).
+  </div>
+
+  <script>
+    // Curated catalog based on file inspection (names, inferred purpose from code, categories)
+    const COMPONENTS = [
+      { file: "01-ROICalculator.jsx", name: "ROI Calculator", category: "calculator", desc: "Calculate return on investment comparing no-code build costs vs traditional development over time.", tags: ["finance", "roi", "calculator", "business"], notes: "Clean React state + styled inline. Useful as a standalone embeddable tool or panel in main app reviews/monetization sections." },
+      { file: "02-PlatformFinder.jsx", name: "Platform Finder (Wizard)", category: "wizard", desc: "Multi-step questionnaire that recommends the best no-code platform based on user answers.", tags: ["quiz", "recommendation", "onboarding"], notes: "Progress bar + option grid. Strong candidate for the main site's Tool Matcher or intake flow." },
+      { file: "04-WebflowVsBubble.jsx", name: "Webflow vs Bubble Comparator", category: "matrix", desc: "Side-by-side picker and comparison for Webflow vs Bubble with feature cards.", tags: ["compare", "webflow", "bubble"], notes: "Visual card-based comparison. Good pattern for expanding the existing compare functionality." },
+      { file: "05-RunwayCalculator.jsx", name: "Runway Calculator", category: "calculator", desc: "Project runway / burn rate calculator for founders using no-code vs custom dev.", tags: ["finance", "runway", "startup"], notes: "Monthly projections grid. Pairs well with ROI and PricingTracker for monetization OS." },
+      { file: "07-TechStackBuilder.jsx", name: "Tech Stack Builder", category: "calculator", desc: "Interactive builder for assembling and costing a full no-code + adjacent tech stack by layers.", tags: ["stack", "architecture", "costing"], notes: "Layered cards + selects. Excellent for the 'Founder App Stacks' or architecture panel." },
+      { file: "BreakEvenCalculator.jsx", name: "Break-Even Calculator", category: "calculator", desc: "Detailed 36-month break-even model comparing no-code monthly costs vs custom dev salary/build time.", tags: ["finance", "break-even", "modeling"], notes: "Uses React hooks for live charts via simple array math. High value for evidence-backed pricing discussions." },
+      { file: "ComparisonMatrix.jsx", name: "Tool Comparison Matrix", category: "matrix", desc: "Multi-tool feature/pricing/scalability comparison matrix with selectable tools.", tags: ["compare", "features", "matrix"], notes: "Comprehensive data table. Directly supports the core compare route and best-of guides." },
+      { file: "IntegrationChecker.jsx", name: "Integration Checker", category: "matrix", desc: "Check native vs third-party integration complexity between popular no-code and adjacent tools.", tags: ["integrations", "api", "checklist"], notes: "Great utility for the 'IntegrationChecker' or pipeline sections of the platform." },
+      { file: "MicrotoolDirectory.jsx", name: "Microtool Directory", category: "directory", desc: "Curated directory of small useful no-code microtools with search, categories, and popular flags.", tags: ["directory", "discovery", "microtools"], notes: "Self-referential. Could become the live version of this very page or a featured tools hub." },
+      { file: "NoCodeRecommendationWizard.jsx", name: "No-Code Recommendation Wizard", category: "wizard", desc: "Answer questions to get matched to the ideal no-code platform (Bubble, Webflow, Glide, etc.).", tags: ["quiz", "recommend", "stack"], notes: "Rich tool data with scores. Already quite polished — strong integration target for main 'Tool Matcher'." },
+      { file: "PricingTracker.jsx", name: "Pricing Tracker", category: "library", desc: "Live-ish pricing database for major no-code tools with plans, recent changes, and affiliate links.", tags: ["pricing", "data", "tracker"], notes: "Structured data. Perfect for keeping the main app's pricing claims fresh and evidence-backed." },
+      { file: "ProjectPlanner.jsx", name: "Project Planner", category: "calculator", desc: "Feature-by-feature hour/cost estimator for building apps with no-code (auth, payments, DB, etc.).", tags: ["planning", "estimation", "features"], notes: "Very practical. Could power an interactive intake or 'Submit a Tool' planning tool." },
+      { file: "StackOfTheMonth.jsx", name: "Stack of the Month", category: "library", desc: "Curated monthly no-code + supporting tool stacks with cost breakdowns and rationale.", tags: ["stacks", "curated", "monthly"], notes: "Content format. Good for a rotating featured section or benchmarks page." },
+      { file: "SuccessStoryDatabase.jsx", name: "Success Story Database", category: "library", desc: "Searchable database of real no-code success stories with revenue, time-to-launch, and ROI metrics.", tags: ["stories", "social-proof", "database"], notes: "Strong social proof material. Consider surfacing in reviews and best-of pages (with proper sourcing)." },
+      { file: "TemplateLibrary.jsx", name: "Template Library", category: "library", desc: "Curated list of no-code templates across platforms with difficulty, price, and clone links.", tags: ["templates", "cloning", "starters"], notes: "Useful reference. Could become a living directory linked from microsites." },
+      { file: "ToolGraveyard.jsx", name: "Tool Graveyard", category: "other", desc: "Archive of acquired, pivoted, or sunset no-code tools with migration advice and lessons learned.", tags: ["graveyard", "history", "risk"], notes: "Excellent for trust/education content. Fits well in methodology or 'why evidence matters' sections." },
+      { file: "bolt-new-microsite.jsx", name: "Bolt.new Full Microsite (Prototype)", category: "microsite", desc: "Complete review microsite for Bolt.new with design system, tabs, and demo content.", tags: ["bolt", "review", "prototype"], notes: "Very close to the new evidence-backed /microsites/bolt-new.html we built. Review for visual patterns only. <a href=\"/microsites/prototypes/bolt-new-microsite.html\" target=\"_blank\" style=\"color:#e8541a;\">View static HTML version →</a>" },
+      { file: "bolt-new-microsite(1).jsx", name: "Bolt.new Microsite (Duplicate)", category: "microsite", desc: "Earlier/alternate version of the Bolt.new microsite.", tags: ["bolt", "duplicate"], notes: "Likely superseded. Use for diffing design ideas only." },
+      { file: "bubble-microsite.jsx", name: "Bubble Microsite (Prototype)", category: "microsite", desc: "Full-featured review microsite for Bubble.io with its own design system.", tags: ["bubble", "review"], notes: "Reference for Bubble review page. Compare against evidence file 16. <a href=\"/microsites/prototypes/bubble-microsite.html\" target=\"_blank\" style=\"color:#e8541a;\">View static HTML version →</a>" },
+      { file: "cursor-microsite.tsx", name: "Cursor Microsite (TSX)", category: "microsite", desc: "Review microsite for Cursor AI IDE with dark theme and component tabs.", tags: ["cursor", "ide", "tsx"], notes: "TSX version. Good reference for AI IDE category reviews." },
+      { file: "lovable-microsite.jsx", name: "Lovable Microsite (Prototype)", category: "microsite", desc: "Main Lovable review microsite prototype.", tags: ["lovable", "review"], notes: "Direct predecessor to our new evidence HTML. <a href=\"/microsites/prototypes/lovable-microsite.html\" target=\"_blank\" style=\"color:#e8541a;\">View static HTML version →</a>" },
+      { file: "lovable-microsite-enhanced.jsx", name: "Lovable Microsite (Enhanced)", category: "microsite", desc: "Enhanced version with animations, charts, credit calculator, radar, etc.", tags: ["lovable", "enhanced", "animations"], notes: "Feature-rich. Many ideas (score bars, calculators) could inform future static-app enhancements after review." },
+      { file: "lovable-review.jsx", name: "Lovable Review Component", category: "microsite", desc: "Standalone Lovable review-focused component.", tags: ["lovable", "review"], notes: "Lighter review module. Consider for inline use inside main reviewDetailPanel." },
+      { file: "ncr-comparisons.jsx", name: "NCR Head-to-Head Comparisons", category: "matrix", desc: "Branded comparison interface for NoCodeReviewed style.", tags: ["compare", "ncr"], notes: "Design system consistent with main site. Useful patterns for compare detail pages." },
+      { file: "ncr-wizard.jsx", name: "NCR Platform Finder Wizard", category: "wizard", desc: "Branded no-code platform recommendation wizard.", tags: ["wizard", "ncr"], notes: "Matches current site aesthetic closely." },
+      { file: "ncr-wizard-branded.jsx", name: "NCR Wizard (Branded Variant)", category: "wizard", desc: "Alternative branded version of the platform finder.", tags: ["wizard", "variant"], notes: "Review for A/B ideas." },
+      { file: "supercool-microsite.jsx", name: "Supercool Microsite", category: "microsite", desc: "Brutalist/editorial style microsite example.", tags: ["demo", "brutalist"], notes: "Design exploration. Interesting aesthetic for future content experiments." },
+      { file: "v0-vercel-microsite.jsx", name: "v0 by Vercel Microsite", category: "microsite", desc: "Review microsite for v0.dev with Vercel design language.", tags: ["v0", "vercel", "ui"], notes: "Strong UI generation reference. Good for the UI generation category. <a href=\"/microsites/prototypes/v0-microsite.html\" target=\"_blank\" style=\"color:#e8541a;\">View static HTML version →</a>" },
+      { file: "webflow-microsite.jsx", name: "Webflow Microsite", category: "microsite", desc: "Full review microsite for Webflow AI / platform.", tags: ["webflow", "review"], notes: "Design system reference for Webflow reviews." },
+      { file: "lovable/", name: "lovable/ (subfolder)", category: "other", desc: "Subdirectory (currently contains only .DS_Store).", tags: ["folder", "empty"], notes: "Appears unused. Safe to ignore or archive." },
+      { file: "microsites/ (subfolder)", name: "microsites/ (subfolder)", category: "other", desc: "Subdirectory (currently empty).", tags: ["folder", "empty"], notes: "Placeholder. Consider moving future microsite prototypes here if needed." }
+    ];
+
+    let currentFilter = 'all';
+    let currentSearch = '';
+
+    function setFilter(cat, el) {
+      currentFilter = cat;
+      document.querySelectorAll('.cl-filter').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+      filterComponents();
+    }
+
+    function filterComponents() {
+      currentSearch = (document.getElementById('search').value || '').toLowerCase().trim();
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+
+      let visible = 0;
+      COMPONENTS.forEach(comp => {
+        const matchesCat = currentFilter === 'all' || comp.category === currentFilter;
+        const haystack = (comp.name + ' ' + comp.desc + ' ' + comp.tags.join(' ') + ' ' + comp.file).toLowerCase();
+        const matchesSearch = !currentSearch || haystack.includes(currentSearch);
+
+        if (matchesCat && matchesSearch) {
+          visible++;
+          const card = createCard(comp);
+          grid.appendChild(card);
+        }
+      });
+
+      document.getElementById('stats').innerHTML = `Showing <strong>${visible}</strong> of ${COMPONENTS.length} items`;
+      if (visible === 0) {
+        grid.innerHTML = '<div class="cl-empty">No components match your filters.<br>Try clearing search or selecting "All".</div>';
+      }
+    }
+
+    function createCard(comp) {
+      const card = document.createElement('div');
+      card.className = 'cl-card';
+
+      const badgeClass = 'cl-badge ' + comp.category;
+
+      let html = `
+        <div class="cl-card-header">
+          <div class="cl-card-title">${comp.name}</div>
+          <div class="${badgeClass}">${comp.category}</div>
+        </div>
+        <div class="cl-desc">${comp.desc}</div>
+        <div class="cl-meta">
+          <span>${comp.file}</span>
+          ${comp.notes ? `<span style="margin-left:auto">• review notes available</span>` : ''}
+        </div>
+        <div class="cl-tags">
+          ${comp.tags.map(t => `<span class="cl-tag">${t}</span>`).join('')}
+        </div>
+        <div class="cl-actions">
+          <a href="/src/components/${comp.file}" target="_blank" class="secondary">Raw</a>
+          <button onclick="showSource('${comp.file}', '${comp.name.replace(/'/g, "\\'")}')" class="secondary">View Code</button>
+          <button onclick="showAndPlay('${comp.file}', '${comp.name.replace(/'/g, "\\'")}')" class="primary">▶ Play in React</button>
+        </div>
+      `;
+
+      if (comp.notes) {
+        html += `<div style="font-size:0.78rem;opacity:0.7;margin-top:4px;border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;">${comp.notes}</div>`;
+      }
+
+      card.innerHTML = html;
+      return card;
+    }
+
+    async function showSource(filename, displayName) {
+      const modal = document.getElementById('modal');
+      const titleEl = document.getElementById('modal-title');
+      const fileEl = document.getElementById('modal-file');
+      const sourceBody = document.getElementById('modal-source-body');
+      const rawLink = document.getElementById('modal-raw');
+      const copyBtn = document.getElementById('modal-copy');
+      const playerContainer = document.getElementById('modal-player-container');
+
+      titleEl.textContent = displayName;
+      fileEl.textContent = filename;
+      rawLink.href = `/src/components/${filename}`;
+      sourceBody.innerHTML = '<div style="padding:20px;opacity:0.6;">Loading source...</div>';
+
+      // reset player
+      if (playerContainer) {
+        playerContainer.innerHTML = '<div style="padding:20px; color:#666; font-size:0.9rem;">Click "Render / Re-render" above to play the component live.</div>';
+      }
+
+      // store the current code for copy and preview
+      window.__currentModalCode = null;
+      window.__currentModalFilename = filename;
+      window.__currentModalDisplayName = displayName;
+
+      modal.classList.add('open');
+
+      try {
+        const res = await fetch(`/src/components/${filename}`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        let text = await res.text();
+        window.__currentModalCode = text;
+
+        // Truncate very long files for preview
+        let displayText = text;
+        if (text.length > 18000) {
+          displayText = text.slice(0, 18000) + '\n\n... (truncated for preview — open raw file for full source)';
+        }
+
+        // Create properly structured Prism block
+        sourceBody.innerHTML = '';
+        const pre = document.createElement('pre');
+        pre.className = 'language-jsx';
+        const code = document.createElement('code');
+        code.className = 'language-jsx';
+        code.textContent = displayText;
+        pre.appendChild(code);
+        sourceBody.appendChild(pre);
+
+        // Highlight with Prism (JSX support loaded)
+        if (window.Prism) {
+          Prism.highlightElement(code);
+        }
+
+        // Update copy button state
+        if (copyBtn) {
+          copyBtn.textContent = 'Copy';
+          copyBtn.disabled = false;
+        }
+      } catch (e) {
+        sourceBody.innerHTML = `<div style="padding:20px;color:#f66">Could not load source: ${e.message}<br><br>Try the "Raw source" link or open the file directly in your editor.</div>`;
+        if (copyBtn) copyBtn.disabled = true;
+      }
+    }
+
+    function loadReactPreviewInModal() {
+      const container = document.getElementById('modal-player-container');
+      const code = window.__currentModalCode;
+      const filename = window.__currentModalFilename || 'component.jsx';
+
+      if (!code || !container) {
+        alert('No code loaded yet.');
+        return;
+      }
+
+      container.innerHTML = '<div style="padding:20px; color:#666;">Building React preview...</div>';
+
+      // Build isolated iframe player
+      const iframe = document.createElement('iframe');
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      iframe.style.minHeight = '300px';
+
+      const srcdoc = buildReactPlayerSrcdoc(code, filename);
+
+      iframe.srcdoc = srcdoc;
+      container.innerHTML = '';
+      container.appendChild(iframe);
+    }
+
+    async function showAndPlay(filename, displayName) {
+      await showSource(filename, displayName);
+      // small delay so the DOM is ready
+      setTimeout(() => {
+        loadReactPreviewInModal();
+      }, 120);
+    }
+
+    function buildReactPlayerSrcdoc(sourceCode, filename) {
+      const safeCode = JSON.stringify(sourceCode);
+      const safeName = JSON.stringify(filename);
+
+      return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Preview: ${filename}</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"><\/script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"><\/script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"><\/script>
+  <style>
+    body { margin:0; padding:12px; font-family: system-ui, -apple-system, sans-serif; background:#fff; color:#111; }
+    #root { min-height: 280px; border: 1px solid #eee; border-radius: 6px; padding: 8px; background: #fafafa; }
+    .error { color: #c00; font-family: monospace; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script>
+    (function() {
+      const React = window.React;
+      const ReactDOM = window.ReactDOM;
+      const Babel = window.Babel;
+
+      let code = ${safeCode};
+      const filename = ${safeName};
+
+      try {
+        // 1. Remove import statements (we provide React globally)
+        let processed = code.replace(/^\\s*import\\s+[\\s\\S]*?from\\s+['"][^'"]+['"];?\\s*$/gm, '');
+
+        // 2. Transpile JSX
+        const result = Babel.transform(processed, {
+          presets: ['react'],
+          filename: filename
+        });
+        const transpiled = result.code;
+
+        // 3. Execute in this scope and capture component
+        let Comp = null;
+
+        // Run the transpiled code
+        // We append detection code
+        const runner = new Function('React', 'ReactDOM', transpiled + \`
+          ;(function detect() {
+            if (typeof module !== 'undefined' && module.exports) {
+              window.__PreviewComp = module.exports.default || module.exports;
+            }
+            if (!window.__PreviewComp) {
+              // Heuristic: find uppercase-starting functions (likely components)
+              const candidates = [];
+              for (let k in this) {
+                if (/^[A-Z]/.test(k) && typeof this[k] === 'function') {
+                  candidates.push(this[k]);
+                }
+              }
+              if (candidates.length > 0) {
+                window.__PreviewComp = candidates[candidates.length-1]; // last one is often the main
+              }
+            }
+          })();
+        \`);
+
+        runner(React, ReactDOM);
+
+        Comp = window.__PreviewComp;
+
+        const rootEl = document.getElementById('root');
+
+        if (Comp && typeof Comp === 'function') {
+          ReactDOM.render(React.createElement(Comp), rootEl);
+        } else {
+          rootEl.innerHTML = '<div class="error">Could not auto-detect the main React component.<br>Common in files without clear default export.<br>Check the source for the main function name.</div>';
+          console.warn('React Player: No component detected. Transpiled code ran but no Comp found. Available after run:', Object.keys(window).filter(k => /^[A-Z]/.test(k) && typeof window[k]==='function'));
+        }
+      } catch (err) {
+        document.getElementById('root').innerHTML = '<div class="error">Error rendering component:\\n' + (err.stack || err.message) + '</div>';
+        console.error('React Player error:', err);
+      }
+    })();
+  <\/script>
+</body>
+</html>`;
+    }
+
+    function copyModalCode() {
+      const copyBtn = document.getElementById('modal-copy');
+      if (!window.__currentModalCode) return;
+
+      navigator.clipboard.writeText(window.__currentModalCode).then(() => {
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => {
+          if (copyBtn) copyBtn.textContent = orig || 'Copy';
+        }, 1500);
+      }).catch(() => {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = window.__currentModalCode;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        const orig = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => { if (copyBtn) copyBtn.textContent = orig || 'Copy'; }, 1500);
+      });
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('open');
+    }
+
+    // Keyboard support
+    document.addEventListener('keydown', function(e) {
+      if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+        e.preventDefault();
+        document.getElementById('search').focus();
+      }
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('modal');
+        if (modal.classList.contains('open')) closeModal();
+      }
+    });
+
+    // Initialize
+    function init() {
+      // Render all initially
+      const grid = document.getElementById('grid');
+      COMPONENTS.forEach(comp => {
+        grid.appendChild(createCard(comp));
+      });
+
+      document.getElementById('stats').innerHTML = `Showing <strong>${COMPONENTS.length}</strong> of ${COMPONENTS.length} items`;
+      document.getElementById('total-count').textContent = COMPONENTS.length;
+
+      // Default filter active
+      const allBtn = document.querySelector('.cl-filter[data-cat="all"]');
+      if (allBtn) allBtn.classList.add('active');
+
+      // Bonus: allow Enter in search to re-filter (already oninput)
+      console.log('%c[Component Library] Index ready. Search, filter, and preview sources directly in browser.', 'color:#666');
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>

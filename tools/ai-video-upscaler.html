@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Video Upscaler • NSFW Expert</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ai-bg: #050507;
+      --ai-panel: #0f1118;
+      --ai-panel-2: #161a24;
+      --ai-panel-3: #1f2432;
+      --ai-line: rgba(255, 255, 255, 0.08);
+      --ai-line-strong: rgba(255, 255, 255, 0.16);
+      --ai-text: #f0f2f7;
+      --ai-muted: #9aa3b5;
+      --ai-faint: #636d80;
+      --ai-accent: #ff3b6b;
+      --ai-accent-2: #ff8a5e;
+      --ai-blue: #5ab0ff;
+      --ai-green: #4ade80;
+      --ai-radius: 10px;
+      --ai-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --ai-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      min-height: 100%;
+      margin: 0;
+      background: var(--ai-bg);
+      color: var(--ai-text);
+      font-family: var(--ai-font);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    button, input, select, textarea { font: inherit; }
+
+    .ai-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+
+    .ai-sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 18px;
+      border-right: 1px solid var(--ai-line);
+      background: rgba(15, 17, 24, 0.95);
+      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .ai-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .ai-brand .mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--ai-accent), var(--ai-accent-2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 18px;
+      color: #fff;
+      box-shadow: 0 10px 30px rgba(255, 59, 107, 0.3);
+    }
+    .ai-brand h1 { margin: 0; font-size: 15px; letter-spacing: -.01em; }
+    .ai-brand p { margin: 2px 0 0; font-size: 11px; color: var(--ai-muted); }
+
+    .ai-privacy {
+      font-size: 12px;
+      padding: 10px 12px;
+      border: 1px solid rgba(74, 222, 128, 0.2);
+      background: rgba(74, 222, 128, 0.06);
+      border-radius: var(--ai-radius);
+      color: #a5f0c8;
+      line-height: 1.4;
+    }
+
+    .ai-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--ai-faint);
+      margin: 8px 0 4px;
+      font-weight: 600;
+    }
+
+    .ai-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--ai-line-strong);
+      background: var(--ai-panel-2);
+      color: var(--ai-text);
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all .1s ease;
+    }
+    .ai-btn:hover { border-color: var(--ai-accent); }
+    .ai-btn.primary {
+      background: linear-gradient(135deg, var(--ai-accent), var(--ai-accent-2));
+      border-color: transparent;
+      color: white;
+      font-weight: 700;
+    }
+    .ai-btn.ghost { background: transparent; }
+
+    .ai-main {
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .ai-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 20px;
+      background: rgba(5, 5, 7, 0.85);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--ai-line);
+    }
+    .ai-topbar h2 { margin: 0; font-size: 18px; letter-spacing: -.02em; }
+
+    .ai-toolbar {
+      padding: 12px 20px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--ai-line);
+      background: var(--ai-panel);
+    }
+
+    .ai-drop {
+      border: 2px dashed var(--ai-line-strong);
+      border-radius: var(--ai-radius);
+      padding: 40px;
+      text-align: center;
+      background: rgba(255,255,255,0.02);
+      margin: 20px;
+      transition: all .2s;
+    }
+    .ai-drop.dragover {
+      border-color: var(--ai-accent);
+      background: rgba(255, 59, 107, 0.05);
+    }
+
+    .ai-video-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .ai-video-box {
+      background: var(--ai-panel);
+      border: 1px solid var(--ai-line);
+      border-radius: var(--ai-radius);
+      overflow: hidden;
+    }
+    .ai-video-box h3 {
+      margin: 0;
+      padding: 10px 14px;
+      background: var(--ai-panel-2);
+      font-size: 13px;
+      border-bottom: 1px solid var(--ai-line);
+    }
+    .ai-video-box video, .ai-video-box canvas {
+      width: 100%;
+      display: block;
+      background: #000;
+    }
+
+    .ai-controls {
+      padding: 12px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .ai-result {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--ai-muted);
+      font-family: var(--ai-mono);
+      white-space: pre-wrap;
+      background: #000;
+      padding: 10px;
+      border-radius: 6px;
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .ai-expert-note {
+      background: rgba(255, 59, 107, 0.1);
+      border: 1px solid rgba(255, 59, 107, 0.3);
+      padding: 12px;
+      border-radius: var(--ai-radius);
+      font-size: 12px;
+      margin: 10px 20px;
+    }
+
+    .ai-stat {
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: var(--ai-panel);
+      border: 1px solid var(--ai-line);
+      color: var(--ai-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="ai-shell">
+    <!-- Sidebar -->
+    <aside class="ai-sidebar">
+      <a class="ai-brand" href="#">
+        <div class="mark">AIU</div>
+        <div>
+          <h1>AI Video Upscaler</h1>
+          <p>NSFW Expert • Godmode</p>
+        </div>
+      </a>
+
+      <div class="ai-privacy">
+        <strong>Local-first.</strong><br>
+        Videos never leave your machine unless you choose an external AI service. All processing stays in-browser or via commands you run.
+      </div>
+
+      <div>
+        <div class="ai-section-title">Mode</div>
+        <select id="mode-select" style="width:100%; padding:8px; background:var(--ai-bg); border:1px solid var(--ai-line-strong); color:var(--ai-text); border-radius:6px;">
+          <option value="basic">Basic (Canvas + Sharpen)</option>
+          <option value="ai-face">AI Face Restore (Expert)</option>
+          <option value="nsfw-detail">NSFW Detail Boost (Skin/Textures)</option>
+          <option value="full-pipeline">Full AI Pipeline (Godmode)</option>
+        </select>
+      </div>
+
+      <div>
+        <div class="ai-section-title">Upscale Factor</div>
+        <select id="scale-select" style="width:100%; padding:8px; background:var(--ai-bg); border:1px solid var(--ai-line-strong); color:var(--ai-text); border-radius:6px;">
+          <option value="2">2x (recommended for most porn)</option>
+          <option value="4">4x (high res source only)</option>
+        </select>
+      </div>
+
+      <div>
+        <div class="ai-section-title">Expert Options (NSFW)</div>
+        <label style="display:block; margin:4px 0; font-size:12px;">
+          <input type="checkbox" id="deinterlace" checked> Deinterlace (old VHS/DVD porn)
+        </label>
+        <label style="display:block; margin:4px 0; font-size:12px;">
+          <input type="checkbox" id="face-restore" checked> Face restoration focus
+        </label>
+        <label style="display:block; margin:4px 0; font-size:12px;">
+          <input type="checkbox" id="temporal"> Temporal smoothing (reduce flicker)
+        </label>
+        <label style="display:block; margin:4px 0; font-size:12px;">
+          <input type="checkbox" id="skin-sharpen"> Skin texture boost
+        </label>
+      </div>
+
+      <div>
+        <div class="ai-section-title">Actions</div>
+        <button class="ai-btn primary" id="btn-load-vault" style="width:100%; margin-bottom:6px;">Load from Adult Media Vault</button>
+        <button class="ai-btn" onclick="window.open('nsfw-gen.html', '_blank')" style="width:100%; margin-bottom:6px;">Generate New Content (nsfw_video/image_gen=true)</button>
+        <button class="ai-btn" onclick="window.open('nsfw-image2video.html', '_blank')" style="width:100%; margin-bottom:6px;">Image-to-Video Uncensored (nsfw_image2video_uncensored=true)</button>
+        <button class="ai-btn" onclick="window.open('explicit-erotic-story-generator.html', '_blank')" style="width:100%; margin-bottom:6px;">Erotic Story + Image Prompts</button>
+        <button class="ai-btn" id="btn-select-folder" style="width:100%;">Select Video Folder</button>
+        <button class="ai-btn ghost" id="btn-clear" style="width:100%;">Clear All</button>
+      </div>
+
+      <div style="margin-top:auto; font-size:11px; color:var(--ai-faint);">
+        ai_video_upscaler=true • nsfw_video/image_gen=true • stacked on nsfw_expert + godmode<br>
+        Generate new with nsfw-gen.html → upscale here → organize in vault
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="ai-main">
+      <div class="ai-topbar">
+        <div>
+          <h2>AI Video Upscaler for NSFW Archives</h2>
+          <div style="color:var(--ai-muted); font-size:12px;">Enhance low-res, old, or compressed adult videos • Local preview + production AI pipeline</div>
+        </div>
+        <div>
+          <span class="ai-stat" id="video-count">0 videos</span>
+        </div>
+      </div>
+
+      <div class="ai-drop" id="drop-zone">
+        <strong>Drop videos here</strong><br>
+        or click to select (mp4, mkv, webm, mov supported for preview)<br>
+        <small>Multiple files OK. Large files will be handled frame-by-frame for preview.</small>
+        <input type="file" id="file-input" multiple accept="video/*" style="display:none;">
+      </div>
+
+      <div id="videos-list" style="padding:0 20px 20px;"></div>
+
+      <div class="ai-expert-note">
+        <strong>NSFW Expert Tip:</strong> For real AI upscaling of porn, use frame extraction + Real-ESRGAN or Topaz Video AI with face restore models (CodeFormer/GFPGAN). 
+        The "Generate AI Script" button below produces ready-to-run commands for macOS/Linux with common tools.
+        Client-side preview uses sharpening + scaling for quick preview only — not true AI.
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const AMV_DEBUG = true; // from previous modes
+      if (AMV_DEBUG) console.log('%c[AI-UPSCALER] ai_video_upscaler=true mode active (NSFW Expert + Godmode stack)', 'color:#ff3b6b');
+
+      let videos = []; // {file, name, url, element, upscaledCanvas?}
+
+      const byId = (id) => document.getElementById(id);
+      const dropZone = byId('drop-zone');
+      const fileInput = byId('file-input');
+      const videosList = byId('videos-list');
+      const videoCount = byId('video-count');
+
+      function updateCount() {
+        videoCount.textContent = `${videos.length} videos`;
+      }
+
+      function escapeHtml(str) {
+        return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      }
+
+      // Basic client-side "AI-like" upscale using canvas + unsharp mask
+      function upscaleFrame(video, scale, options) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { alpha: false });
+
+        const w = video.videoWidth || 640;
+        const h = video.videoHeight || 360;
+
+        canvas.width = w * scale;
+        canvas.height = h * scale;
+
+        // Draw original
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        if (options.sharpen || options.face || options.skin) {
+          // Simple unsharp mask via convolution (client-side "AI" approximation)
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imageData.data;
+          const temp = new Uint8ClampedArray(data);
+
+          const amount = options.skin ? 1.8 : (options.face ? 1.5 : 1.2);
+          const threshold = 5;
+
+          for (let i = 0; i < data.length; i += 4) {
+            // Simple sharpen on luminance approx
+            const r = temp[i], g = temp[i+1], b = temp[i+2];
+            const lum = (r + g + b) / 3;
+
+            // Neighbor average (3x3 approx, simplified)
+            let sum = 0, count = 0;
+            for (let dy = -1; dy <= 1; dy++) {
+              for (let dx = -1; dx <= 1; dx++) {
+                const ni = i + (dy * canvas.width * 4) + (dx * 4);
+                if (ni >= 0 && ni < data.length) {
+                  sum += (temp[ni] + temp[ni+1] + temp[ni+2]) / 3;
+                  count++;
+                }
+              }
+            }
+            const avg = sum / count;
+            const diff = lum - avg;
+
+            if (Math.abs(diff) > threshold) {
+              const factor = amount;
+              data[i] = Math.min(255, Math.max(0, r + diff * factor));
+              data[i+1] = Math.min(255, Math.max(0, g + diff * factor));
+              data[i+2] = Math.min(255, Math.max(0, b + diff * factor));
+            }
+          }
+          ctx.putImageData(imageData, 0, 0);
+        }
+
+        return canvas;
+      }
+
+      function renderVideoItem(vid, index) {
+        const div = document.createElement('div');
+        div.className = 'ai-video-box';
+        div.style.marginBottom = '16px';
+
+        const mode = byId('mode-select').value;
+        const scale = parseInt(byId('scale-select').value);
+
+        const options = {
+          sharpen: mode !== 'basic',
+          face: mode === 'ai-face' || mode === 'full-pipeline',
+          skin: mode === 'nsfw-detail' || mode === 'full-pipeline',
+          deinterlace: byId('deinterlace').checked,
+          temporal: byId('temporal').checked
+        };
+
+        div.innerHTML = `
+          <h3>${escapeHtml(vid.name)} <span style="float:right; color:#666; font-size:11px;">${scale}x • ${mode}</span></h3>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#222;">
+            <div>
+              <div style="padding:6px 10px; font-size:11px; background:#111; color:#888;">Original</div>
+              <video controls style="width:100%; max-height:280px; background:#000;" src="${vid.url}"></video>
+            </div>
+            <div>
+              <div style="padding:6px 10px; font-size:11px; background:#111; color:#888;">AI Upscaled Preview (client-side approx)</div>
+              <canvas id="canvas-${index}" style="width:100%; max-height:280px; background:#000; image-rendering: crisp-edges;"></canvas>
+            </div>
+          </div>
+          <div class="ai-controls">
+            <button class="ai-btn" data-action="preview" data-index="${index}">AI Upscale Preview</button>
+            <button class="ai-btn primary" data-action="script" data-index="${index}">Generate Full AI Script</button>
+            <button class="ai-btn ghost" data-action="remove" data-index="${index}">Remove</button>
+            <span style="margin-left:auto; font-size:11px; color:#666;">${vid.file.size ? (vid.file.size / 1024 / 1024).toFixed(1) + ' MB' : ''}</span>
+          </div>
+          <div id="script-${index}" class="ai-result" style="display:none;"></div>
+        `;
+
+        videosList.appendChild(div);
+
+        // Attach events
+        const previewBtn = div.querySelector('[data-action="preview"]');
+        const scriptBtn = div.querySelector('[data-action="script"]');
+        const removeBtn = div.querySelector('[data-action="remove"]');
+        const canvas = div.querySelector(`#canvas-${index}`);
+
+        previewBtn.addEventListener('click', () => {
+          const videoEl = div.querySelector('video');
+          if (!videoEl) return;
+
+          const upscaled = upscaleFrame(videoEl, scale, options);
+          const ctx = canvas.getContext('2d');
+          canvas.width = upscaled.width;
+          canvas.height = upscaled.height;
+          ctx.drawImage(upscaled, 0, 0);
+
+          // For "temporal" fake a note
+          if (options.temporal) {
+            const note = document.createElement('div');
+            note.style.fontSize = '10px';
+            note.style.color = '#888';
+            note.textContent = 'Temporal smoothing simulated in preview (real AI uses optical flow)';
+            div.querySelector('.ai-controls').appendChild(note);
+            setTimeout(() => note.remove(), 4000);
+          }
+        });
+
+        scriptBtn.addEventListener('click', () => {
+          const scriptArea = div.querySelector(`#script-${index}`);
+          scriptArea.style.display = 'block';
+          scriptArea.textContent = generateAIScript(vid, scale, options, mode);
+        });
+
+        removeBtn.addEventListener('click', () => {
+          if (vid.url) URL.revokeObjectURL(vid.url);
+          videos.splice(index, 1);
+          renderAll();
+        });
+
+        // Auto preview on load for first frame
+        const videoEl = div.querySelector('video');
+        videoEl.addEventListener('loadedmetadata', () => {
+          // Seek a bit in for better preview frame (common in porn intros)
+          videoEl.currentTime = Math.min(5, videoEl.duration * 0.1);
+        });
+        videoEl.addEventListener('seeked', () => {
+          if (canvas.width === 0) {
+            const upscaled = upscaleFrame(videoEl, scale, options);
+            const ctx = canvas.getContext('2d');
+            canvas.width = upscaled.width;
+            canvas.height = upscaled.height;
+            ctx.drawImage(upscaled, 0, 0);
+          }
+        }, { once: true });
+      }
+
+      function generateAIScript(vid, scale, options, mode) {
+        const name = vid.name.replace(/\.[^/.]+$/, "");
+        const outName = `${name}_upscaled_${scale}x`;
+
+        let script = `# AI Video Upscaler Script (generated in ai_video_upscaler=true mode)\n`;
+        script += `# For: ${vid.name}\n`;
+        script += `# Target: ${scale}x | Mode: ${mode}\n\n`;
+
+        script += `# 1. Install prerequisites (macOS example)\n`;
+        script += `brew install ffmpeg\n`;
+        script += `# For real AI: pip install realesrgan  (or use Topaz Video AI GUI)\n\n`;
+
+        script += `# 2. Extract frames (high quality for AI)\n`;
+        script += `mkdir -p frames_${name}\n`;
+        script += `ffmpeg -i "${vid.name}" -vf "fps=30" frames_${name}/frame_%06d.png\n\n`;
+
+        if (options.deinterlace) {
+          script += `# Deinterlace was enabled - apply in extraction if needed\n`;
+        }
+
+        script += `# 3. REAL AI UPSCALE (choose one)\n\n`;
+
+        script += `# Option A: Real-ESRGAN (free, local, excellent for NSFW faces/skin)\n`;
+        script += `# pip install git+https://github.com/xinntao/Real-ESRGAN.git\n`;
+        script += `# realesrgan-ncnn-vulkan -i frames_${name} -o upscaled_frames -n realesrgan-x4plus -s ${scale}\n\n`;
+
+        script += `# Option B: Topaz Video AI (best quality, paid, face restore built-in)\n`;
+        script += `# Use GUI or CLI: topaz --input "${vid.name}" --output ${outName}.mp4 --model iris-2 --scale ${scale} --face-restore\n\n`;
+
+        if (options.face || mode.includes('face')) {
+          script += `# Option C: Face-specific (GFPGAN / CodeFormer for porn faces)\n`;
+          script += `# After upscaling frames, run face restore:\n`;
+          script += `# python codeformer/inference_codeformer.py -i upscaled_frames -o restored --face_upsample -w 0.7 -s ${scale}\n\n`;
+        }
+
+        if (options.skin) {
+          script += `# NSFW skin/texture boost: After AI, run light sharpen in ffmpeg\n`;
+        }
+
+        script += `# 4. Reassemble video (preserve audio, high quality)\n`;
+        script += `ffmpeg -framerate 30 -i upscaled_frames/frame_%06d.png -i "${vid.name}" -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -c:a copy ${outName}.mp4\n\n`;
+
+        script += `# 5. (Optional) Add to your Adult Media Vault\n`;
+        script += `# Open tools/adult-media-vault.html and load the folder containing ${outName}.mp4\n\n`;
+
+        script += `# Expert notes (nsfw_expert + godmode):\n`;
+        script += `# - Use --face-restore for close-ups and talking head porn.\n`;
+        script += `# - Temporal consistency (no flicker) requires video-specific models like Topaz or RIFE + ESRGAN combo.\n`;
+        script += `# - For very old/low-bitrate content, run denoising first: ffmpeg -i input -vf "nlmeans" cleaned.mp4\n`;
+        script += `# - Process in batches. 4x on long videos is slow even on GPU.\n`;
+        script += `# - Legal: Only upscale content you own or that is public domain/free.\n`;
+
+        return script;
+      }
+
+      function renderAll() {
+        videosList.innerHTML = '';
+        videos.forEach((vid, i) => renderVideoItem(vid, i));
+        updateCount();
+      }
+
+      function addVideo(file) {
+        const url = URL.createObjectURL(file);
+        const vid = {
+          file,
+          name: file.name,
+          url,
+          size: file.size
+        };
+        videos.push(vid);
+        renderAll();
+      }
+
+      // Drag & drop
+      dropZone.addEventListener('click', () => fileInput.click());
+      dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+      dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+      dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        for (const file of e.dataTransfer.files) {
+          if (file.type.startsWith('video/')) addVideo(file);
+        }
+      });
+
+      fileInput.addEventListener('change', () => {
+        for (const file of fileInput.files) {
+          if (file.type.startsWith('video/')) addVideo(file);
+        }
+        fileInput.value = '';
+      });
+
+      // Load from vault (simulated - user opens vault separately and can drag files here too)
+      byId('btn-load-vault').addEventListener('click', () => {
+        alert('Open tools/adult-media-vault.html in another tab/window.\nSelect your videos there, then drag the actual video files here (or use the folder selector).\nThe vault and upscaler work great side-by-side for your NSFW archive workflow.');
+      });
+
+      byId('btn-select-folder').addEventListener('click', async () => {
+        if (!window.showDirectoryPicker) {
+          alert('Folder picker requires Chrome/Edge. Use drag & drop or file select instead.');
+          return;
+        }
+        try {
+          const dirHandle = await window.showDirectoryPicker();
+          for await (const entry of dirHandle.values()) {
+            if (entry.kind === 'file') {
+              const file = await entry.getFile();
+              if (file.type.startsWith('video/') || /\.(mp4|mkv|webm|mov|avi)$/i.test(file.name)) {
+                addVideo(file);
+              }
+            }
+          }
+        } catch (e) {
+          if (e.name !== 'AbortError') console.error(e);
+        }
+      });
+
+      byId('btn-clear').addEventListener('click', () => {
+        videos.forEach(v => URL.revokeObjectURL(v.url));
+        videos = [];
+        renderAll();
+      });
+
+      // Re-render previews when options change
+      ['mode-select', 'scale-select', 'deinterlace', 'face-restore', 'temporal', 'skin-sharpen'].forEach(id => {
+        const el = byId(id);
+        if (el) el.addEventListener('change', () => {
+          // Re-render all for simplicity (in real use would be per video)
+          renderAll();
+        });
+      });
+
+      // Keyboard
+      document.addEventListener('keydown', e => {
+        if (e.key === '/' && document.activeElement.tagName === 'BODY') {
+          e.preventDefault();
+          // focus first video or something
+        }
+      });
+
+      // Boot message
+      if (AMV_DEBUG) {
+        console.log('%c[AI-UPSCALER] Ready. Drop videos or use folder picker. Use "Generate Full AI Script" for production Real-ESRGAN / Topaz / CodeFormer pipelines.', 'color:#888');
+      }
+
+      // Welcome note
+      setTimeout(() => {
+        if (videos.length === 0) {
+          console.log('%c[AI-UPSCALER] ai_video_upscaler=true • nsfw_expert=true • For best results on adult content: face restoration + 2x on 720p sources usually looks best.', 'color:#666');
+        }
+      }, 2000);
+    })();
+  </script>
+</body>
+</html>

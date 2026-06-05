@@ -1,0 +1,16 @@
+{
+  "id": "doc-site-NndIeiNv",
+  "source": "site-audit",
+  "source_account": "admin-local",
+  "title": "Site Audit: inventory",
+  "path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z/universal-site-audit.json",
+  "imported_at": "2026-06-04T04:00:42.708Z",
+  "content_type": "json",
+  "content": "{\n  \"totalFilesScanned\": 960,\n  \"byCategory\": {\n    \"ignored\": 408,\n    \"operational_infrastructure\": 221,\n    \"production_core\": 33,\n    \"evidence_sources\": 27,\n    \"needs_human_review\": 4,\n    \"microsite_sources\": 15,\n    \"review_prototypes\": 190,\n    \"tool_assets\": 34,\n    \"unsafe_quarantine\": 15,\n    \"utility_tools\": 13\n  },\n  \"safetySummary\": {\n    \"A\": 149,\n    \"B\": 36,\n    \"C\": 17,\n    \"D\": 346,\n    \"E\": 412\n  },\n  \"quarantinedCount\": 346\n}",
+  "tags": [
+    "site-audit",
+    "inventory",
+    "admin"
+  ],
+  "artifacts": []
+}

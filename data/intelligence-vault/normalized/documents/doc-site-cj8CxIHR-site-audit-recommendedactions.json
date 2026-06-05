@@ -1,0 +1,16 @@
+{
+  "id": "doc-site-cj8CxIHR",
+  "source": "site-audit",
+  "source_account": "admin-local",
+  "title": "Site Audit: recommendedActions",
+  "path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_04-59-40Z/universal-site-audit.json",
+  "imported_at": "2026-06-04T05:00:01.482Z",
+  "content_type": "json",
+  "content": "[\n  {\n    \"priority\": \"critical\",\n    \"action\": \"Remove or confirm no links to quarantined unsafe files\",\n    \"reason\": \"Unsafe exposure audit\"\n  },\n  {\n    \"priority\": \"high\",\n    \"action\": \"Capture evidence files for missing numbers\",\n    \"reason\": \"Evidence coverage\"\n  },\n  {\n    \"priority\": \"low\",\n    \"action\": \"Re-run audit after fixes and ingest inbox to Vault\",\n    \"reason\": \"Parser handoff\"\n  }\n]",
+  "tags": [
+    "site-audit",
+    "recommendedActions",
+    "admin"
+  ],
+  "artifacts": []
+}

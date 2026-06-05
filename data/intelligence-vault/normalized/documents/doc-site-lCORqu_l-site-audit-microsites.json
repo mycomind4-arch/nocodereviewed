@@ -1,0 +1,16 @@
+{
+  "id": "doc-site-lCORqu_l",
+  "source": "site-audit",
+  "source_account": "admin-local",
+  "title": "Site Audit: microsites",
+  "path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z/universal-site-audit.json",
+  "imported_at": "2026-06-04T04:00:42.708Z",
+  "content_type": "json",
+  "content": "{\n  \"checked\": 10,\n  \"results\": [\n    {\n      \"slug\": \"lovable\",\n      \"fileExists\": true,\n      \"status\": \"complete_funnel\"\n    },\n    {\n      \"slug\": \"bolt-new\",\n      \"fileExists\": true,\n      \"status\": \"complete_funnel\"\n    },\n    {\n      \"slug\": \"replit\",\n      \"fileExists\": true,\n      \"status\": \"complete_funnel\"\n    },\n    {\n      \"slug\": \"cursor\",\n      \"fileExists\": false,\n      \"status\": \"pending_funnel\"\n    },\n    {\n      \"slug\": \"windsurf\",\n      \"fileExists\": false,\n      \"status\": \"pending_funnel\"\n    },\n    {\n      \"slug\": \"webflow\",\n      \"fileExists\": false,\n      \"status\": \"pending_funnel\"\n    },\n    {\n      \"slug\": \"bubble\",\n      \"fileExists\": false,\n      \"status\": \"pending_funnel\"\n    },\n    {\n      \"slug\": \"framer\",\n      \"fileExists\": false,\n      \"status\": \"pending_funnel\"\n    },\n    {\n      \"slug\": \"v0\",\n      \"fileExists\": false,\n      \"status\": \"pending_funnel\"\n    },\n    {\n      \"slug\": \"shopify\",\n      \"fileExists\": false,\n      \"status\": \"pending_funnel\"\n    }\n  ]\n}",
+  "tags": [
+    "site-audit",
+    "microsites",
+    "admin"
+  ],
+  "artifacts": []
+}

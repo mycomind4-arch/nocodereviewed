@@ -1,0 +1,78 @@
+[
+  {
+    "tag": "site-audit",
+    "count": 15
+  },
+  {
+    "tag": "admin",
+    "count": 12
+  },
+  {
+    "tag": "detected",
+    "count": 4
+  },
+  {
+    "tag": "document",
+    "count": 3
+  },
+  {
+    "tag": "evidence_claim",
+    "count": 2
+  },
+  {
+    "tag": "inventory",
+    "count": 1
+  },
+  {
+    "tag": "sourceSafety",
+    "count": 1
+  },
+  {
+    "tag": "routes",
+    "count": 1
+  },
+  {
+    "tag": "links",
+    "count": 1
+  },
+  {
+    "tag": "evidence",
+    "count": 1
+  },
+  {
+    "tag": "reviews",
+    "count": 1
+  },
+  {
+    "tag": "microsites",
+    "count": 1
+  },
+  {
+    "tag": "vibeAuditorGate",
+    "count": 1
+  },
+  {
+    "tag": "assets",
+    "count": 1
+  },
+  {
+    "tag": "unsafeExposure",
+    "count": 1
+  },
+  {
+    "tag": "blog",
+    "count": 1
+  },
+  {
+    "tag": "recommendedActions",
+    "count": 1
+  },
+  {
+    "tag": "workflow",
+    "count": 1
+  },
+  {
+    "tag": "benchmark",
+    "count": 1
+  }
+]

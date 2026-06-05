@@ -1,0 +1,16 @@
+{
+  "id": "doc-site-yGbZhQex",
+  "source": "site-audit",
+  "source_account": "admin-local",
+  "title": "Site Audit: vibeAuditorGate",
+  "path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_03-45-55Z/universal-site-audit.json",
+  "imported_at": "2026-06-04T04:00:42.708Z",
+  "content_type": "json",
+  "content": "{\n  \"auditorPageExists\": true,\n  \"linksFromReviews\": true,\n  \"note\": \"Vibe Auditor criteria/links detected in review templates (not executed by this audit)\",\n  \"status\": \"detected\"\n}",
+  "tags": [
+    "site-audit",
+    "vibeAuditorGate",
+    "admin"
+  ],
+  "artifacts": []
+}

@@ -1,0 +1,724 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Redwood Trellis Retail + Shop Tool Benchmark | NoCodeReviewed</title>
+  <meta name="description" content="A real-world benchmark test for AI app builders, no-code tools, and vibe-coding platforms: can they build a retail trellis website plus internal shop-management system from exact product constraints?" />
+  <style>
+    :root {
+      --bg: #f7f1e8;
+      --panel: #fffaf2;
+      --panel-2: #f0e2d1;
+      --ink: #241712;
+      --muted: #6b5a4c;
+      --line: rgba(78, 49, 33, .18);
+      --redwood: #8b3f24;
+      --redwood-dark: #542615;
+      --moss: #476647;
+      --moss-dark: #2f4a32;
+      --clay: #bd6844;
+      --gold: #d7a84d;
+      --success: #2f6b43;
+      --warning: #9a5b16;
+      --danger: #9b3328;
+      --shadow: 0 20px 70px rgba(48, 28, 16, .14);
+      --radius: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(139, 63, 36, .18), transparent 30%),
+        radial-gradient(circle at 95% 5%, rgba(71, 102, 71, .16), transparent 34%),
+        linear-gradient(180deg, #fbf4eb 0%, var(--bg) 45%, #efe2d0 100%);
+      line-height: 1.55;
+    }
+
+    a { color: inherit; }
+    .page { overflow: hidden; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 250, 242, .88);
+      backdrop-filter: blur(16px);
+    }
+    .topbar-inner {
+      min-height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: -.04em;
+    }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      color: white;
+      background: linear-gradient(145deg, var(--redwood), var(--moss-dark));
+      box-shadow: 0 10px 30px rgba(84, 38, 21, .24);
+      font-size: 13px;
+    }
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .nav a { text-decoration: none; }
+    .nav a:hover { color: var(--redwood-dark); }
+
+    .hero {
+      padding: 82px 0 54px;
+      position: relative;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 34px;
+      align-items: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 250, 242, .78);
+      color: var(--redwood-dark);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .pulse {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      background: var(--success);
+      box-shadow: 0 0 0 6px rgba(47, 107, 67, .13);
+    }
+    h1 {
+      margin: 22px 0 18px;
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+      font-size: clamp(42px, 7vw, 86px);
+      line-height: .93;
+      letter-spacing: -.065em;
+    }
+    .hero-lead {
+      max-width: 760px;
+      font-size: clamp(18px, 2vw, 22px);
+      color: var(--muted);
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+    .btn {
+      border: 0;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 14px;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, var(--redwood), var(--redwood-dark));
+      box-shadow: 0 16px 35px rgba(84, 38, 21, .25);
+    }
+    .btn-secondary {
+      color: var(--redwood-dark);
+      background: rgba(255, 250, 242, .9);
+      border: 1px solid var(--line);
+    }
+    .hero-card {
+      border: 1px solid var(--line);
+      border-radius: 30px;
+      background: rgba(255, 250, 242, .78);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .hero-visual {
+      padding: 24px;
+      background:
+        linear-gradient(135deg, rgba(84,38,21,.94), rgba(47,74,50,.92)),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.08) 0 1px, transparent 1px 72px),
+        repeating-linear-gradient(0deg, rgba(255,255,255,.08) 0 1px, transparent 1px 72px);
+      color: white;
+      min-height: 360px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+    .trellis-lines {
+      position: absolute;
+      inset: 22px;
+      opacity: .3;
+      background:
+        repeating-linear-gradient(90deg, #fff 0 3px, transparent 3px 56px),
+        repeating-linear-gradient(0deg, #fff 0 3px, transparent 3px 56px);
+      border-radius: 24px;
+      transform: rotate(-2deg);
+    }
+    .visual-content { position: relative; z-index: 1; }
+    .score-big { font-size: 72px; line-height: .85; font-weight: 950; letter-spacing: -.08em; }
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .metric-mini {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 18px;
+      padding: 14px;
+    }
+    .metric-mini strong { display: block; font-size: 22px; }
+    .metric-mini span { display: block; font-size: 12px; opacity: .82; }
+
+    section { padding: 54px 0; }
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+    .section-kicker {
+      color: var(--redwood);
+      font-size: 13px;
+      font-weight: 950;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    h2 {
+      margin: 6px 0 0;
+      font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+      font-size: clamp(32px, 4.4vw, 54px);
+      line-height: 1;
+      letter-spacing: -.045em;
+    }
+    .section-copy { max-width: 760px; color: var(--muted); font-size: 17px; }
+
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 250, 242, .78);
+      box-shadow: 0 14px 45px rgba(48, 28, 16, .08);
+      padding: 22px;
+    }
+    .card h3 { margin: 0 0 8px; font-size: 19px; letter-spacing: -.03em; }
+    .card p { margin: 0; color: var(--muted); }
+
+    .catalog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .catalog {
+      border: 1px solid var(--line);
+      border-radius: 26px;
+      background: rgba(255, 250, 242, .86);
+      overflow: hidden;
+      box-shadow: 0 18px 50px rgba(48,28,16,.09);
+    }
+    .catalog-header {
+      padding: 22px;
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(139,63,36,.13), rgba(71,102,71,.1));
+      border-bottom: 1px solid var(--line);
+    }
+    .catalog-header h3 { margin: 0; font-size: 22px; letter-spacing: -.035em; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      white-space: nowrap;
+      border-radius: 999px;
+      padding: 7px 11px;
+      background: var(--moss);
+      color: white;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .product-list { padding: 10px 18px 18px; }
+    .product-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      font-weight: 800;
+    }
+    .product-row:last-child { border-bottom: 0; }
+    .price { color: var(--redwood-dark); font-weight: 950; }
+
+    .rubric {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .score-table, .leaderboard {
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 20px;
+      background: rgba(255,250,242,.88);
+      box-shadow: 0 14px 45px rgba(48,28,16,.08);
+    }
+    th, td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--redwood-dark);
+      background: rgba(139,63,36,.1);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    tr:last-child td { border-bottom: 0; }
+    td strong { font-weight: 950; }
+
+    .fail-list { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+    .fail-list li {
+      border: 1px solid rgba(155, 51, 40, .2);
+      background: rgba(155, 51, 40, .06);
+      color: #5f211c;
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-weight: 750;
+    }
+
+    .leaderboard-wrap { overflow-x: auto; border-radius: 22px; }
+    .rank { font-size: 20px; font-weight: 950; color: var(--redwood); }
+    .status { display: inline-flex; border-radius: 999px; padding: 6px 10px; background: rgba(154,91,22,.1); color: var(--warning); font-size: 12px; font-weight: 950; }
+
+    .prompt-box {
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: #211713;
+      color: #fff7ec;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .prompt-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 18px 20px;
+      background: rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .prompt-title { font-weight: 950; letter-spacing: -.02em; }
+    .copy-btn {
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.1);
+      color: white;
+      border-radius: 999px;
+      padding: 9px 12px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    pre {
+      margin: 0;
+      padding: 22px;
+      overflow-x: auto;
+      max-height: 560px;
+      font-size: 13px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+    }
+
+    .evidence-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .evidence-item {
+      padding: 16px;
+      min-height: 116px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: rgba(255,250,242,.78);
+      font-weight: 900;
+    }
+    .evidence-item span { display: block; margin-top: 8px; color: var(--muted); font-size: 13px; font-weight: 650; }
+
+    .cta-band {
+      margin: 42px 0 76px;
+      border-radius: 34px;
+      padding: 36px;
+      background: linear-gradient(135deg, var(--redwood-dark), var(--moss-dark));
+      color: white;
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+    }
+    .cta-band h2 { margin: 0; color: white; }
+    .cta-band p { margin: 10px 0 0; color: rgba(255,255,255,.76); max-width: 760px; }
+    .cta-band .btn-secondary { background: rgba(255,255,255,.12); color: white; border-color: rgba(255,255,255,.18); }
+
+    .footer {
+      border-top: 1px solid var(--line);
+      padding: 34px 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 920px) {
+      .hero-grid, .rubric, .catalog-grid, .cta-band { grid-template-columns: 1fr; }
+      .cards { grid-template-columns: 1fr; }
+      .evidence-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav { display: none; }
+      .hero { padding-top: 52px; }
+    }
+    @media (max-width: 560px) {
+      .wrap { width: min(100% - 26px, 1180px); }
+      .hero-metrics { grid-template-columns: 1fr; }
+      .evidence-grid { grid-template-columns: 1fr; }
+      .catalog-header { align-items: start; flex-direction: column; }
+      th, td { padding: 12px 10px; font-size: 13px; }
+      .cta-band { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <div class="wrap topbar-inner">
+        <div class="brand"><div class="brand-mark">NCR</div><span>NoCodeReviewed Benchmark Lab</span></div>
+        <nav class="nav" aria-label="Benchmark navigation">
+          <a href="#challenge">Challenge</a>
+          <a href="#catalog">Catalog</a>
+          <a href="#rubric">Rubric</a>
+          <a href="#results">Results</a>
+          <a href="#prompt">Prompt</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div>
+            <div class="eyebrow"><span class="pulse"></span> Flagship real-world benchmark</div>
+            <h1>Can AI app builders handle a real retail shop?</h1>
+            <p class="hero-lead">This benchmark tests whether no-code, AI coding, and vibe-code platforms can build a public redwood trellis store plus internal shop-management tool while preserving exact product data, prices, workflows, and operational constraints.</p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#results">View Results</a>
+              <a class="btn btn-secondary" href="#prompt">Copy Benchmark Prompt</a>
+              <a class="btn btn-secondary" href="#catalog">Inspect Catalog</a>
+            </div>
+          </div>
+          <aside class="hero-card" aria-label="Benchmark summary">
+            <div class="hero-visual">
+              <div class="trellis-lines"></div>
+              <div class="visual-content">
+                <div class="score-big">100</div>
+                <div style="font-weight: 950; font-size: 24px; letter-spacing: -.04em;">point scoring rubric</div>
+                <p style="max-width: 430px; color: rgba(255,255,255,.78);">A platform only scores well if it builds the real catalog, customer shopping flow, quote workflow, admin tool, data model, and deployable app.</p>
+              </div>
+              <div class="visual-content hero-metrics">
+                <div class="metric-mini"><strong>19</strong><span>real products</span></div>
+                <div class="metric-mini"><strong>2</strong><span>product lines</span></div>
+                <div class="metric-mini"><strong>$32–$278</strong><span>exact prices</span></div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="challenge">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">The challenge</div>
+              <h2>More than a landing page.</h2>
+            </div>
+            <p class="section-copy">Most AI builder demos look good in screenshots. This test asks something harder: can the platform preserve real business constraints and produce a usable retail + operations system?</p>
+          </div>
+          <div class="cards">
+            <article class="card"><h3>Public retail site</h3><p>Homepage, shop all, product detail, size guide, materials page, cart, and quote forms built around the real trellis catalog.</p></article>
+            <article class="card"><h3>Internal shop tool</h3><p>Dashboard, product manager, quote manager, job tracker, lumber tracker, settings, and JSON backup/restore.</p></article>
+            <article class="card"><h3>Strict constraints</h3><p>No invented products, no changed prices, no fake unrelated categories, no dead buttons, and no generic SaaS filler.</p></article>
+          </div>
+        </div>
+      </section>
+
+      <section id="catalog">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Required catalog</div>
+              <h2>Exact products. Exact prices.</h2>
+            </div>
+            <p class="section-copy">Any platform that changes prices, skips products, or invents unrelated garden products loses catalog-accuracy points.</p>
+          </div>
+          <div class="catalog-grid">
+            <article class="catalog">
+              <div class="catalog-header"><h3>3/4&quot; Open Grid Trellis</h3><span class="pill">10 products</span></div>
+              <div class="product-list">
+                <div class="product-row"><span>2' x 2'</span><span class="price">$32</span></div>
+                <div class="product-row"><span>3' x 2'</span><span class="price">$38</span></div>
+                <div class="product-row"><span>4' x 2'</span><span class="price">$48</span></div>
+                <div class="product-row"><span>5' x 2'</span><span class="price">$58</span></div>
+                <div class="product-row"><span>6' x 2'</span><span class="price">$68</span></div>
+                <div class="product-row"><span>4' x 3'</span><span class="price">$78</span></div>
+                <div class="product-row"><span>5' x 3'</span><span class="price">$92</span></div>
+                <div class="product-row"><span>4' x 4'</span><span class="price">$110</span></div>
+                <div class="product-row"><span>5' x 4'</span><span class="price">$128</span></div>
+                <div class="product-row"><span>6' x 4'</span><span class="price">$168</span></div>
+              </div>
+            </article>
+            <article class="catalog">
+              <div class="catalog-header"><h3>1 1/8&quot; Premium Trellis</h3><span class="pill">9 products</span></div>
+              <div class="product-list">
+                <div class="product-row"><span>4' x 2'</span><span class="price">$68</span></div>
+                <div class="product-row"><span>5' x 2'</span><span class="price">$78</span></div>
+                <div class="product-row"><span>6' x 2'</span><span class="price">$92</span></div>
+                <div class="product-row"><span>4' x 3'</span><span class="price">$118</span></div>
+                <div class="product-row"><span>5' x 3'</span><span class="price">$138</span></div>
+                <div class="product-row"><span>6' x 3'</span><span class="price">$158</span></div>
+                <div class="product-row"><span>4' x 4'</span><span class="price">$188</span></div>
+                <div class="product-row"><span>5' x 4'</span><span class="price">$218</span></div>
+                <div class="product-row"><span>6' x 4'</span><span class="price">$278</span></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="rubric">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Scoring rubric</div>
+              <h2>100-point benchmark.</h2>
+            </div>
+            <p class="section-copy">The rubric rewards platforms that build a real, useful system rather than a shallow mockup.</p>
+          </div>
+          <div class="rubric">
+            <table class="score-table">
+              <thead><tr><th>Category</th><th>Points</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Real catalog accuracy</strong><br>All 19 products, exact prices, no invented categories.</td><td>20</td></tr>
+                <tr><td><strong>Public site completeness</strong><br>Homepage, shop, product detail, size guide, quote, materials, contact.</td><td>15</td></tr>
+                <tr><td><strong>Product browsing/filtering/cart</strong><br>Filters, sorting, add to cart, quantity, subtotal.</td><td>15</td></tr>
+                <tr><td><strong>Quote/bulk workflow</strong><br>Wholesale, nursery, delivery, custom and bulk quote capture.</td><td>10</td></tr>
+                <tr><td><strong>Internal shop tool</strong><br>Products, quotes, jobs, lumber, settings, backups.</td><td>15</td></tr>
+                <tr><td><strong>Data model quality</strong><br>Readable structure and durable product/order/quote/job data.</td><td>10</td></tr>
+                <tr><td><strong>Design quality</strong><br>Warm, local, handmade, responsive, product-focused interface.</td><td>10</td></tr>
+                <tr><td><strong>Deploy/build reliability</strong><br>Builds cleanly, no broken navigation, deployable output.</td><td>5</td></tr>
+              </tbody>
+            </table>
+            <div class="card">
+              <h3>Automatic failure conditions</h3>
+              <ul class="fail-list">
+                <li>Invents products not in the catalog</li>
+                <li>Changes product prices or sizes</li>
+                <li>Builds only a landing page</li>
+                <li>Skips the internal shop tool</li>
+                <li>Adds fake unrelated garden products</li>
+                <li>Uses buttons or routes that do nothing</li>
+                <li>Cannot build or deploy</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="results">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Platform results</div>
+              <h2>Leaderboard.</h2>
+            </div>
+            <p class="section-copy">Scores should be updated only after each platform is tested with the same prompt and the result is inspected against the rubric.</p>
+          </div>
+          <div class="leaderboard-wrap">
+            <table class="leaderboard">
+              <thead>
+                <tr><th>Rank</th><th>Platform</th><th>Score</th><th>Catalog</th><th>Public Site</th><th>Cart</th><th>Admin Tool</th><th>Build</th><th>Verdict</th></tr>
+              </thead>
+              <tbody>
+                <tr><td class="rank">—</td><td><strong>Codex</strong></td><td>TBD</td><td>/20</td><td>/15</td><td>/15</td><td>/15</td><td>/5</td><td><span class="status">Not tested</span></td></tr>
+                <tr><td class="rank">—</td><td><strong>Lovable</strong></td><td>TBD</td><td>/20</td><td>/15</td><td>/15</td><td>/15</td><td>/5</td><td><span class="status">Not tested</span></td></tr>
+                <tr><td class="rank">—</td><td><strong>Bolt</strong></td><td>TBD</td><td>/20</td><td>/15</td><td>/15</td><td>/15</td><td>/5</td><td><span class="status">Not tested</span></td></tr>
+                <tr><td class="rank">—</td><td><strong>Replit</strong></td><td>TBD</td><td>/20</td><td>/15</td><td>/15</td><td>/15</td><td>/5</td><td><span class="status">Not tested</span></td></tr>
+                <tr><td class="rank">—</td><td><strong>v0</strong></td><td>TBD</td><td>/20</td><td>/15</td><td>/15</td><td>/15</td><td>/5</td><td><span class="status">Not tested</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="evidence">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Evidence requirements</div>
+              <h2>What gets captured.</h2>
+            </div>
+            <p class="section-copy">Each platform result page should include screenshots, generated URLs or repos, build logs, scoring notes, and a checklist showing exactly what passed or failed.</p>
+          </div>
+          <div class="evidence-grid">
+            <div class="evidence-item">Homepage screenshot<span>Did it explain the exact product lines?</span></div>
+            <div class="evidence-item">Shop screenshot<span>Did all 19 products appear correctly?</span></div>
+            <div class="evidence-item">Product page screenshot<span>Did specs and CTAs work?</span></div>
+            <div class="evidence-item">Cart screenshot<span>Did quantity and subtotal work?</span></div>
+            <div class="evidence-item">Quote form screenshot<span>Did bulk/custom flow capture usable data?</span></div>
+            <div class="evidence-item">Admin dashboard screenshot<span>Did internal operations exist?</span></div>
+            <div class="evidence-item">Build log<span>Did the app build and deploy?</span></div>
+            <div class="evidence-item">Manual scoring notes<span>Where did the platform succeed or fail?</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="prompt">
+        <div class="wrap">
+          <div class="section-head">
+            <div>
+              <div class="section-kicker">Run the test</div>
+              <h2>Copy the benchmark prompt.</h2>
+            </div>
+            <p class="section-copy">Use this same prompt across platforms to compare output quality under consistent constraints.</p>
+          </div>
+          <div class="prompt-box">
+            <div class="prompt-head"><div class="prompt-title">Redwood Trellis Retail + Shop Tool Benchmark Prompt</div><button class="copy-btn" type="button" onclick="copyPrompt()">Copy prompt</button></div>
+            <pre id="benchmarkPrompt">Build a full-stack retail website and internal shop tool for a real redwood trellis business.
+
+The business sells handmade redwood trellises in standard sizes. Do not invent products. Use only the product catalog below.
+
+Product Line 1: 3/4 Inch Open Grid Trellis
+2' x 2' — $32
+3' x 2' — $38
+4' x 2' — $48
+5' x 2' — $58
+6' x 2' — $68
+4' x 3' — $78
+5' x 3' — $92
+4' x 4' — $110
+5' x 4' — $128
+6' x 4' — $168
+
+Product Line 2: 1 1/8 Inch Premium Trellis
+4' x 2' — $68
+5' x 2' — $78
+6' x 2' — $92
+4' x 3' — $118
+5' x 3' — $138
+6' x 3' — $158
+4' x 4' — $188
+5' x 4' — $218
+6' x 4' — $278
+
+Create two sides:
+1. Public retail website
+2. Internal shop-management tool
+
+Public website requirements:
+- Homepage with headline: Handmade Redwood Trellises Built in Standard Sizes
+- Shop All page showing all 19 products
+- Product detail page/template
+- Size Guide
+- Wholesale / Nursery Orders page
+- Request Custom / Bulk Quote page
+- Materials / Redwood Quality page
+- Cart / Checkout or order-request flow
+
+Internal shop tool requirements:
+- Dashboard
+- Product Manager
+- Quote Manager
+- Job Tracker
+- Lumber Tracker
+- Settings and Backup
+
+The app must preserve exact product names, sizes, and prices. Do not add unrelated products such as pergolas, arched trellises, benches, planters, fences, or furniture.
+
+Design style: handmade, local, warm, redwood, practical, premium but not fake luxury. Use redwood brown, bark brown, moss green, warm cream, linen, and muted clay.
+
+Success criteria:
+1. All 19 real products appear correctly.
+2. Product prices match the catalog exactly.
+3. Customers can browse, filter, view, and add real trellises to cart.
+4. Customers can request bulk/custom/delivery quotes.
+5. Internal admin can manage products, quotes, jobs, lumber, settings, and backups.
+6. No fake or unrelated products are invented.
+7. The app is deployable.
+8. The final app is useful for a real small woodworking shop.</pre>
+          </div>
+        </div>
+      </section>
+
+      <div class="wrap">
+        <div class="cta-band">
+          <div>
+            <h2>Use this as a repeatable NoCodeReviewed test.</h2>
+            <p>Run the same benchmark across platforms, capture the evidence, score the output, and publish the results as an authority-grade comparison.</p>
+          </div>
+          <a class="btn btn-secondary" href="#results">Update Results</a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">NoCodeReviewed Benchmark Lab · Redwood Trellis Retail + Shop Tool Benchmark</div>
+    </footer>
+  </div>
+  <script>
+    function copyPrompt() {
+      const prompt = document.getElementById('benchmarkPrompt').innerText;
+      navigator.clipboard.writeText(prompt).then(() => {
+        const btn = document.querySelector('.copy-btn');
+        const original = btn.innerText;
+        btn.innerText = 'Copied';
+        setTimeout(() => btn.innerText = original, 1400);
+      }).catch(() => {
+        alert('Copy failed. Select the prompt text manually.');
+      });
+    }
+  </script>
+</body>
+</html>

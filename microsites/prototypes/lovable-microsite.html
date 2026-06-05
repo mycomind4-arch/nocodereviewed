@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lovable • Full Review Microsite (Prototype)</title>
+  <style>
+    :root {
+      --accent: #e8541a;
+      --text: #0f0e0d;
+      --card: #faf8f4;
+      --bg: #f0ede7;
+      --muted: #72685f;
+      --border: #e0dbd3;
+      --good: #1a6e3c;
+      --warn: #b83020;
+      --good-bg: #edf7f2;
+      --warn-bg: #fdf0ee;
+      --nav-h: 60px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+    }
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      padding: 0 24px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-tab {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+    }
+    .nav-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .hero {
+      background: var(--text);
+      color: #faf8f4;
+      padding: 60px 40px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 0 0 20px 20px;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 260px;
+      height: 260px;
+      background: var(--accent);
+      opacity: 0.12;
+      border-radius: 50%;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+    .section {
+      margin-bottom: 48px;
+    }
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px 24px;
+      margin-bottom: 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+    .stat-num {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+    .badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 99px;
+    }
+    .badge.accent { background: #fde8de; color: var(--accent); }
+    .badge.good { background: var(--good-bg); color: var(--good); }
+    .badge.warn { background: var(--warn-bg); color: var(--warn); }
+    .prose {
+      font-size: 15px;
+      line-height: 1.8;
+      color: #2e2a25;
+    }
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 36px 0;
+    }
+    .alert {
+      border-left: 4px solid;
+      padding: 18px 22px;
+      border-radius: 0 12px 12px 0;
+      margin-bottom: 20px;
+    }
+    .alert.good { border-color: var(--good); background: var(--good-bg); }
+    .alert.warn { border-color: var(--warn); background: var(--warn-bg); }
+    .footer-nav {
+      border-top: 1px solid var(--border);
+      padding-top: 32px;
+      margin-top: 48px;
+      display: flex;
+      justify-content: space-between;
+    }
+    button {
+      font-family: inherit;
+    }
+    .content-page {
+      display: none;
+    }
+    .content-page.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <strong style="font-size:18px;">Lovable Review</strong>
+    <span style="margin-left:auto; font-size:12px; color:#888;">Prototype from src/components/lovable-microsite.jsx</span>
+  </div>
+
+  <div class="nav-tabs" id="nav-tabs">
+    <!-- populated by JS -->
+  </div>
+
+  <div class="hero">
+    <div style="max-width:860px;margin:0 auto;position:relative;z-index:1;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#f4a261;margin-bottom:14px;">No-Code Reviewed · In-Depth Platform Review</div>
+      <h1 style="font-size:clamp(30px,5vw,52px);font-weight:800;letter-spacing:-0.025em;line-height:1.08;margin-bottom:18px;color:#faf8f4;">
+        Lovable<br>Complete Review 2026
+      </h1>
+      <p style="font-size:17px;color:rgba(250,248,244,0.72);line-height:1.65;max-width:580px;margin-bottom:32px;">
+        The AI app builder that lets anyone go from idea to deployed full-stack web app in hours. We tested every major capability, dug into the security record, and built real apps to give you the most thorough Lovable review available.
+      </p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <button onclick="document.getElementById('nav-tabs').scrollIntoView({behavior:'smooth'})" 
+                style="background:#e8541a;color:white;border:none;padding:12px 24px;border-radius:8px;font-weight:600;cursor:pointer;">
+          Explore Features
+        </button>
+        <button onclick="switchTab('verdict')" 
+                style="background:transparent;color:#faf8f4;border:1px solid rgba(250,248,244,0.3);padding:12px 24px;border-radius:8px;font-weight:600;cursor:pointer;">
+          Jump to Verdict
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Overview -->
+    <div id="page-overview" class="content-page active">
+      <div class="section">
+        <div class="eyebrow">Platform Overview</div>
+        <h2 style="font-size:32px;font-weight:800;margin-bottom:12px;">Lovable: Prompt-to-Full-Stack in Minutes</h2>
+        <div class="prose">
+          Lovable is an AI development platform that generates complete web applications from natural language prompts. It combines code generation, visual editing, Supabase backend integration, and one-click deployment.
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:32px;">
+        <div class="stat" style="flex:1;min-width:140px;">
+          <div class="stat-num">1 prompt</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px;">To generate a complete full-stack app</div>
+        </div>
+        <div class="stat" style="flex:1;min-width:140px;">
+          <div class="stat-num">Minutes</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:6px;">From prompt to live hosted URL</div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--good);margin-bottom:14px;">Best For</div>
+          <div style="font-size:13px;line-height:1.6;">
+            • Non-technical founders validating MVPs<br>
+            • Designers bringing Figma work to life<br>
+            • Agencies prototyping before dev handoff<br>
+            • Internal tools for small teams
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:var(--warn);margin-bottom:14px;">Approach With Caution</div>
+          <div style="font-size:13px;line-height:1.6;">
+            • Apps collecting real user PII without security audit<br>
+            • Enterprise production systems at scale<br>
+            • Complex multi-step business logic
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features (simplified static version of the full grid) -->
+    <div id="page-features" class="content-page">
+      <div class="section">
+        <div class="eyebrow">Platform Features</div>
+        <h2 style="font-size:28px;font-weight:800;margin-bottom:24px;">Everything Lovable Can Do</h2>
+        
+        <div class="grid">
+          <div class="card">
+            <div style="font-size:24px;margin-bottom:8px;">⚡</div>
+            <h3 style="margin:0 0 8px;font-size:15px;">Prompt-to-App Generation</h3>
+            <p style="font-size:13px;color:var(--muted);">Type a description and Lovable builds pages, routes, components, and logic.</p>
+            <span class="badge accent" style="margin-top:8px;">All plans</span>
+          </div>
+          <div class="card">
+            <div style="font-size:24px;margin-bottom:8px;">🗄️</div>
+            <h3 style="margin:0 0 8px;font-size:15px;">Supabase Integration</h3>
+            <p style="font-size:13px;color:var(--muted);">Authentication, database, and file storage wired automatically.</p>
+            <span class="badge accent" style="margin-top:8px;">All plans</span>
+          </div>
+          <div class="card">
+            <div style="font-size:24px;margin-bottom:8px;">🎨</div>
+            <h3 style="margin:0 0 8px;font-size:15px;">Visual Editor</h3>
+            <p style="font-size:13px;color:var(--muted);">Point-and-click editing on top of generated code.</p>
+            <span class="badge accent" style="margin-top:8px;">All plans</span>
+          </div>
+          <!-- Add more cards as needed from the prototype -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Other pages (stubs with content from prototype) -->
+    <div id="page-autonomous" class="content-page">
+      <div class="section">
+        <div class="eyebrow">Autonomous AI</div>
+        <h2 style="font-size:28px;font-weight:800;margin-bottom:16px;">How Much Can Lovable Actually Do On Its Own?</h2>
+        <div class="alert good">
+          <strong>What's Genuinely Autonomous:</strong><br>
+          From a single prompt, Lovable autonomously generates route structure, all page components, database schema, auth configuration, API layer, styling system, and deployment.
+        </div>
+      </div>
+    </div>
+
+    <div id="page-security" class="content-page">
+      <div class="section">
+        <div class="eyebrow">Security</div>
+        <h2 style="font-size:28px;font-weight:800;margin-bottom:16px;">Security &amp; Production Readiness</h2>
+        <div class="alert warn">
+          <strong>Key Caveat:</strong> Security is listed in official positioning but treat as vendor positioning, not proof. Third-party reports exist around abuse and visibility issues.
+        </div>
+      </div>
+    </div>
+
+    <div id="page-pricing" class="content-page">
+      <div class="section">
+        <div class="eyebrow">Pricing</div>
+        <h2 style="font-size:28px;font-weight:800;margin-bottom:16px;">Lovable Pricing (as of prototype)</h2>
+        <div class="card">
+          <p>Free plan with daily/monthly credit limits. Pro $25/mo (100 credits). Business $50/mo. Enterprise custom. Top-ups available.</p>
+          <p style="font-size:12px;color:var(--muted);">Note: Exact numbers should be re-verified from official sources before use.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="page-verdict" class="content-page">
+      <div class="section">
+        <div class="eyebrow">Verdict</div>
+        <h2 style="font-size:28px;font-weight:800;margin-bottom:16px;">Final Verdict (from prototype)</h2>
+        <div class="prose">
+          Lovable is a serious candidate for rapid AI-assisted app prototyping. Its final rating depends on test outcomes across security, autonomy, deployment, backend behavior, and maintainability.
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-nav">
+      <button onclick="switchTab('overview')" style="padding:10px 18px;background:var(--card);border:1px solid var(--border);border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;">← Overview</button>
+      <button onclick="switchTab('verdict')" style="padding:10px 18px;background:var(--accent);color:white;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;">Verdict →</button>
+    </div>
+  </div>
+
+  <script>
+    const NAV = [
+      { id: "overview", label: "Overview" },
+      { id: "features", label: "Features" },
+      { id: "autonomous", label: "Autonomous AI" },
+      { id: "security", label: "Security" },
+      { id: "pricing", label: "Pricing" },
+      { id: "verdict", label: "Verdict" }
+    ];
+
+    function switchTab(tabId) {
+      // Hide all pages
+      document.querySelectorAll('.content-page').forEach(el => el.classList.remove('active'));
+      // Show target
+      const target = document.getElementById('page-' + tabId);
+      if (target) target.classList.add('active');
+
+      // Update tab styles
+      document.querySelectorAll('.nav-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tabId);
+      });
+    }
+
+    function initNav() {
+      const tabsContainer = document.getElementById('nav-tabs');
+      NAV.forEach(item => {
+        const btn = document.createElement('button');
+        btn.className = 'nav-tab';
+        btn.textContent = item.label;
+        btn.dataset.tab = item.id;
+        btn.onclick = () => switchTab(item.id);
+        tabsContainer.appendChild(btn);
+      });
+
+      // Activate first
+      if (NAV.length > 0) {
+        const firstBtn = tabsContainer.querySelector('.nav-tab');
+        if (firstBtn) firstBtn.classList.add('active');
+      }
+    }
+
+    // Keyboard support for tabs
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+        const active = document.querySelector('.nav-tab.active');
+        if (!active) return;
+        const tabs = Array.from(document.querySelectorAll('.nav-tab'));
+        let idx = tabs.indexOf(active);
+        idx = e.key === 'ArrowRight' ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
+        tabs[idx].click();
+        e.preventDefault();
+      }
+    });
+
+    // Boot
+    window.onload = () => {
+      initNav();
+      // Show overview by default
+      const overview = document.getElementById('page-overview');
+      if (overview) overview.classList.add('active');
+    };
+  </script>
+</body>
+</html>

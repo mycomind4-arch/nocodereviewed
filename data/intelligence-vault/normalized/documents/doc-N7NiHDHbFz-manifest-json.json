@@ -1,0 +1,15 @@
+{
+  "id": "doc-N7NiHDHbFz",
+  "source": "site-audit",
+  "source_account": "admin-local",
+  "title": "manifest.json",
+  "path": "/Users/macdizzle/Desktop/no code empire revised/data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_04-36-29Z/manifest.json",
+  "imported_at": "2026-06-04T04:36:48.211Z",
+  "content_type": "json",
+  "content": "{\n  \"auditRunId\": \"universal_audit_2026-06-04_04-36-29Z\",\n  \"resultPath\": \"data/intelligence-vault/audit-runs/universal_audit_2026-06-04_04-36-29Z/universal-site-audit.json\",\n  \"parserInbox\": \"data/intelligence-vault/parser-inbox/site-audits/universal_audit_2026-06-04_04-36-29Z\",\n  \"parserStatus\": \"queued\",\n  \"createdAt\": \"2026-06-04T04:36:31.461Z\"\n}",
+  "tags": [
+    "site-audit",
+    "document"
+  ],
+  "artifacts": []
+}

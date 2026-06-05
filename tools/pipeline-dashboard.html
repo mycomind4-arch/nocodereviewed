@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NoCodeReviewed — Pipeline Dashboard</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d0f12;--bg2:#13161a;--bg3:#1a1e24;--bg4:#212730;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#e8eaed;--text2:#9aa0ad;--text3:#5a6070;
+  --accent:#e8541a;--accent-dim:rgba(232,84,26,0.13);
+  --green:#3ecf6a;--green-dim:rgba(62,207,106,0.12);
+  --yellow:#f0b429;--yellow-dim:rgba(240,180,41,0.12);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.12);
+  --blue:#60a5fa;--blue-dim:rgba(96,165,250,0.12);
+  --purple:#a78bfa;--purple-dim:rgba(167,139,250,0.12);
+}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:14px;min-height:100vh}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border2);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:100}
+.brand{font-size:15px;font-weight:600;color:var(--text)}
+.brand span{color:var(--text3);font-weight:400;margin-left:6px;font-size:13px}
+.topbar-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px 20px 0}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.stat-label{font-size:11px;color:var(--text3);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.stat-val{font-size:22px;font-weight:600;color:var(--text)}
+.stat-val.red{color:var(--red)}
+.stat-val.green{color:var(--green)}
+.main{padding:16px 20px}
+.filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+input,select{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:6px;padding:6px 10px;font-size:13px;font-family:inherit}
+input::placeholder{color:var(--text3)}
+input:focus,select:focus{outline:none;border-color:var(--accent)}
+select option{background:var(--bg3)}
+.filters input{flex:1;min-width:140px}
+.tbl-wrap{border:1px solid var(--border);border-radius:10px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+thead th{background:var(--bg3);padding:8px 10px;text-align:left;font-weight:500;color:var(--text3);font-size:11px;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg3)}
+td{padding:8px 10px;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cn{width:17%}.cst{width:17%}.ccs{width:11%}.ces{width:12%}.cps{width:10%}.cbl{width:15%}.cac{width:14%}
+.badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:999px;white-space:nowrap;font-weight:500}
+.b-ns{background:rgba(90,96,112,0.2);color:var(--text3)}
+.b-draft{background:var(--blue-dim);color:var(--blue)}
+.b-nr{background:var(--yellow-dim);color:var(--yellow)}
+.b-appr{background:var(--green-dim);color:var(--green)}
+.b-pub{background:var(--green-dim);color:var(--green)}
+.b-pend{background:var(--purple-dim);color:var(--purple)}
+.b-part{background:var(--yellow-dim);color:var(--yellow)}
+.b-ver{background:var(--green-dim);color:var(--green)}
+.b-nu{background:var(--red-dim);color:var(--red)}
+.b-unk{background:rgba(90,96,112,0.2);color:var(--text3)}
+.b-nv{background:var(--yellow-dim);color:var(--yellow)}
+.b-mv{background:var(--green-dim);color:var(--green)}
+.b-stale{background:var(--red-dim);color:var(--red)}
+.blk{font-size:10px;padding:2px 8px;border-radius:999px;display:inline-block;white-space:nowrap;font-weight:500}
+.blk-r{background:var(--red-dim);color:var(--red)}
+.blk-w{background:var(--yellow-dim);color:var(--yellow)}
+.blk-c{background:var(--green-dim);color:var(--green)}
+.sp{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;white-space:nowrap;font-weight:500}
+.sp0{background:var(--blue-dim);color:var(--blue)}
+.sp1{background:var(--purple-dim);color:var(--purple)}
+.sp2{background:rgba(167,139,250,0.18);color:var(--purple)}
+.sp3{background:var(--accent-dim);color:var(--accent)}
+.sp4{background:var(--yellow-dim);color:var(--yellow)}
+.sp5{background:rgba(90,96,112,0.2);color:var(--text3)}
+.sp6{background:var(--green-dim);color:var(--green)}
+.inline-sel{background:var(--bg4);border:1px solid var(--border2);color:var(--text);border-radius:5px;padding:2px 6px;font-size:11px;cursor:pointer;font-family:inherit;max-width:100%}
+.inline-sel:focus{outline:none;border-color:var(--accent)}
+.btn{background:transparent;border:1px solid var(--border2);color:var(--text2);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
+.btn:hover{background:var(--bg4);color:var(--text);border-color:var(--text3)}
+.btn.accent{border-color:var(--accent);color:var(--accent)}
+.btn.accent:hover{background:var(--accent-dim)}
+.btn.danger{color:var(--red)}
+.btn.danger:hover{background:var(--red-dim);border-color:var(--red)}
+.copy-btn{background:transparent;border:1px solid var(--border2);color:var(--accent);border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
+.copy-btn:hover{background:var(--accent-dim)}
+.copy-btn.copied{color:var(--green);border-color:var(--green);background:var(--green-dim)}
+.del-btn{background:transparent;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 5px;border-radius:4px;line-height:1;float:right}
+.del-btn:hover{color:var(--red);background:var(--red-dim)}
+.add-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 12px;background:var(--bg3);border-radius:8px;margin-bottom:12px;border:1px solid var(--border)}
+.add-row input{font-size:12px;padding:5px 8px}
+.log-section{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-top:16px}
+.log-header{background:var(--bg3);padding:8px 14px;font-size:12px;font-weight:500;color:var(--text3);display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.04em}
+.log-entry{padding:7px 14px;font-size:12px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:baseline}
+.log-entry:last-child{border-bottom:none}
+.log-time{font-size:11px;color:var(--text3);white-space:nowrap;min-width:110px}
+.log-tool{font-weight:500;color:var(--text);min-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.log-msg{color:var(--text2);flex:1}
+.log-empty{padding:14px;font-size:12px;color:var(--text3);text-align:center}
+.save-flash{font-size:11px;color:var(--green);opacity:0;transition:opacity .3s}
+.save-flash.show{opacity:1}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg3);border:1px solid var(--green);color:var(--green);padding:8px 16px;border-radius:8px;font-size:13px;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.prompt-modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center}
+.prompt-modal-bg.open{display:flex}
+.prompt-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;width:min(620px,92vw);max-height:80vh;overflow:hidden;display:flex;flex-direction:column}
+.modal-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:14px;font-weight:600;color:var(--text)}
+.modal-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.modal-body{padding:16px 18px;overflow-y:auto;flex:1}
+.prompt-text{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;font-size:12px;color:var(--text2);line-height:1.7;white-space:pre-wrap;font-family:'IBM Plex Mono',monospace;max-height:320px;overflow-y:auto}
+.modal-footer{padding:12px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">NoCodeReviewed <span>pipeline dashboard</span></div>
+  <div class="topbar-right">
+    <span class="save-flash" id="save-flash">saved</span>
+    <button class="btn accent" onclick="toggleAdd()">+ add tool</button>
+    <button class="btn" onclick="exportCSV()">↓ export csv</button>
+    <button class="btn danger" onclick="resetAll()">reset</button>
+  </div>
+</div>
+
+<div class="stats" id="stats"></div>
+
+<div class="main">
+  <div class="add-row" id="add-row" style="display:none">
+    <input id="new-name" placeholder="tool name" style="width:160px">
+    <select id="new-stage" class="inline-sel" style="font-size:12px;padding:5px 8px">
+      <option value="0">GPT 02 — research</option>
+      <option value="1">GPT 01 — schema</option>
+      <option value="2">GPT 07 — build prompts</option>
+      <option value="3">Claude build</option>
+      <option value="4">GPT 06 — content gate</option>
+      <option value="5">GPT 05 — security</option>
+      <option value="6">Published</option>
+    </select>
+    <button class="btn accent" onclick="addTool()">add</button>
+    <button class="btn" onclick="toggleAdd()">cancel</button>
+  </div>
+
+  <div class="filters">
+    <input type="text" id="search" placeholder="search tools..." oninput="render()">
+    <select id="fStage" onchange="render()">
+      <option value="">all stages</option>
+      <option value="0">GPT 02 — research</option>
+      <option value="1">GPT 01 — schema</option>
+      <option value="2">GPT 07 — build prompts</option>
+      <option value="3">Claude build</option>
+      <option value="4">GPT 06 — content gate</option>
+      <option value="5">GPT 05 — security</option>
+      <option value="6">Published</option>
+    </select>
+    <select id="fBlock" onchange="render()">
+      <option value="">all statuses</option>
+      <option value="blocked">blocked</option>
+      <option value="warning">warning</option>
+      <option value="clear">clear</option>
+    </select>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="cn">tool</th>
+          <th class="cst">stage</th>
+          <th class="ccs">content</th>
+          <th class="ces">evidence</th>
+          <th class="cps">pricing</th>
+          <th class="cbl">blocker</th>
+          <th class="cac">action</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="log-section">
+    <div class="log-header">
+      <span>activity log</span>
+      <button class="btn" onclick="clearLog()">clear</button>
+    </div>
+    <div id="log-body"></div>
+  </div>
+</div>
+
+<!-- prompt modal -->
+<div class="prompt-modal-bg" id="modal-bg" onclick="closeModal(event)">
+  <div class="prompt-modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="modal-title">GPT prompt</div>
+        <div class="modal-sub" id="modal-sub"></div>
+      </div>
+      <button class="btn" onclick="closeModalDirect()">✕ close</button>
+    </div>
+    <div class="modal-body">
+      <div class="prompt-text" id="modal-prompt"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModalDirect()">close</button>
+      <button class="copy-btn" id="modal-copy-btn" onclick="copyModalPrompt()">copy prompt</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">prompt copied to clipboard</div>
+
+<script>
+const STORAGE_KEY = 'ncr_pipeline_v3';
+const LOG_KEY = 'ncr_pipeline_log_v3';
+
+const STAGES = ['GPT 02 — research','GPT 01 — schema','GPT 07 — build prompts','Claude build','GPT 06 — content gate','GPT 05 — security','Published'];
+const STAGE_CLS = ['sp0','sp1','sp2','sp3','sp4','sp5','sp6'];
+const CS_VALS = ['not-started','draft','needs-review','approved','published'];
+const ES_VALS = ['not-started','pending-HOT','partially-tested','verified','needs-update'];
+const PS_VALS = ['unknown','needs-verification','manually-verified','stale'];
+
+const DEFAULT_TOOLS = [
+  {id:1,name:'Lovable.dev',stage:4,cs:'needs-review',es:'partially-tested',ps:'manually-verified'},
+  {id:2,name:'Bolt.new',stage:4,cs:'draft',es:'pending-HOT',ps:'needs-verification'},
+  {id:3,name:'Cursor',stage:3,cs:'draft',es:'partially-tested',ps:'manually-verified'},
+  {id:4,name:'Replit Agent',stage:0,cs:'not-started',es:'not-started',ps:'unknown'},
+  {id:5,name:'Bubble',stage:5,cs:'approved',es:'verified',ps:'manually-verified'},
+  {id:6,name:'Webflow',stage:6,cs:'approved',es:'verified',ps:'manually-verified'},
+  {id:7,name:'Framer AI',stage:0,cs:'not-started',es:'not-started',ps:'unknown'},
+  {id:8,name:'Supabase',stage:3,cs:'draft',es:'partially-tested',ps:'manually-verified'},
+  {id:9,name:'v0 by Vercel',stage:1,cs:'not-started',es:'not-started',ps:'needs-verification'},
+  {id:10,name:'Softr',stage:4,cs:'needs-review',es:'partially-tested',ps:'manually-verified'},
+  {id:11,name:'Glide',stage:0,cs:'not-started',es:'not-started',ps:'unknown'},
+  {id:12,name:'Adalo',stage:1,cs:'not-started',es:'not-started',ps:'needs-verification'},
+  {id:13,name:'FlutterFlow',stage:2,cs:'draft',es:'partially-tested',ps:'needs-verification'},
+  {id:14,name:'WeWeb',stage:2,cs:'draft',es:'not-started',ps:'needs-verification'},
+  {id:15,name:'Xano',stage:2,cs:'draft',es:'partially-tested',ps:'manually-verified'},
+  {id:16,name:'Netlify',stage:4,cs:'needs-review',es:'verified',ps:'manually-verified'},
+  {id:17,name:'Vercel',stage:5,cs:'approved',es:'verified',ps:'manually-verified'},
+  {id:18,name:'Airtable',stage:6,cs:'approved',es:'verified',ps:'manually-verified'},
+  {id:19,name:'Notion API',stage:6,cs:'approved',es:'verified',ps:'stale'},
+  {id:20,name:'Railway',stage:1,cs:'not-started',es:'not-started',ps:'unknown'},
+  {id:21,name:'Render',stage:0,cs:'not-started',es:'not-started',ps:'unknown'},
+  {id:22,name:'PlanetScale',stage:1,cs:'not-started',es:'not-started',ps:'needs-verification'},
+  {id:23,name:'Neon',stage:0,cs:'not-started',es:'not-started',ps:'unknown'},
+  {id:24,name:'Base44',stage:0,cs:'not-started',es:'not-started',ps:'unknown'},
+  {id:25,name:'Windsurf',stage:0,cs:'not-started',es:'not-started',ps:'unknown'},
+  {id:26,name:'Firebase Studio',stage:0,cs:'not-started',es:'not-started',ps:'unknown'},
+  {id:27,name:'Retool AI',stage:0,cs:'not-started',es:'not-started',ps:'unknown'},
+  {id:28,name:'Bubble AI',stage:0,cs:'not-started',es:'not-started',ps:'unknown'},
+];
+
+let tools = [];
+let log = [];
+let nextId = 100;
+
+function load() {
+  try { const d = JSON.parse(localStorage.getItem(STORAGE_KEY)); if(d){tools=d.tools;nextId=d.nextId||100;} else { tools=JSON.parse(JSON.stringify(DEFAULT_TOOLS)); } } catch(e){ tools=JSON.parse(JSON.stringify(DEFAULT_TOOLS)); }
+  try { const l = JSON.parse(localStorage.getItem(LOG_KEY)); if(l) log=l; } catch(e){ log=[]; }
+  render(); renderLog();
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({tools, nextId}));
+  const f = document.getElementById('save-flash');
+  f.classList.add('show');
+  setTimeout(() => f.classList.remove('show'), 1500);
+}
+
+function saveLog() {
+  localStorage.setItem(LOG_KEY, JSON.stringify(log.slice(0,60)));
+}
+
+function addLog(toolName, msg) {
+  const now = new Date();
+  const ts = now.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' ' + now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+  log.unshift({ts, tool:toolName, msg});
+  if(log.length > 60) log.pop();
+  saveLog(); renderLog();
+}
+
+function renderLog() {
+  const el = document.getElementById('log-body');
+  if(!log.length){ el.innerHTML='<div class="log-empty">no activity yet — status changes appear here</div>'; return; }
+  el.innerHTML = log.slice(0,15).map(e=>`<div class="log-entry"><span class="log-time">${e.ts}</span><span class="log-tool">${e.tool}</span><span class="log-msg">${e.msg}</span></div>`).join('');
+}
+
+function getBlocker(t) {
+  if(t.es==='not-started' && t.stage>0) return {label:'evidence missing',type:'blocked'};
+  if(t.es==='pending-HOT' && t.stage>1) return {label:'needs hands-on test',type:'blocked'};
+  if(t.ps==='unknown') return {label:'pricing unknown',type:'blocked'};
+  if(t.ps==='stale') return {label:'pricing stale',type:'warning'};
+  if(t.ps==='needs-verification') return {label:'pricing unverified',type:'warning'};
+  if(t.cs==='needs-review' && t.stage>=4) return {label:'awaiting GPT 06',type:'warning'};
+  if(t.stage===5 && t.cs==='approved') return {label:'security review due',type:'warning'};
+  return {label:'clear to advance',type:'clear'};
+}
+
+function getPrompt(t) {
+  const n = t.name;
+  const gptLabel = STAGES[t.stage];
+  if(t.stage===0) return {
+    title: 'GPT 02 — Evidence Review Researcher',
+    sub: `Starting research session for ${n}`,
+    prompt: `You are acting as GPT 02 — Evidence Review Researcher for NoCodeReviewed.\n\nPrepare a complete evidence brief for ${n}.\n\nFocus on:\n1. Official claims — what does ${n} say about itself on its own website?\n2. Pricing — document current tiers from the official pricing page. Mark pricing status as needs-verification until confirmed.\n3. Security notes — what does ${n} officially disclose about auth, data residency, and compliance?\n4. Autonomy notes — what does ${n} claim to do autonomously? What human steps are required?\n5. Safe-to-publish claims — what can we state without hands-on testing?\n6. Claims requiring verification — what needs hands-on testing before we can publish?\n7. Testing plan — list the top 5 hands-on tests needed to complete this brief.\n\nDo not invent any facts. If a pricing page is not accessible, mark pricing as unknown. All claims must be labeled with their source type: official / reputable third-party / anecdotal / needs testing.\n\nOutput the full standard evidence brief format as defined in the GPT 02 spec.`
+  };
+  if(t.stage===1) return {
+    title: 'GPT 01 — Autonomous Infrastructure Architect',
+    sub: `Schema check for ${n}`,
+    prompt: `You are acting as GPT 01 — Autonomous Infrastructure Architect for NoCodeReviewed.\n\nConfirm the tool data model is correctly set up for ${n} before build begins.\n\nCheck:\n1. Does the tools table have a record for ${n} with the correct slug, category, and status fields?\n2. Are all three status fields present and set to their correct default values:\n   - content_status: not-started\n   - evidence_status: not-started\n   - pricing_status: unknown\n3. Are there any schema gaps that would block the build workflow?\n4. What is the correct next transition for each status field once the evidence brief is ready?\n\nDo not modify any schema. Report only. Flag any issues before the build begins.\n\nReference: data/vibecode_authority_schema.sql`
+  };
+  if(t.stage===2) return {
+    title: 'GPT 07 — Claude Build Manager',
+    sub: `Creating build task sequence for ${n}`,
+    prompt: `You are acting as GPT 07 — Claude Build Manager for NoCodeReviewed.\n\nCreate the first single-task Claude build prompt for the ${n} review page microsite.\n\nThe task must follow the standard Claude Build Manager format:\n- TASK: one sentence\n- GOAL: what this accomplishes\n- FILES TO INSPECT FIRST\n- FILES TO MODIFY\n- FILES NOT TO TOUCH\n- EXACT CHANGE REQUIRED\n- ACCEPTANCE CRITERIA (3+ checkboxes)\n- TEST COMMAND + expected result\n- STOP CONDITION\n- ROLLBACK INSTRUCTIONS\n- FINAL SUMMARY REQUIRED\n\nStart with the scaffold task only — create the page file structure for the ${n} microsite. No content, no real data yet. One task at a time.\n\nDo not bundle multiple tasks. Do not ask Claude to make architectural decisions.`
+  };
+  if(t.stage===3) return {
+    title: 'Claude build task',
+    sub: `Next single task for ${n}`,
+    prompt: `TASK: [describe the specific next build task for ${n}]\n\nGOAL:\nImplement [specific feature] for the ${n} review microsite.\n\nFILES TO INSPECT FIRST:\n- [relevant file]: [what to look for]\n\nFILES TO MODIFY:\n- [file path]: [specific change]\n\nFILES NOT TO TOUCH:\n- src/static-app.js: do not modify the tools array\n- data/local-store.json: do not modify existing records\n- Any file not listed above\n\nEXACT CHANGE REQUIRED:\n[Precise description of what to add, modify, or remove]\n\nACCEPTANCE CRITERIA:\n- [ ] [criterion 1]\n- [ ] [criterion 2]\n- [ ] [criterion 3]\n\nTEST COMMAND:\n[exact command]\nExpected result: [what passing looks like]\n\nSTOP CONDITION:\nStop and report back if:\n- You find the file structure differs from what is described above\n- Any change would affect more than the listed files\n\nFINAL SUMMARY REQUIRED:\n1. Files modified (with description)\n2. Test result (pass/fail + output)\n3. Any decisions made not in this prompt\n4. Any problems encountered\n\n---\nNOTE: Replace bracketed placeholders before sending to Claude. This is a template for the ${n} build task.`
+  };
+  if(t.stage===4) return {
+    title: 'GPT 06 — Content Editor & Quality Gate',
+    sub: `Content audit for ${n}`,
+    prompt: `You are acting as GPT 06 — Content Editor & Quality Gate for NoCodeReviewed.\n\nAudit the ${n} review page content before publication.\n\nAttach the current draft content for ${n} to this session.\n\nYour output must follow the standard Pre-Publish Audit Report format:\n\n1. PUBLISH DECISION: Approve / Approve with minor edits / Needs evidence / Needs rewrite / Do not publish\n2. REQUIRED FIXES (blocking) — list each with page location and recommended fix\n3. RISKY CLAIMS — list each claim with why it is risky and what evidence would satisfy it\n4. MISSING EVIDENCE — list what is missing and what would satisfy each gap\n5. VAGUE LANGUAGE FLAGS — exact phrases with suggested rewrites\n6. AFFILIATE / HYPE FLAGS — exact phrases with issue and rewrite\n7. DISCLOSURE CHECK — affiliate disclosure, testing methodology, sponsored content\n8. SECURITY SECTION FLAG — does this page contain security claims? If yes, flag for GPT 05.\n9. READABILITY NOTES\n10. PAGE COMPLETENESS — required sections present?\n11. SUGGESTED REWRITES for any blocking issues\n\nDo not approve content if evidence status is not-started or pending-HOT.\nDo not approve vague language. Do not approve unsupported "best" or "enterprise-grade" claims.`
+  };
+  if(t.stage===5) return {
+    title: 'GPT 05 — Security & Production Readiness Auditor',
+    sub: `Security audit for ${n}`,
+    prompt: `You are acting as GPT 05 — Security & Production Readiness Auditor for NoCodeReviewed.\n\nAudit the security section of the ${n} review page before publication.\n\nFor each security claim in the content:\n1. Identify the exact claim\n2. Check whether it is supported by official ${n} documentation\n3. Rate the claim: verified / unsupported / unknown\n4. Provide a recommended replacement if unsupported\n\nAlso check:\n- Is "enterprise-grade" or equivalent language used? If so, is it backed by SOC 2 Type II or ISO 27001 documentation?\n- Does the review correctly separate ${n}'s security from underlying infrastructure security (e.g. Supabase, hosting)?\n- Are missing disclosures explicitly noted rather than silently omitted?\n\nRate ${n}'s official security documentation: strong / partial / minimal / none\n\nEnd with:\n- Human review required: YES/NO\n- Any security claims that must be removed before publish\n- Conservative replacement language for each removed claim\n\nDo not claim any tool is secure without a cited official source.`
+  };
+  return {
+    title: 'Maintenance check',
+    sub: `${n} is published`,
+    prompt: `${n} is published on NoCodeReviewed. Run a maintenance check:\n\n1. Pricing freshness — when was pricing last verified? Is it within 60 days? If not, flag as stale and trigger needs-verification.\n2. Evidence freshness — has ${n} released major updates since the review was published? Check their changelog and official blog.\n3. Content accuracy — are there any claims in the published review that may no longer be accurate based on recent ${n} updates?\n4. Affiliate status — has the affiliate relationship changed?\n\nOutput a maintenance report with:\n- Items that need action (with priority: urgent / soon / monitor)\n- Items that are current\n- Recommended next review date`
+  };
+}
+
+function updateField(id, field, val) {
+  const t = tools.find(x=>x.id===id);
+  if(!t) return;
+  const old = t[field];
+  t[field] = isNaN(val) ? val : (field==='stage' ? parseInt(val) : val);
+  const labels = {cs:'content status',es:'evidence status',ps:'pricing status',stage:'stage'};
+  const oldLabel = field==='stage' ? STAGES[old] : old;
+  const newLabel = field==='stage' ? STAGES[t[field]] : val;
+  addLog(t.name, `${labels[field]}: ${oldLabel} → ${newLabel}`);
+  save(); render();
+}
+
+function deleteTool(id) {
+  const t = tools.find(x=>x.id===id);
+  if(!t || !confirm(`Remove ${t.name}?`)) return;
+  tools = tools.filter(x=>x.id!==id);
+  addLog(t.name, 'removed from pipeline');
+  save(); render();
+}
+
+function csSel(t) {
+  return `<select class="inline-sel" onchange="updateField(${t.id},'cs',this.value)">${CS_VALS.map(v=>`<option value="${v}"${v===t.cs?' selected':''}>${v}</option>`).join('')}</select>`;
+}
+function esSel(t) {
+  const short={'not-started':'not started','pending-HOT':'pending HOT','partially-tested':'partial','verified':'verified','needs-update':'needs update'};
+  return `<select class="inline-sel" onchange="updateField(${t.id},'es',this.value)">${ES_VALS.map(v=>`<option value="${v}"${v===t.es?' selected':''}>${short[v]||v}</option>`).join('')}</select>`;
+}
+function psSel(t) {
+  const short={'unknown':'unknown','needs-verification':'needs verify','manually-verified':'verified','stale':'stale'};
+  return `<select class="inline-sel" onchange="updateField(${t.id},'ps',this.value)">${PS_VALS.map(v=>`<option value="${v}"${v===t.ps?' selected':''}>${short[v]||v}</option>`).join('')}</select>`;
+}
+function stageSel(t) {
+  return `<select class="inline-sel" onchange="updateField(${t.id},'stage',this.value)">${STAGES.map((s,i)=>`<option value="${i}"${i===t.stage?' selected':''}>${s}</option>`).join('')}</select>`;
+}
+function blockerTag(b) {
+  const cls = b.type==='blocked'?'blk-r':b.type==='warning'?'blk-w':'blk-c';
+  return `<span class="blk ${cls}">${b.label}</span>`;
+}
+
+function render() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const fStage = document.getElementById('fStage').value;
+  const fBlock = document.getElementById('fBlock').value;
+  const filtered = tools.filter(t => {
+    if(search && !t.name.toLowerCase().includes(search)) return false;
+    if(fStage!=='' && t.stage!==parseInt(fStage)) return false;
+    if(fBlock){ const b=getBlocker(t); if(b.type!==fBlock) return false; }
+    return true;
+  });
+  document.getElementById('tbody').innerHTML = filtered.map(t => {
+    const b = getBlocker(t);
+    const sc = STAGE_CLS[t.stage]||'sp5';
+    const isPublished = t.stage===6;
+    const actionBtn = isPublished
+      ? `<span style="color:var(--text3);font-size:11px">live ✓</span>`
+      : `<button class="copy-btn" onclick="openPrompt(${t.id})">copy prompt</button>`;
+    return `<tr>
+      <td class="cn" title="${t.name}" style="font-weight:500">${t.name}<button class="del-btn" onclick="deleteTool(${t.id})" title="remove">×</button></td>
+      <td class="cst">${stageSel(t)}</td>
+      <td class="ccs">${csSel(t)}</td>
+      <td class="ces">${esSel(t)}</td>
+      <td class="cps">${psSel(t)}</td>
+      <td class="cbl">${blockerTag(b)}</td>
+      <td class="cac">${actionBtn}</td>
+    </tr>`;
+  }).join('');
+
+  const blocked = tools.filter(t=>getBlocker(t).type==='blocked').length;
+  const pub = tools.filter(t=>t.stage===6).length;
+  const inf = tools.filter(t=>t.stage>0&&t.stage<6).length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-label">total tools</div><div class="stat-val">${tools.length}</div></div>
+    <div class="stat"><div class="stat-label">in pipeline</div><div class="stat-val">${inf}</div></div>
+    <div class="stat"><div class="stat-label">blocked</div><div class="stat-val red">${blocked}</div></div>
+    <div class="stat"><div class="stat-label">published</div><div class="stat-val green">${pub}</div></div>
+  `;
+}
+
+let currentPromptText = '';
+function openPrompt(id) {
+  const t = tools.find(x=>x.id===id);
+  if(!t) return;
+  const p = getPrompt(t);
+  currentPromptText = p.prompt;
+  document.getElementById('modal-title').textContent = p.title;
+  document.getElementById('modal-sub').textContent = p.sub;
+  document.getElementById('modal-prompt').textContent = p.prompt;
+  document.getElementById('modal-copy-btn').textContent = 'copy prompt';
+  document.getElementById('modal-copy-btn').classList.remove('copied');
+  document.getElementById('modal-bg').classList.add('open');
+}
+
+function closeModal(e) {
+  if(e.target === document.getElementById('modal-bg')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modal-bg').classList.remove('open');
+}
+
+function copyModalPrompt() {
+  navigator.clipboard.writeText(currentPromptText).then(() => {
+    const btn = document.getElementById('modal-copy-btn');
+    btn.textContent = 'copied!';
+    btn.classList.add('copied');
+    showToast();
+    setTimeout(()=>{ btn.textContent='copy prompt'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function showToast() {
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2000);
+}
+
+function toggleAdd() {
+  const r = document.getElementById('add-row');
+  r.style.display = r.style.display==='none'?'flex':'none';
+  if(r.style.display==='flex') document.getElementById('new-name').focus();
+}
+
+function addTool() {
+  const name = document.getElementById('new-name').value.trim();
+  if(!name) return;
+  const stage = parseInt(document.getElementById('new-stage').value);
+  tools.push({id:nextId++, name, stage, cs:'not-started', es:'not-started', ps:'unknown'});
+  addLog(name, 'added to pipeline');
+  document.getElementById('new-name').value = '';
+  document.getElementById('add-row').style.display = 'none';
+  save(); render();
+}
+
+function clearLog() {
+  if(!confirm('Clear activity log?')) return;
+  log = []; saveLog(); renderLog();
+}
+
+function resetAll() {
+  if(!confirm('Reset all tools to defaults? This cannot be undone.')) return;
+  tools = JSON.parse(JSON.stringify(DEFAULT_TOOLS));
+  log = [];
+  nextId = 100;
+  save(); saveLog(); render(); renderLog();
+}
+
+function exportCSV() {
+  const rows = [['tool','stage','content status','evidence status','pricing status','blocker']];
+  tools.forEach(t => {
+    const b = getBlocker(t);
+    rows.push([t.name, STAGES[t.stage], t.cs, t.es, t.ps, b.label]);
+  });
+  const csv = rows.map(r=>r.map(c=>'"'+c+'"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'ncr-pipeline.csv';
+  a.click();
+}
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModalDirect(); });
+load();
+</script>
+</body>
+</html>
