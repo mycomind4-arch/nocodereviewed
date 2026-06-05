@@ -42,3 +42,7 @@ outputs/coding-agent-runs/*
 # agent-swarm-coder generated run outputs
 tools/internal/agent-swarm-coder/outputs/coding-agent-runs/*
 !tools/internal/agent-swarm-coder/outputs/coding-agent-runs/.gitkeep
+
+# agent-swarm-coder generated run outputs
+tools/internal/agent-swarm-coder/outputs/coding-agent-runs/*
+!tools/internal/agent-swarm-coder/outputs/coding-agent-runs/.gitkeep
