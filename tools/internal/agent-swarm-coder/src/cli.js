@@ -26,7 +26,8 @@ function parseArgs(argv) {
     vaultHandoff: false,
     backfillHandoffPath: null,
     contextPacket: false,
-    taskPath: null
+    taskPath: null,
+    interactive: false
   };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
@@ -40,6 +41,8 @@ function parseArgs(argv) {
       out.dryRun = true;
     } else if (a === '--apply' || a === '--no-dry-run') {
       out.dryRun = false;
+    } else if (a === '--interactive' || a === '-i') {
+      out.interactive = true;
     } else if (a === '--allow-repair-apply') {
       out.allowRepairApply = true;
     } else if (a === '--allow-deletes') {
@@ -102,6 +105,9 @@ Usage (context packet retrieval using prior local Vault ingestion outputs):
 Usage (compound mode - context + handoff):
   node src/cli.js --project "." --goal "..." --dry-run --compound
 
+Usage (interactive mode):
+  node src/cli.js --project "." --interactive
+
 Usage (task mode - for ai-chat-command-bridge native host):
   node src/cli.js --task "path/to/task.json"
   The task.json contains instruction, project_path, mode ("dry-run"|"apply"), options {vault_handoff, context_packet, compile_package}.
@@ -119,6 +125,7 @@ Options:
   --compile-package, --compile  After normal goal planning, compile the produced implementation-plan.json into generated-implementation-package.{json,md}, then immediately execute it via the package pipeline in dry-run (saves paths)
   --vault-handoff   Emit vault-handoff/ normalized export (manifest + records.jsonl + summary) inside the run dir using VAULT_DATA_CONTRACT shapes. Does not alter raw artifacts. (default false per current contracts)
   --backfill-vault-handoff <path>  Read an existing run dir and create/overwrite only its vault-handoff/ subdir (no execution)
+  --interactive, -i  Enter interactive terminal mode (maintains session state, REPL)
   --dry-run         Inspect + plan only. Do not modify files. (DEFAULT)
   --apply           Permit actual file writes + backups (use with extreme caution)
   --allow-repair-apply  Allow the repair loop to apply a pre-approved narrow patch on failure (advanced)
@@ -172,6 +179,13 @@ async function main() {
   const hasPlan = !!opts.planPath;
   const hasBackfill = !!opts.backfillHandoffPath;
   const hasTask = !!opts.taskPath;
+  const isInteractive = opts.interactive;
+
+  if (isInteractive) {
+    const { startRepl } = await import('./repl.js');
+    await startRepl(opts);
+    process.exit(0);
+  }
 
   if (!hasGoal && !hasPackage && !hasPlan && !hasBackfill && !hasTask) {
     console.error('ERROR: either --goal or --package or --plan or --backfill-vault-handoff or --task is required.\n');
